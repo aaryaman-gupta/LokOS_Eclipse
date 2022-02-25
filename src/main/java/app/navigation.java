@@ -1,5 +1,7 @@
 package app;
 
+import java.util.concurrent.TimeUnit;
+
 import io.appium.java_client.MobileBy;
 import lokos.lokosTest;
 import util.MobileTouch;
@@ -7,20 +9,20 @@ import util.MobileTouch;
 public class navigation extends lokosTest {
 
 	public static void shgButton() throws InterruptedException {
-		Thread.sleep(2000);
+		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/tbl_shg").click();
-		Thread.sleep(3000);
+		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	}
 
 	public static void navToVillage(int row) throws InterruptedException {
 		xc.changeSheet("SHGs");
 		appdriver.findElementById("com.microware.cdfi:id/spin_panchayat").click();
-		Thread.sleep(1500);
+		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		appdriver.findElement(MobileBy
 				.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, profileCons.gpColNum) + "\")"))
 				.click();
 		appdriver.findElementById("com.microware.cdfi:id/spin_village").click();
-		Thread.sleep(1500);
+		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		appdriver.findElement(MobileBy.AndroidUIAutomator(
 				"new UiSelector().text(\"" + xc.getCellString(row, profileCons.villageColNum) + "\")")).click();
 		

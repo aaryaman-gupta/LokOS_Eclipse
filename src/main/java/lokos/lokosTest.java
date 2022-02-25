@@ -1,13 +1,11 @@
 package lokos;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 
 import app.loginConstants;
@@ -23,6 +21,7 @@ import app.shgMeetings;
 import app.shgProfileCreation;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
+
 import readingXLS.xlsClasses;
 import reporting.ExtentManager;
 import util.DeviceUtil;
@@ -47,13 +46,15 @@ public class lokosTest {
 	public static DeviceUtil du = null;
 	public static int shg_row_counter = 0;
 	public static boolean web_process_success_flag = false;
-	public static int[][] mem_check=new int[2][58];
-	public static int[][] shg_check=new int[2][59];
+	public static int[][] mem_check = new int[2][58];
+	public static int[][] shg_check = new int[2][59];
 	public static int[][] cutoff_check = new int[2][88];
 	public static int[][] reg_check = new int[2][88];
+	
 
 	@Test
 	public static void startApp() throws Exception {
+		
 		ExtentManager.getReports();
 		test = reports.createTest("LokOS App Test");
 		System.out.println("=====================================================================================");
@@ -67,13 +68,16 @@ public class lokosTest {
 //		app.loginTest.login();
 		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+		
 		test.log(Status.PASS, "Login Complete");
 //		app.loginTest.sync();
 		System.out.println("Login and Sync Complete");
+		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function)","PFA report of previous Test");
 		Thread.sleep(1000);
 		ExtentManager.addScreenShotsToTest("SHG Bookeeper Screen", test);
-
+		
 		navigation.shgButton();
+		
 
 		xc.changeSheet("SHGs");
 
@@ -83,10 +87,11 @@ public class lokosTest {
 		for (int r = 1; r < row; r++) {
 			xc.changeSheet("SHGs");
 			try {
-				testFlow = reports.createTest(
-						"[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum) + " (Flow: "
-								+ xc.getCellString(r, profileCons.typeColNum)+")");
-				testFlow.log(Status.INFO, "FLOW TYPE: " + xc.getCellString(r, profileCons.flowTypeColNum));
+				if (!(xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")
+						|| xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")))
+					testFlow = reports.createTest("[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum)
+							+ " (Flow: " + xc.getCellString(r, profileCons.typeColNum) + ")");
+				test.log(Status.INFO, "Flow number \" + r + \" begins");
 				System.out.println("\nFlow number " + r + " begins");
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New Members")) {
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
@@ -106,50 +111,54 @@ public class lokosTest {
 						++memberRow;
 						String memName = xc.getCellString(memberRow, memCons.nameColNum);
 						System.out.println("Member no: " + i + " -->" + memName);
-						testMem = testFlow.createNode("Member: " + memName+"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
+						testMem = testFlow.createNode(
+								"Member: " + memName + "(" + xc.getCellString(memberRow, memCons.typeColNum) + ")");
 						navigation.newMember();
 						/////////////////////////////////////////////////
 						int[] val = memberProfile.idSelect_Mem(memberRow);
 						/////////////////////////////////////////////////
+						int[][] zeroIni=new int[mem_check[0].length][mem_check[1].length];
 						summary.display(mem_check, testMem);
-						Arrays.fill(mem_check,0);
+						mem_check=zeroIni;
 						testMem.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
 						testFlow.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
-						System.out.println("^^^^^^^^^^^^^^");						
+						System.out.println("^^^^^^^^^^^^^^");
 						System.out.println("Member " + i + " Fails: " + val[1] + "/" + val[2]);
 						System.out.println("________________________");
 					}
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update Member")) {
 
-					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					System.out.println("Flow started for Update Member in SHG " + shg + "("
-							+ xc.getCellString(r, profileCons.flowTypeColNum) + ")");
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGMembers(r);
-					
+
+					String shg = xc.getCellString(r, profileCons.shgNameColNum);
+					System.out.println("Flow started for Update Member in SHG " + shg + "("
+							+ xc.getCellString(r, profileCons.flowTypeColNum) + ")");
+
 					xc.changeSheet("Members");
 					++memberRow;
 					String memName = xc.getCellString(memberRow, memCons.nameColNum);
-					System.out.println("Member no:" + memName);
-					testMem = testFlow.createNode("Member: " + memName+"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
+					testMem = testFlow.createNode(
+							"Member: " + memName + "(" + xc.getCellString(memberRow, memCons.typeColNum) + ")");
 					System.out.println("");
 					System.out.println("________________________");
-					
+
 					navigation.existingMember(memberRow);
 
 					///////////////////////////////////////////////////
 					int[] val = memberProfile.idSelect_Mem(memberRow);
 					///////////////////////////////////////////////////
+					int[][] zeroIni=new int[mem_check[0].length][mem_check[1].length];
 					summary.display(mem_check, testMem);
-					Arrays.fill(mem_check,0);
-					String resultF="Member " + memName + " Fails: " + val[1] + "/" + val[2];
-					String resultP="Member " + memName + " Passed: " + val[0] + "/" + val[2];
-					testMem.log(Status.INFO,resultF);
-					testMem.log(Status.INFO,resultP);
-					testFlow.log(Status.INFO,resultF);
-					testFlow.log(Status.INFO,resultP);
+					mem_check=zeroIni;
+					String resultF = "Member " + memName + " Fails: " + val[1] + "/" + val[2];
+					String resultP = "Member " + memName + " Passed: " + val[0] + "/" + val[2];
+					testMem.log(Status.INFO, resultF);
+					testMem.log(Status.INFO, resultP);
+					testFlow.log(Status.INFO, resultF);
+					testFlow.log(Status.INFO, resultP);
 					System.out.println("^^^^^^^^^^^^^^");
 					System.out.println(resultF);
 					System.out.println(resultP);
@@ -157,51 +166,56 @@ public class lokosTest {
 
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New SHG")) {
-					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					testSHG = reports.createTest(
-							"New SHG: " + shg + "(" + xc.getCellString(r, profileCons.flowTypeColNum) + ")");
-					System.out.println("\nFlow started for New SHG " + shg);
+
 					navigation.navToVillage(r);
 					navigation.newSHG();
+
+					String shg = xc.getCellString(r, profileCons.shgNameColNum);
+					System.out.println("\nFlow started for New SHG " + shg);
+					testSHG = testFlow.createNode(
+							"New SHG: " + shg + "(" + xc.getCellString(r, profileCons.flowTypeColNum) + ")");
 					System.out.println("________________________");
 					//////////////////////////////////////////////
 					int[] val = shgProfileCreation.idSelect_SHG(r);
 					//////////////////////////////////////////////
+					int[][] zeroIni=new int[shg_check[0].length][shg_check[1].length];
+					summary.display(shg_check, testSHG);
+					shg_check=zeroIni;
+					String resultF = "New SHG " + xc.getCellString(r, profileCons.shgNameColNum) + " Fails: " + val[1]
+							+ "/" + val[2];
+					testSHG.log(Status.INFO, resultF);
+					testFlow.log(Status.INFO, resultF);
 					System.out.println("^^^^^^^^^^^^^^");
-					testSHG.log(Status.INFO, "New SHG " + xc.getCellString(r, profileCons.shgNameColNum) + " Fails: "
-							+ val[1] + "/" + val[2]);
-					test.log(Status.INFO, "New SHG " + xc.getCellString(r, profileCons.shgNameColNum) + " Fails: "
-							+ val[1] + "/" + val[2]);
-					System.out.println("New SHG " + xc.getCellString(r, profileCons.shgNameColNum) + " Fails: " + val[1]
-							+ "/" + val[2]);
+					System.out.println(resultF);
 					System.out.println("________________________");
 
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update SHG")) {
-					testSHG = reports.createTest("Update SHG: " + xc.getCellString(r, profileCons.shgNameColNum) + "("
-							+ xc.getCellString(r, profileCons.flowTypeColNum) + ")");
-					testSHG.log(Status.INFO,
-							"Flow started for New SHG " + xc.getCellString(r, profileCons.shgNameColNum));
-					test.log(Status.INFO, "Flow started for New SHG " + xc.getCellString(r, profileCons.shgNameColNum));
-					System.out.println("\nFlow started for New SHG " + xc.getCellString(r, profileCons.shgNameColNum));
+
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGProfile(r);
+
+					String shg = xc.getCellString(r, profileCons.shgNameColNum);
+					testSHG = testFlow.createNode(
+							"Update SHG: " + shg + "(" + xc.getCellString(r, profileCons.flowTypeColNum) + ")");
+					System.out.println("\nFlow started for New SHG " + xc.getCellString(r, profileCons.shgNameColNum));
 					System.out.println("________________________");
+					//////////////////////////////////////////////
 					int[] val = shgProfileCreation.idSelect_SHG(r);
+					//////////////////////////////////////////////
+					int[][] zeroIni=new int[shg_check[0].length][shg_check[1].length];
+					summary.display(shg_check, testSHG);
+					shg_check=zeroIni;
+					String resultF = "Update of " + shg + " Failed: " + val[1] + "/" + val[2];
+					String resultP = "Update of " + shg + " Passed: " + val[0] + "/" + val[2];
+					testSHG.log(Status.INFO, resultF);
+					testSHG.log(Status.INFO, resultP);
+					testFlow.log(Status.INFO, resultF);
+					testFlow.log(Status.INFO, resultP);
 					System.out.println("^^^^^^^^^^^^^^");
-					testSHG.log(Status.INFO, "Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Failed: "
-							+ val[1] + "/" + val[2]);
-					testSHG.log(Status.INFO, "Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Passed: "
-							+ val[0] + "/" + val[2]);
-					test.log(Status.INFO, "Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Failed: "
-							+ val[1] + "/" + val[2]);
-					test.log(Status.INFO, "Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Passed: "
-							+ val[0] + "/" + val[2]);
-					System.out.println("Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Failed: "
-							+ val[1] + "/" + val[2]);
-					System.out.println("Update of " + xc.getCellString(r, profileCons.shgNameColNum) + " Passed: "
-							+ val[0] + "/" + val[2]);
+					System.out.println(resultF);
+					System.out.println(resultP);
 					System.out.println("________________________");
 
 				}
@@ -209,7 +223,9 @@ public class lokosTest {
 
 					boolean webProcess_flag = true;
 					try {
+
 						test.log(Status.INFO, "Starting Updation Process...");
+						testSHG = test.createNode("Upload Data + Web Flow");
 						System.out.println("Starting Updation Process...");
 						appdriver.findElementById("com.microware.cdfi:id/icBack").click();
 						Thread.sleep(1000);
@@ -220,7 +236,7 @@ public class lokosTest {
 						String s = appdriver.findElementById("com.microware.cdfi:id/tvUploadData").getText();
 						System.out.println(s);
 						if (s.contains("(0)")) {
-							test.log(Status.INFO, "Data not sufficient to upload");
+							testSHG.log(Status.FAIL, "Data not sufficient to upload");
 							System.out.println("Data not sufficient to upload");
 							webProcess_flag = false;
 							appdriver.quit();
@@ -230,46 +246,51 @@ public class lokosTest {
 							appdriver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
 							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 									.equals("Record Added To Queue")) {
-								test.log(Status.PASS, "Record Added To Queue");
+								testSHG.log(Status.PASS, "Record Added To Queue");
 								System.out.println("Record Added To Queue");
 								appdriver.quit();
 							} else {
-								test.log(Status.FAIL, "||||Error->Record was not added to the Queue||||");
+								ExtentManager.addScreenShotsToLogFail("Fail Submission Process" + r, testSHG);
+								testSHG.log(Status.FAIL, "||||Error->Record was not added to the Queue||||");
 								System.out.println("||||Error->Record was not added to the Queue||||");
 								appdriver.quit();
 								webProcess_flag = false;
 							}
 
 						}
-
 //						appdriver.findElementById(loginConstants.syncHome).click();
 						test.log(Status.INFO, "...Updation Process Complete ");
 						System.out.println("...Updation Process Complete ");
 					} catch (Exception e) {
-						test.log(Status.FAIL, "...error in Updation Process");
+						webProcess_flag=false;
+						ExtentManager.addScreenShotsToLogFail("Fail: Submission Process " + r, testSHG);
+						testSHG.log(Status.FAIL, "...error in Updation Process");
 						System.out.println("...error in Updation Process");
-						test.log(Status.INFO, "   ||||Terminating Test||||");
-						System.out.println("\n   ||||Terminating Test||||");
+						test.log(Status.INFO, "   ||||Terminating Web Flow||||");
+						System.out.println("\n   ||||Terminating Web Flow||||");
 						Thread.sleep(2000);
 						e.printStackTrace();
 						appdriver.quit();
 					}
 
+					xc.changeSheet("SHGs");
+					
 					if (webProcess_flag) {
+						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
+						System.out.println("Web Flow Commencing in 3 minutes");
 						Thread.sleep(180000);
 						web.LoginTest.startWeb();
-
 					}
-					xc.changeSheet("SHGs");
+					
 					app.launchLokOS.launchLokos();
 					test.log(Status.PASS, "Lokos Successfully Launched");
 					System.out.println("Lokos Successfully Launched");
 					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
 					app.loginTest.sync();
-
 					test.log(Status.PASS, "Login and Sync Complete");
 					System.out.println("Login and Sync Complete");
+					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
 					navigation.shgButton();
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {
@@ -288,11 +309,13 @@ public class lokosTest {
 					String s = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 					test.log(Status.PASS, "Status: " + s);
 					System.out.println("Status: " + s);
+					ExtentManager.addScreenShotsToTest("Status "+r, test);
 					appdriver.findElementById(loginConstants.alertOK2).click();
 					appdriver.findElementById(loginConstants.syncHome).click();
 					System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 					test.log(Status.INFO, "...status record processed.");
 					System.out.println("...status record processed.\n");
+					navigation.shgButton();
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("SHG Meetings")) {
 
@@ -303,6 +326,7 @@ public class lokosTest {
 					System.out.println("\n-----SHG Meetings-----");
 
 					/////////////////////////
+					@SuppressWarnings("unused")
 					int[] val = shgMeetings.meetingNum(r);
 					/////////////////////////
 
@@ -316,7 +340,9 @@ public class lokosTest {
 				System.out.println("Flow number " + r + " complete");
 
 			} catch (Exception e) {
-				test.log(Status.FAIL, "Flow " + r + " failed in between");
+				ExtentManager.addScreenShotsToTest("Failed Flow" +r, testFlow);
+				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
+				test.log(Status.INFO,"Flow " + r + " failed in between" );
 				System.out.println("Flow " + r + " failed in between");
 				e.printStackTrace();
 			}
@@ -331,7 +357,7 @@ public class lokosTest {
 		xc.closeReaders();
 		reports.flush();
 
-		util.mail.ZipAndSendMail.send();
+		util.mail.ZipAndSendMail.send("Automation Test Reports","Please find the reports in attachment");
 	}
 
 }

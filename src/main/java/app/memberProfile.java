@@ -3,6 +3,8 @@ package app;
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
 import util.cameraLogic;
 import util.dateLogic;
@@ -30,7 +32,8 @@ public class memberProfile extends lokosTest {
 
 		xc.changeSheet("Members");
 		if (testMem == null)
-			testMem = reports.createTest("Member: " + xc.getCellString(row, memCons.nameColNum)+"("+xc.getCellString(row, memCons.typeColNum)+")");
+			testMem = reports.createTest("Member: " + xc.getCellString(row, memCons.nameColNum) + "("
+					+ xc.getCellString(row, memCons.typeColNum) + ")");
 		System.out.println("Member name: " + xc.getCellString(row, memCons.nameColNum));
 		System.out.println("Inside member profile creation");
 		int count = 0;
@@ -1018,7 +1021,7 @@ public class memberProfile extends lokosTest {
 							fail++;
 //							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
 							System.out.println("Error in ID:025-------------Check Here////");
-							e.printStackTrace();
+							System.out.println("Error:"+e.getMessage());
 						} finally {
 							count++;
 							p = 0;
@@ -1136,7 +1139,7 @@ public class memberProfile extends lokosTest {
 								p = 1;
 								pass++;
 								System.out.println("027:Insurance");
-								test.log(Status.PASS, "027:Insurance");
+								testMem.log(Status.PASS, "027:Insurance");
 
 							} catch (Exception e) {
 								f = 1;
@@ -1172,24 +1175,20 @@ public class memberProfile extends lokosTest {
 		}
 		try {
 			appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-			Thread.sleep(1000);
+			
 		} catch (Exception e) {
-
+			System.out.println("Error: com.microware.cdfi:id/ivBack");
 		}
-		Thread.sleep(1000);
+		
+		
+
 		try {
-			if(!appdriver.findElementById("om.microware.cdfi:id/tv_title").getText().equalsIgnoreCase("SHG"))
-				appdriver.findElementById("com.microware.cdfi:id/icBack").click();
+			if (!appdriver.findElementById("om.microware.cdfi:id/tv_title").getText().equalsIgnoreCase("SHG"))
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+//				appdriver.findElementById("com.microware.cdfi:id/icBack").click();
 			Thread.sleep(1000);
 		} catch (Exception e) {
-
-		}
-		try {
-			if(!appdriver.findElementById("om.microware.cdfi:id/tv_title").getText().equalsIgnoreCase("SHG"))
-				appdriver.findElementById("com.microware.cdfi:id/icBack").click();
-			Thread.sleep(1000);
-		} catch (Exception e) {
-
+			System.out.println("Error: AndroidKey.BACK");
 		}
 
 		if (neg_test_flag)

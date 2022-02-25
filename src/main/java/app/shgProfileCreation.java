@@ -7,6 +7,7 @@ import lokos.lokosTest;
 import util.cameraLogic;
 import util.dateLogic;
 import util.randomPressLogic;
+import util.summary;
 
 public class shgProfileCreation extends lokosTest {
 
@@ -704,7 +705,7 @@ public class shgProfileCreation extends lokosTest {
 						|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 								.equals("Data Updated Successfully")) {
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					testSHG.log(Status.PASS, "Necessary fields for saving SHG filled.");
+					testSHG.log(Status.INFO, "Necessary fields for saving SHG filled.");
 					System.out.println("Necessary fields for saving SHG filled.");
 				} else {
 					String err = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
@@ -1252,12 +1253,24 @@ public class shgProfileCreation extends lokosTest {
 				navigation.existingSHG(row);
 				navigation.openSHGMembers(row);
 				navigation.newMember();
-				int[] val1 = memberProfile.idSelect_Mem(++memberRow);
-				Thread.sleep(1000);
-				testSHG.log(Status.INFO,"Member " + xc.getCellString(memberRow, memCons.nameColNum) + " Fails: " + val1[1]
-						+ "/" + val1[2] );
-				System.out.println("\nMember " + xc.getCellString(memberRow, memCons.nameColNum) + " Fails: " + val1[1]
-						+ "/" + val1[2]);
+				
+				xc.changeSheet("Members");
+				++memberRow;
+				String memName = xc.getCellString(memberRow, memCons.nameColNum);
+				System.out.println("Member no: " + i + " -->" + memName);
+				testMem = testSHG.createNode(
+						"Member: " + memName + "(" + xc.getCellString(memberRow, memCons.typeColNum) + ")");
+				/////////////////////////////////////////////////
+				int[] val = memberProfile.idSelect_Mem(memberRow);
+				/////////////////////////////////////////////////
+				int[][] zeroIni=new int[mem_check[0].length][mem_check[1].length];
+				summary.display(mem_check, testMem);
+				mem_check=zeroIni;
+				testMem.log(Status.INFO, "Member " + memName + " Fails: " + val[1] + "/" + val[2]);
+				testSHG.log(Status.INFO, "Member " + memName + " Fails: " + val[1] + "/" + val[2]);
+				System.out.println("^^^^^^^^^^^^^^");
+				System.out.println("Member " + i + " Fails: " + val[1] + "/" + val[2]);
+				
 				testSHG.log(Status.INFO, "#" + i);
 				System.out.println("#" + i + "\n");
 			}

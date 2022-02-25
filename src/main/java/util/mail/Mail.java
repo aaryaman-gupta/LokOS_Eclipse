@@ -53,6 +53,7 @@ public class Mail {
 		}
 
 		emailMessage.setSubject(emailSubject);
+		emailMessage.setText(emailBody);
 		DataSource source = new FileDataSource(attachmentPath);
 		emailMessage.setDataHandler(new DataHandler(source));
 		emailMessage.setFileName(attachmentName);
