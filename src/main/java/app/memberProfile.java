@@ -10,13 +10,6 @@ import util.dateLogic;
 public class memberProfile extends lokosTest {
 
 	public static int[] idSelect_Mem(int row) throws Exception {
-		
-		
-
-		xc.changeSheet("Members");
-		testMem = reports.createTest("Member: " + xc.getCellString(row, memCons.nameColNum));
-		testMem.log(Status.INFO, "Member: " + xc.getCellString(row, memCons.nameColNum));
-		Thread.sleep(1000);
 
 		String[] idList = { "000" };
 

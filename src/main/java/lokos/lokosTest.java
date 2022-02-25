@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 
 import app.loginConstants;
@@ -43,7 +44,8 @@ public class lokosTest {
 	public static DeviceUtil du = null;
 	public static int shg_row_counter = 0;
 	public static boolean web_process_success_flag = false;
-	public static int[][] cutoff_check= new int[2][30];
+	public static int[][] cutoff_check= new int[2][88];
+	public static int[][] reg_check= new int[2][88];
 
 	@Test
 	public static void startApp() throws Exception {
@@ -52,20 +54,20 @@ public class lokosTest {
 		System.out.println("=====================================================================================");
 		test.log(Status.INFO, "Start Test");
 		xc = new xlsClasses(System.getProperty("user.dir") + flowCons.xlsName, flowCons.sheetName);
-
 		app.launchLokOS.launchLokos();
 		test.log(Status.PASS, "LokOS Successfully Launched");
 		System.out.println("Lokos Successfully Launched");
 		mt = new MobileTouch(appdriver);
 		du = new DeviceUtil(appdriver);
 //		app.loginTest.login();
-
 		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
 		test.log(Status.PASS, "Login Complete");
 //		app.loginTest.sync();
 		System.out.println("Login and Sync Complete");
-
+		Thread.sleep(1000);
+		ExtentManager.addScreenShotsToTest("SHG Bookeeper Screen", test);
+		
 		navigation.shgButton();
 
 		xc.changeSheet("SHGs");
@@ -78,10 +80,11 @@ public class lokosTest {
 			try {
 				test.log(Status.INFO, "Flow number " + r + " begins");
 				System.out.println("\nFlow number " + r + " begins");
+				
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New Members")) {
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					test.log(Status.INFO, "Flow started for New Members in SHG " + shg);
-					System.out.println("Flow started for New Members in SHG " + shg);
+					test.log(Status.INFO, "Flow started for New Members in SHG " + shg+"("+profileCons.flowTypeColNum+")");
+					System.out.println("Flow started for New Members in SHG " + shg+"("+profileCons.flowTypeColNum+")");
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGMembers(r);
@@ -92,11 +95,17 @@ public class lokosTest {
 					for (int i = 1; i <= numMem; i++) {
 						System.out.println("");
 						System.out.println("________________________");
-						test.log(Status.INFO, "Member no: " + i + " -->" + xc.getCellString(i, memCons.nameColNum));
-						System.out.println("Member no: " + i + " -->" + xc.getCellString(i, memCons.nameColNum));
+						xc.changeSheet("Members");
+						++memberRow;
+						String memName=xc.getCellString(memberRow, memCons.nameColNum);
+						test.log(Status.INFO, "Member no: " + i + " -->" + memName);
+						System.out.println("Member no: " + i + " -->" + memName);
+						testMem = test.createNode("Member: " + memName,"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
+						testMem.log(Status.INFO, "Member: " + memName);
+						reports.flush();
 						navigation.newMember();
 						/////////////////////////////////////////////////////
-						int[] val = memberProfile.idSelect_Mem(++memberRow);
+						int[] val = memberProfile.idSelect_Mem(memberRow);
 						/////////////////////////////////////////////////////
 						System.out.println("^^^^^^^^^^^^^^");
 						testMem.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
