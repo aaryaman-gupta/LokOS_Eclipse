@@ -1,5 +1,6 @@
 package lokos;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Test;
@@ -26,6 +27,7 @@ import readingXLS.xlsClasses;
 import reporting.ExtentManager;
 import util.DeviceUtil;
 import util.MobileTouch;
+import util.summary;
 
 public class lokosTest {
 
@@ -33,6 +35,7 @@ public class lokosTest {
 	public static AndroidDriver<AndroidElement> appdriver = null;
 	public static ExtentReports reports = null;
 	public static ExtentTest test = null;
+	public static ExtentTest testFlow = null;
 	public static ExtentTest testMem = null;
 	public static ExtentTest testSHG = null;
 	public static ExtentTest testCoff = null;
@@ -44,8 +47,10 @@ public class lokosTest {
 	public static DeviceUtil du = null;
 	public static int shg_row_counter = 0;
 	public static boolean web_process_success_flag = false;
-	public static int[][] cutoff_check= new int[2][88];
-	public static int[][] reg_check= new int[2][88];
+	public static int[][] mem_check=new int[2][58];
+	public static int[][] shg_check=new int[2][59];
+	public static int[][] cutoff_check = new int[2][88];
+	public static int[][] reg_check = new int[2][88];
 
 	@Test
 	public static void startApp() throws Exception {
@@ -67,7 +72,7 @@ public class lokosTest {
 		System.out.println("Login and Sync Complete");
 		Thread.sleep(1000);
 		ExtentManager.addScreenShotsToTest("SHG Bookeeper Screen", test);
-		
+
 		navigation.shgButton();
 
 		xc.changeSheet("SHGs");
@@ -78,18 +83,20 @@ public class lokosTest {
 		for (int r = 1; r < row; r++) {
 			xc.changeSheet("SHGs");
 			try {
-				test.log(Status.INFO, "Flow number " + r + " begins");
+				testFlow = reports.createTest(
+						"[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum) + " (Flow: "
+								+ xc.getCellString(r, profileCons.typeColNum)+")");
+				testFlow.log(Status.INFO, "FLOW TYPE: " + xc.getCellString(r, profileCons.flowTypeColNum));
 				System.out.println("\nFlow number " + r + " begins");
-				
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New Members")) {
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					test.log(Status.INFO, "Flow started for New Members in SHG " + shg+"("+profileCons.flowTypeColNum+")");
-					System.out.println("Flow started for New Members in SHG " + shg+"("+profileCons.flowTypeColNum+")");
+					System.out.println("Flow started for New Members in SHG " + shg + "("
+							+ xc.getCellString(r, profileCons.flowTypeColNum) + ")");
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGMembers(r);
 					int numMem = (int) xc.getCellDoubleValue(r, profileCons.numMemAddColNum);
-					test.log(Status.INFO, "Number of members to add--> " + numMem);
+					testFlow.log(Status.INFO, "Number of members to add--> " + numMem);
 					System.out.println("Number of members to add--> " + numMem);
 					xc.changeSheet("Members");
 					for (int i = 1; i <= numMem; i++) {
@@ -97,19 +104,18 @@ public class lokosTest {
 						System.out.println("________________________");
 						xc.changeSheet("Members");
 						++memberRow;
-						String memName=xc.getCellString(memberRow, memCons.nameColNum);
-						test.log(Status.INFO, "Member no: " + i + " -->" + memName);
+						String memName = xc.getCellString(memberRow, memCons.nameColNum);
 						System.out.println("Member no: " + i + " -->" + memName);
-						testMem = test.createNode("Member: " + memName,"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
-						testMem.log(Status.INFO, "Member: " + memName);
-						reports.flush();
+						testMem = testFlow.createNode("Member: " + memName+"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
 						navigation.newMember();
-						/////////////////////////////////////////////////////
+						/////////////////////////////////////////////////
 						int[] val = memberProfile.idSelect_Mem(memberRow);
-						/////////////////////////////////////////////////////
-						System.out.println("^^^^^^^^^^^^^^");
+						/////////////////////////////////////////////////
+						summary.display(mem_check, testMem);
+						Arrays.fill(mem_check,0);
 						testMem.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
-						test.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
+						testFlow.log(Status.INFO, "Member " + i + " Fails: " + val[1] + "/" + val[2]);
+						System.out.println("^^^^^^^^^^^^^^");						
 						System.out.println("Member " + i + " Fails: " + val[1] + "/" + val[2]);
 						System.out.println("________________________");
 					}
@@ -117,34 +123,36 @@ public class lokosTest {
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update Member")) {
 
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					test.log(Status.INFO, "Flow started for Update Member in SHG " + shg);
-					System.out.println("Flow started for Update Member in SHG " + shg);
+					System.out.println("Flow started for Update Member in SHG " + shg + "("
+							+ xc.getCellString(r, profileCons.flowTypeColNum) + ")");
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGMembers(r);
+					
 					xc.changeSheet("Members");
-
+					++memberRow;
+					String memName = xc.getCellString(memberRow, memCons.nameColNum);
+					System.out.println("Member no:" + memName);
+					testMem = testFlow.createNode("Member: " + memName+"("+xc.getCellString(memberRow, memCons.typeColNum)+")");
 					System.out.println("");
 					System.out.println("________________________");
-
-					navigation.existingMember(r);
+					
+					navigation.existingMember(memberRow);
 
 					///////////////////////////////////////////////////
-					int[] val = memberProfile.idSelect_Mem(++memberRow);
+					int[] val = memberProfile.idSelect_Mem(memberRow);
 					///////////////////////////////////////////////////
+					summary.display(mem_check, testMem);
+					Arrays.fill(mem_check,0);
+					String resultF="Member " + memName + " Fails: " + val[1] + "/" + val[2];
+					String resultP="Member " + memName + " Passed: " + val[0] + "/" + val[2];
+					testMem.log(Status.INFO,resultF);
+					testMem.log(Status.INFO,resultP);
+					testFlow.log(Status.INFO,resultF);
+					testFlow.log(Status.INFO,resultP);
 					System.out.println("^^^^^^^^^^^^^^");
-					testMem.log(Status.INFO,
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Fails: " + val[1] + "/" + val[2]);
-					testMem.log(Status.INFO,
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Passed: " + val[0] + "/" + val[2]);
-					test.log(Status.INFO,
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Fails: " + val[1] + "/" + val[2]);
-					test.log(Status.INFO,
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Passed: " + val[0] + "/" + val[2]);
-					System.out.println(
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Fails: " + val[1] + "/" + val[2]);
-					System.out.println(
-							"Member " + xc.getCellString(r, memCons.nameColNum) + " Passed: " + val[0] + "/" + val[2]);
+					System.out.println(resultF);
+					System.out.println(resultP);
 					System.out.println("________________________");
 
 				}
@@ -293,11 +301,11 @@ public class lokosTest {
 					Thread.sleep(1000);
 
 					System.out.println("\n-----SHG Meetings-----");
-					
+
 					/////////////////////////
-					int[] val=shgMeetings.meetingNum(r);
+					int[] val = shgMeetings.meetingNum(r);
 					/////////////////////////
-					
+
 					appdriver.findElementById("com.microware.cdfi:id/ic_Back").click();
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();
@@ -322,7 +330,7 @@ public class lokosTest {
 		System.out.println("=====================================================================================");
 		xc.closeReaders();
 		reports.flush();
-		
+
 		util.mail.ZipAndSendMail.send();
 	}
 
