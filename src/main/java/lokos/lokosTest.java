@@ -353,6 +353,19 @@ public class lokosTest {
 				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
 				test.log(Status.INFO,"Flow " + r + " failed in between" );
 				System.out.println("Flow " + r + " failed in between");
+				test.log(Status.INFO, "Restarting App");
+				appdriver.quit();
+				app.launchLokOS.launchLokos();
+				test.log(Status.PASS, "Lokos Successfully Launched");
+				System.out.println("Lokos Successfully Launched");
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
+				app.loginTest.sync();
+				test.log(Status.PASS, "Login and Sync Complete");
+				System.out.println("Login and Sync Complete");
+				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+				navigation.shgButton();
+				test.log(Status.INFO, "Continuing next Flow");
 				e.printStackTrace();
 			}
 			Thread.sleep(2000);

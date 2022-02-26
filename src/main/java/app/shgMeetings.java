@@ -129,7 +129,6 @@ public class shgMeetings extends lokosTest {
 			summary.display(reg_check, testMeet);
 			reg_check = zeroIni;
 		}
-
 		return val;
 		}catch(NullPointerException e) {
 			testMeet.log(Status.FAIL, "Excel Sheet has an empty cells.");

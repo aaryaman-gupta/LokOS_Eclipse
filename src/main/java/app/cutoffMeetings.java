@@ -2,16 +2,19 @@ package app;
 
 import com.aventstack.extentreports.Status;
 
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
+import reporting.ExtentManager;
 import util.dateLogic;
 
 public class cutoffMeetings extends lokosTest {
-	
-	public static boolean neg_test_flag=false;
-	public static int neg_test_count=0;
-	public static int[] idSelectCutoff(int row) throws InterruptedException {	
+
+	public static boolean neg_test_flag = false;
+	public static int neg_test_count = 0;
+
+	public static int[] idSelectCutoff(int row) throws Exception {
 
 		String[] idList = { "000" };
 
@@ -27,7 +30,7 @@ public class cutoffMeetings extends lokosTest {
 	}
 
 	@SuppressWarnings("unused")
-	public static int[] cutoff(int row, String[] idList) throws InterruptedException {
+	public static int[] cutoff(int row, String[] idList) throws Exception {
 
 		int count = 0;
 		int pass = 0;
@@ -70,15 +73,11 @@ public class cutoffMeetings extends lokosTest {
 			if (newMtngNum > (oldMtngNum + 11)) {
 				appdriver.findElementById("com.microware.cdfi:id/et_new_meeting_no").sendKeys("" + newMtngNum);
 				// validation
-				if (!appdriver.findElementById("com.microware.cdfi:id/et_new_meeting_no").getText()
-						.equals(xc.getCellString(row, cutoffCons.newMeetingNumColNum))) {
-					System.out.println("Validation Failed: New Meeting Number");
-					if(neg_test_flag)
-						testMeet.log(Status.PASS, "Validation Failed: New Meeting Number");
-					else {
-						testMeet.log(Status.FAIL, "Validation Failed: New Meeting Number");
-					}
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
+				f = validCheckString("com.microware.cdfi:id/et_new_meeting_no", "id",
+						(int) xc.getCellDoubleValue(row, cutoffCons.newMeetingNumColNum) + "",
+						"Validation Failed: New Meeting Number");
+				if (f == 1) {
+					testMeet.log(Status.FAIL, "New Meeting Number is Not Valid");
 					int[] val = { 0, 0, 0 };
 					return val;
 				}
@@ -115,38 +114,25 @@ public class cutoffMeetings extends lokosTest {
 		for (int iterations = 0; iterations < idList.length; iterations++) {
 			id = Integer.valueOf(idList[iterations]);
 
-			// ATTENDENCE
+			// Attendance
 			switch (id) {
 			case 0:
 			case 1:
 				try {
+					f=0;
 					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.attendenceColNum) + "");
-					
-					try {//validation
-						if (!appdriver.findElementByXPath(
-								"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText")
-								.getText().equals(xc.getCellString(row, cutoffCons.attendenceColNum))) {
-							if(neg_test_flag) {
-								++neg_test_count;
-							}
-							System.out.println("001:||Validation Failed||");
-							testMeet.log(Status.INFO, "001:||Validation Failed||");
-							throw new Exception("001:||Validation Failed||");
-						}
-					} catch (Exception e) {						
-						if(neg_test_flag) {
-							++neg_test_count;
-						}
-						System.out.println("001:||Validation Failed||");
-						testMeet.log(Status.INFO, "001:||Validation Failed||");
-						throw new Exception("001:||Validation Failed||");
+					f = validCheckString(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText",
+							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.attendenceColNum) + "",
+							"001:||Validation Failed||");
+					if (f == 1) {
+						throw new Exception("Validation Failed");
 					}
 
-					
 					for (int j = 2; j <= memNum; j++) {
 						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
 								+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
@@ -159,68 +145,43 @@ public class cutoffMeetings extends lokosTest {
 
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 
-					if (!appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-							.equals("Data Updated Successfully")
-							|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-									.equals("Data saved successfully"))
-						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					else {
-						String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if (neg_test_flag) {										
-							try {
-								String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
-								if (ex.contains(exp_errs)) {
-									System.out.println("|||||||||||||||||||||||||||||");
-									System.out.println("Expected Error is encountered");
-									System.out.println("   ((Negetive Test Passed))");
-									System.out.println("|||||||||||||||||||||||||||||");
-									++neg_test_count;
-								} else {
-									System.out.println("   (((Negetive Test Failed)))\n");
-								}
-							} catch (NullPointerException np) {
-								System.out.println("---->>Expected Errors is empty.");
-							}
-						}
-						throw new Exception(ex);
+					f = validOnSave("Blank", row);
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					if (f == 1) {
+						throw new Exception("Save Failed");
 					}
+
 					pass++;
-					cutoff_check[1][id]=1;
-					if(neg_test_flag)
+					cutoff_check[1][id] = 1;
+					if (neg_test_flag)
 						testMeet.log(Status.FAIL, "001:Attendence");
 					else
 						testMeet.log(Status.PASS, "001:Attendence");
 					System.out.println("001:Attendence");
-				} catch (Exception e) {					
+				} catch (Exception e) {
 					fail++;
-					cutoff_check[1][id]=-1;
-					if(!neg_test_flag)
+					cutoff_check[1][id] = -1;
+					if (!neg_test_flag)
 						testMeet.log(Status.FAIL, "001:Attendence");
 					else
 						testMeet.log(Status.PASS, "001:Attendence");
 					System.out.println("Error in Attendence:001----------------------Check Here////");
-					id=999;
+					navigateBackToScreen("SHG");
+					int[] val = { 0, 0, 0 };
 					e.printStackTrace();
+					return val;
+					
 				} finally {
 					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				}
 				if (id != 000)
 					break;
-			default:
-				break;
-			}
-			
-			
-			// Member's Saving
-			switch (id) {
-			case 0:
+				// Member's Saving
 			case 2:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					
+
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
@@ -228,15 +189,15 @@ public class cutoffMeetings extends lokosTest {
 						if (!appdriver.findElementByXPath(
 								"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 								.getText().equals(xc.getCellString(row, cutoffCons.compSavColNum))) {
-							if(neg_test_flag) {
+							if (neg_test_flag) {
 								++neg_test_count;
 							}
 							System.out.println("002:||Validation Failed||");
 							testMeet.log(Status.INFO, "002:||Validation||");
 							throw new Exception("002:||Validation Failed||");
 						}
-					} catch (Exception e) {						
-						if(neg_test_flag) {
+					} catch (Exception e) {
+						if (neg_test_flag) {
 							++neg_test_count;
 						}
 						System.out.println("001:||Validation Failed||");
@@ -244,7 +205,6 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("001:||Validation Failed||");
 					}
 
-					
 					for (int j = 2; j <= memNum; j++) {
 						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
 								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
@@ -265,7 +225,7 @@ public class cutoffMeetings extends lokosTest {
 					else {
 						String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if (neg_test_flag) {										
+						if (neg_test_flag) {
 							try {
 								String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
 								if (ex.contains(exp_errs)) {
@@ -284,16 +244,16 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception(ex);
 					}
 					pass++;
-					cutoff_check[1][id]=1;
-					if(neg_test_flag)
+					cutoff_check[1][id] = 1;
+					if (neg_test_flag)
 						testMeet.log(Status.FAIL, "002:Compulsory Saving");
 					else
 						testMeet.log(Status.PASS, "002:Compulsory Saving");
 					System.out.println("002:Compulsory Saving");
-				} catch (Exception e) {					
+				} catch (Exception e) {
 					fail++;
-					cutoff_check[1][id]=-1;
-					if(!neg_test_flag)
+					cutoff_check[1][id] = -1;
+					if (!neg_test_flag)
 						testMeet.log(Status.FAIL, "002:Compulsory Saving");
 					else
 						testMeet.log(Status.PASS, "002:Compulsory Saving");
@@ -309,7 +269,7 @@ public class cutoffMeetings extends lokosTest {
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					
+
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
@@ -317,15 +277,15 @@ public class cutoffMeetings extends lokosTest {
 						if (!appdriver.findElementByXPath(
 								"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
 								.getText().equals(xc.getCellString(row, cutoffCons.volSavColNum))) {
-							if(neg_test_flag) {
+							if (neg_test_flag) {
 								++neg_test_count;
 							}
 							System.out.println("003:||Validation Failed||");
 							testMeet.log(Status.INFO, "003:||Validation||");
 							throw new Exception("003:||Validation Failed||");
 						}
-					} catch (Exception e) {						
-						if(neg_test_flag) {
+					} catch (Exception e) {
+						if (neg_test_flag) {
 							++neg_test_count;
 						}
 						System.out.println("003:||Validation Failed||");
@@ -333,7 +293,6 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("003:||Validation Failed||");
 					}
 
-					
 					for (int j = 2; j <= memNum; j++) {
 						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
 								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
@@ -354,7 +313,7 @@ public class cutoffMeetings extends lokosTest {
 					else {
 						String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if (neg_test_flag) {										
+						if (neg_test_flag) {
 							try {
 								String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
 								if (ex.contains(exp_errs)) {
@@ -373,16 +332,16 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception(ex);
 					}
 					pass++;
-					cutoff_check[1][id]=1;
-					if(neg_test_flag)
+					cutoff_check[1][id] = 1;
+					if (neg_test_flag)
 						testMeet.log(Status.FAIL, "003:Voluntary Saving");
 					else
 						testMeet.log(Status.PASS, "003:Voluntary Saving");
 					System.out.println("003:Voluntary Saving");
-				} catch (Exception e) {					
+				} catch (Exception e) {
 					fail++;
-					cutoff_check[1][id]=-1;
-					if(!neg_test_flag)
+					cutoff_check[1][id] = -1;
+					if (!neg_test_flag)
 						testMeet.log(Status.FAIL, "003:Voluntary Saving");
 					else
 						testMeet.log(Status.PASS, "003:Voluntary Saving");
@@ -394,19 +353,11 @@ public class cutoffMeetings extends lokosTest {
 				}
 				if (id != 000)
 					break;
-			default:
-				break;
-			}
-			
-			
-			// Member's Closed Loan
-			switch (id) {
-			case 0:
-			case 4:
+				// Member's Closed Loan
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					
+
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
@@ -414,15 +365,15 @@ public class cutoffMeetings extends lokosTest {
 						if (!appdriver.findElementByXPath(
 								"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 								.getText().equals(xc.getCellString(row, cutoffCons.noLoansColNum))) {
-							if(neg_test_flag) {
+							if (neg_test_flag) {
 								++neg_test_count;
 							}
 							System.out.println("004:||Validation Failed||");
 							testMeet.log(Status.INFO, "004:||Validation||");
 							throw new Exception("004:||Validation Failed||");
 						}
-					} catch (Exception e) {						
-						if(neg_test_flag) {
+					} catch (Exception e) {
+						if (neg_test_flag) {
 							++neg_test_count;
 						}
 						System.out.println("004:||Validation Failed||");
@@ -430,7 +381,6 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("004:||Validation Failed||");
 					}
 
-					
 					for (int j = 2; j <= memNum; j++) {
 						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
 								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
@@ -451,7 +401,7 @@ public class cutoffMeetings extends lokosTest {
 					else {
 						String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if (neg_test_flag) {										
+						if (neg_test_flag) {
 							try {
 								String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
 								if (ex.contains(exp_errs)) {
@@ -470,16 +420,16 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception(ex);
 					}
 					pass++;
-					cutoff_check[1][id]=1;
-					if(neg_test_flag)
+					cutoff_check[1][id] = 1;
+					if (neg_test_flag)
 						testMeet.log(Status.FAIL, "004:Number of Loans");
 					else
 						testMeet.log(Status.PASS, "004:Number of Loans");
 					System.out.println("004:Number of Loans");
-				} catch (Exception e) {					
+				} catch (Exception e) {
 					fail++;
-					cutoff_check[1][id]=-1;
-					if(!neg_test_flag)
+					cutoff_check[1][id] = -1;
+					if (!neg_test_flag)
 						testMeet.log(Status.FAIL, "004:Number of Loans");
 					else
 						testMeet.log(Status.PASS, "004:Number of Loans");
@@ -495,7 +445,7 @@ public class cutoffMeetings extends lokosTest {
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					
+
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
@@ -503,15 +453,15 @@ public class cutoffMeetings extends lokosTest {
 						if (!appdriver.findElementByXPath(
 								"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
 								.getText().equals(xc.getCellString(row, cutoffCons.amtLoansColNum))) {
-							if(neg_test_flag) {
+							if (neg_test_flag) {
 								++neg_test_count;
 							}
 							System.out.println("005:||Validation Failed||");
 							testMeet.log(Status.INFO, "005:||Validation||");
 							throw new Exception("005:||Validation Failed||");
 						}
-					} catch (Exception e) {						
-						if(neg_test_flag) {
+					} catch (Exception e) {
+						if (neg_test_flag) {
 							++neg_test_count;
 						}
 						System.out.println("005:||Validation Failed||");
@@ -519,7 +469,6 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("005:||Validation Failed||");
 					}
 
-					
 					for (int j = 2; j <= memNum; j++) {
 						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
 								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
@@ -540,7 +489,7 @@ public class cutoffMeetings extends lokosTest {
 					else {
 						String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if (neg_test_flag) {										
+						if (neg_test_flag) {
 							try {
 								String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
 								if (ex.contains(exp_errs)) {
@@ -559,16 +508,16 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception(ex);
 					}
 					pass++;
-					cutoff_check[1][id]=1;
-					if(neg_test_flag)
+					cutoff_check[1][id] = 1;
+					if (neg_test_flag)
 						testMeet.log(Status.FAIL, "005:Amount of Loans");
 					else
 						testMeet.log(Status.PASS, "005:Amount of Loans");
 					System.out.println("005:Amount of Loans");
-				} catch (Exception e) {					
+				} catch (Exception e) {
 					fail++;
-					cutoff_check[1][id]=-1;
-					if(!neg_test_flag)
+					cutoff_check[1][id] = -1;
+					if (!neg_test_flag)
 						testMeet.log(Status.FAIL, "005:Amount of Loans");
 					else
 						testMeet.log(Status.PASS, "005:Amount of Loans");
@@ -579,201 +528,23 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				}
 				if (id != 000)
-					break;				
-			default:
-				break;
-			}
-			
-			
-			// Member's Share Capital
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Membership fee
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Group Investment
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Group's Closed Loan
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Group's Active Loan
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Fund Received
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Group Cash Balance
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
-			default:
-				break;
-			}
-			// Group Bank Balance
-			switch (id) {
-			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
-					p = 1;
-					pass++;
-					testMeet.log(Status.PASS, "");
-					System.out.println("");
-				} catch (Exception e) {
-					f = 1;
-					fail++;
-					testMeet.log(Status.FAIL, "");
-					System.out.println("Error in :----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					p = 0;
-					f = 0;
-				}
+					break;
+				// Member's Share Capital
+				// Membership fee
+				// Group Investment
+				// Group's Closed Loan
+				// Group's Active Loan
+			case 13:
+
+				// Fund Received
+			case 14:
+
+				// Group Cash Balance
+			case 15:
+
+				// Group Bank Balance
+			case 16:
+
 			default:
 				break;
 			}
@@ -785,36 +556,46 @@ public class cutoffMeetings extends lokosTest {
 		int[] val = { pass, fail, count };
 		return val;
 	}
-	
-	public static int validCheck(String loc, String locStrat, int row, int col, int id) {
-		if(locStrat.equalsIgnoreCase("xpath")) {
-			
-			
-		}else if(locStrat.equalsIgnoreCase("id")) {
-			if (!appdriver.findElementById(loc).getText()
-					.equals(xc.getCellString(row, col))) {
-				System.out.println(id+"||Validation Failed||");
-				if(neg_test_flag)
-					testMeet.log(Status.PASS, id+"||Validation Failed||");
-				else {
-					testMeet.log(Status.FAIL, id+"||Validation Failed||");
-				}
-			}else
+
+	public static int validCheckString(String loc, String locStrat, String field_txt, String text) {
+		if (locStrat.equalsIgnoreCase("xpath")) {
+			if (!appdriver.findElementByXPath(loc).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
 				return 1;
-		}else if(locStrat.equalsIgnoreCase("UiSelectorText")){
-			
+			}
+		} else if (locStrat.equalsIgnoreCase("id")) {
+			if (!appdriver.findElementById(loc).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
+			if (!appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
 		}
 		return 0;
 	}
-	public static int validOnSave(String txt_msg, int row)throws Exception {
-		if (!appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-				.equals(txt_msg)
+
+	public static int validOnSave(String txt_msg, int row) throws Exception {
+
+		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data Updated Successfully")
 				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-						.equals("Data saved successfully"))
+						.equals("Data saved successfully")
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals(txt_msg))
 			return 0;
 		else {
-			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();			
-			if (neg_test_flag) {										
+			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			testMeet.log(Status.FAIL, "ex");
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
+			System.out.println("Error: " + ex);
+			if (neg_test_flag) {
 				try {
 					String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
 					if (ex.contains(exp_errs)) {
@@ -825,15 +606,18 @@ public class cutoffMeetings extends lokosTest {
 						++neg_test_count;
 					} else {
 						System.out.println("   (((Negetive Test Failed)))\n");
+						testMeet.log(Status.INFO, "Negetive Test Failed");
 					}
 				} catch (NullPointerException np) {
 					System.out.println("---->>Expected Errors is empty.");
+					testMeet.log(Status.INFO, "Expected Errors is empty.");
 				}
-			}			
-			return 0;
+			}
+			return 1;
 		}
+
 	}
-	
+
 	public static void navigateBackToScreen(String screen_title) throws Exception {
 		@SuppressWarnings("unused")
 		int i = 0;
@@ -853,6 +637,6 @@ public class cutoffMeetings extends lokosTest {
 		} catch (Exception e) {
 			throw new Exception("Cannot navigate to " + screen_title + " screen");
 		}
-	}	
+	}
 
 }
