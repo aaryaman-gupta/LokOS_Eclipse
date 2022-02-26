@@ -37,8 +37,7 @@ public class lokosTest {
 	public static ExtentTest testFlow = null;
 	public static ExtentTest testMem = null;
 	public static ExtentTest testSHG = null;
-	public static ExtentTest testCoff = null;
-	public static ExtentTest testReg = null;
+	public static ExtentTest testMeet = null;
 	public static int memberRow = 0;
 	public static int cutoffRow = 0;
 	public static int regularRow = 0;
@@ -319,17 +318,27 @@ public class lokosTest {
 				}
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("SHG Meetings")) {
 
-					xc.changeSheet("SHGs");
 					appdriver.findElementById("com.microware.cdfi:id/icBack").click();
 					Thread.sleep(1000);
-
 					System.out.println("\n-----SHG Meetings-----");
-
+					String shg = xc.getCellString(r, profileCons.shgNameColNum);
+					testMeet = testFlow.createNode(
+							"Update SHG: " + shg + "(" + xc.getCellString(r, profileCons.flowTypeColNum) + ")");
+					System.out.println("\nFlow started for SHG Meetings " + xc.getCellString(r, profileCons.shgNameColNum));
 					/////////////////////////
-					@SuppressWarnings("unused")
 					int[] val = shgMeetings.meetingNum(r);
-					/////////////////////////
-
+					/////////////////////////					
+					String resultF = "Update of " + shg + " Failed: " + val[1] + "/" + val[2];
+					String resultP = "Update of " + shg + " Passed: " + val[0] + "/" + val[2];
+					testMeet.log(Status.INFO, resultF);
+					testMeet.log(Status.INFO, resultP);
+					testFlow.log(Status.INFO, resultF);
+					testFlow.log(Status.INFO, resultP);
+					System.out.println("^^^^^^^^^^^^^^");
+					System.out.println(resultF);
+					System.out.println(resultP);
+					System.out.println("________________________");
+					
 					appdriver.findElementById("com.microware.cdfi:id/ic_Back").click();
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();

@@ -2,18 +2,16 @@ package app;
 
 import com.aventstack.extentreports.Status;
 
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
 import util.dateLogic;
 
 public class cutoffMeetings extends lokosTest {
-
-	public static int[] idSelectCutoff(int row) throws InterruptedException {
-
-		String shg = xc.getCellString(row, cutoffCons.shgColNum);
-		testCoff = reports
-				.createTest("Cutoff Meeting: " + shg + "(" + xc.getCellString(row, cutoffCons.typeColNum) + ")");
-
-		testCoff.log(Status.INFO, "Cutoff Flow Started");
+	
+	public static boolean neg_test_flag=false;
+	public static int neg_test_count=0;
+	public static int[] idSelectCutoff(int row) throws InterruptedException {	
 
 		String[] idList = { "000" };
 
@@ -51,14 +49,10 @@ public class cutoffMeetings extends lokosTest {
 				cutoff_check[0][j] = j;
 			}
 		}
-
-		boolean neg_test_flag = false;
-		int neg_test_count = 0;
-
 		try {
 			if (xc.getCellString(row, cutoffCons.typeColNum).contains("Check")) {
 				neg_test_flag = true;
-				testCoff.log(Status.INFO, "NEGETIVE TESTING");
+				testMeet.log(Status.INFO, "NEGETIVE TESTING");
 			}
 		} catch (NullPointerException np) {
 		}
@@ -80,9 +74,9 @@ public class cutoffMeetings extends lokosTest {
 						.equals(xc.getCellString(row, cutoffCons.newMeetingNumColNum))) {
 					System.out.println("Validation Failed: New Meeting Number");
 					if(neg_test_flag)
-						testCoff.log(Status.PASS, "Validation Failed: New Meeting Number");
+						testMeet.log(Status.PASS, "Validation Failed: New Meeting Number");
 					else {
-						testCoff.log(Status.FAIL, "Validation Failed: New Meeting Number");
+						testMeet.log(Status.FAIL, "Validation Failed: New Meeting Number");
 					}
 					appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
 					int[] val = { 0, 0, 0 };
@@ -99,7 +93,7 @@ public class cutoffMeetings extends lokosTest {
 
 				} else {
 					System.out.println(appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText());
-					testCoff.log(Status.FAIL, appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText());
+					testMeet.log(Status.FAIL, appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText());
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 					appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
 					int[] val = { 0, 0, 0 };
@@ -108,7 +102,7 @@ public class cutoffMeetings extends lokosTest {
 
 			} else {
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
-				testCoff.log(Status.FAIL, "Incorrect meeting number for cutoff");
+				testMeet.log(Status.FAIL, "Incorrect meeting number for cutoff");
 				System.out.println("Incorrect meeting number for cutoff");
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
 				int[] val = { 0, 0, 0 };
@@ -116,7 +110,7 @@ public class cutoffMeetings extends lokosTest {
 			}
 		}
 
-		testCoff.log(Status.INFO, "Cutoff Entry Begin");
+		testMeet.log(Status.INFO, "Cutoff Entry Begin");
 
 		for (int iterations = 0; iterations < idList.length; iterations++) {
 			id = Integer.valueOf(idList[iterations]);
@@ -140,7 +134,7 @@ public class cutoffMeetings extends lokosTest {
 								++neg_test_count;
 							}
 							System.out.println("001:||Validation Failed||");
-							testCoff.log(Status.INFO, "001:||Validation Failed||");
+							testMeet.log(Status.INFO, "001:||Validation Failed||");
 							throw new Exception("001:||Validation Failed||");
 						}
 					} catch (Exception e) {						
@@ -148,7 +142,7 @@ public class cutoffMeetings extends lokosTest {
 							++neg_test_count;
 						}
 						System.out.println("001:||Validation Failed||");
-						testCoff.log(Status.INFO, "001:||Validation Failed||");
+						testMeet.log(Status.INFO, "001:||Validation Failed||");
 						throw new Exception("001:||Validation Failed||");
 					}
 
@@ -194,17 +188,17 @@ public class cutoffMeetings extends lokosTest {
 					pass++;
 					cutoff_check[1][id]=1;
 					if(neg_test_flag)
-						testCoff.log(Status.FAIL, "001:Attendence");
+						testMeet.log(Status.FAIL, "001:Attendence");
 					else
-						testCoff.log(Status.PASS, "001:Attendence");
+						testMeet.log(Status.PASS, "001:Attendence");
 					System.out.println("001:Attendence");
 				} catch (Exception e) {					
 					fail++;
 					cutoff_check[1][id]=-1;
 					if(!neg_test_flag)
-						testCoff.log(Status.FAIL, "001:Attendence");
+						testMeet.log(Status.FAIL, "001:Attendence");
 					else
-						testCoff.log(Status.PASS, "001:Attendence");
+						testMeet.log(Status.PASS, "001:Attendence");
 					System.out.println("Error in Attendence:001----------------------Check Here////");
 					id=999;
 					e.printStackTrace();
@@ -238,7 +232,7 @@ public class cutoffMeetings extends lokosTest {
 								++neg_test_count;
 							}
 							System.out.println("002:||Validation Failed||");
-							testCoff.log(Status.INFO, "002:||Validation||");
+							testMeet.log(Status.INFO, "002:||Validation||");
 							throw new Exception("002:||Validation Failed||");
 						}
 					} catch (Exception e) {						
@@ -246,7 +240,7 @@ public class cutoffMeetings extends lokosTest {
 							++neg_test_count;
 						}
 						System.out.println("001:||Validation Failed||");
-						testCoff.log(Status.INFO, "001:||Validation Failed||");
+						testMeet.log(Status.INFO, "001:||Validation Failed||");
 						throw new Exception("001:||Validation Failed||");
 					}
 
@@ -292,17 +286,17 @@ public class cutoffMeetings extends lokosTest {
 					pass++;
 					cutoff_check[1][id]=1;
 					if(neg_test_flag)
-						testCoff.log(Status.FAIL, "002:Compulsory Saving");
+						testMeet.log(Status.FAIL, "002:Compulsory Saving");
 					else
-						testCoff.log(Status.PASS, "002:Compulsory Saving");
+						testMeet.log(Status.PASS, "002:Compulsory Saving");
 					System.out.println("002:Compulsory Saving");
 				} catch (Exception e) {					
 					fail++;
 					cutoff_check[1][id]=-1;
 					if(!neg_test_flag)
-						testCoff.log(Status.FAIL, "002:Compulsory Saving");
+						testMeet.log(Status.FAIL, "002:Compulsory Saving");
 					else
-						testCoff.log(Status.PASS, "002:Compulsory Saving");
+						testMeet.log(Status.PASS, "002:Compulsory Saving");
 					System.out.println("Error in Compulsory Saving:002----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -327,7 +321,7 @@ public class cutoffMeetings extends lokosTest {
 								++neg_test_count;
 							}
 							System.out.println("003:||Validation Failed||");
-							testCoff.log(Status.INFO, "003:||Validation||");
+							testMeet.log(Status.INFO, "003:||Validation||");
 							throw new Exception("003:||Validation Failed||");
 						}
 					} catch (Exception e) {						
@@ -335,7 +329,7 @@ public class cutoffMeetings extends lokosTest {
 							++neg_test_count;
 						}
 						System.out.println("003:||Validation Failed||");
-						testCoff.log(Status.INFO, "003:||Validation Failed||");
+						testMeet.log(Status.INFO, "003:||Validation Failed||");
 						throw new Exception("003:||Validation Failed||");
 					}
 
@@ -381,17 +375,17 @@ public class cutoffMeetings extends lokosTest {
 					pass++;
 					cutoff_check[1][id]=1;
 					if(neg_test_flag)
-						testCoff.log(Status.FAIL, "003:Voluntary Saving");
+						testMeet.log(Status.FAIL, "003:Voluntary Saving");
 					else
-						testCoff.log(Status.PASS, "003:Voluntary Saving");
+						testMeet.log(Status.PASS, "003:Voluntary Saving");
 					System.out.println("003:Voluntary Saving");
 				} catch (Exception e) {					
 					fail++;
 					cutoff_check[1][id]=-1;
 					if(!neg_test_flag)
-						testCoff.log(Status.FAIL, "003:Voluntary Saving");
+						testMeet.log(Status.FAIL, "003:Voluntary Saving");
 					else
-						testCoff.log(Status.PASS, "003:Voluntary Saving");
+						testMeet.log(Status.PASS, "003:Voluntary Saving");
 					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -424,7 +418,7 @@ public class cutoffMeetings extends lokosTest {
 								++neg_test_count;
 							}
 							System.out.println("004:||Validation Failed||");
-							testCoff.log(Status.INFO, "004:||Validation||");
+							testMeet.log(Status.INFO, "004:||Validation||");
 							throw new Exception("004:||Validation Failed||");
 						}
 					} catch (Exception e) {						
@@ -432,7 +426,7 @@ public class cutoffMeetings extends lokosTest {
 							++neg_test_count;
 						}
 						System.out.println("004:||Validation Failed||");
-						testCoff.log(Status.INFO, "004:||Validation Failed||");
+						testMeet.log(Status.INFO, "004:||Validation Failed||");
 						throw new Exception("004:||Validation Failed||");
 					}
 
@@ -478,17 +472,17 @@ public class cutoffMeetings extends lokosTest {
 					pass++;
 					cutoff_check[1][id]=1;
 					if(neg_test_flag)
-						testCoff.log(Status.FAIL, "004:Number of Loans");
+						testMeet.log(Status.FAIL, "004:Number of Loans");
 					else
-						testCoff.log(Status.PASS, "004:Number of Loans");
+						testMeet.log(Status.PASS, "004:Number of Loans");
 					System.out.println("004:Number of Loans");
 				} catch (Exception e) {					
 					fail++;
 					cutoff_check[1][id]=-1;
 					if(!neg_test_flag)
-						testCoff.log(Status.FAIL, "004:Number of Loans");
+						testMeet.log(Status.FAIL, "004:Number of Loans");
 					else
-						testCoff.log(Status.PASS, "004:Number of Loans");
+						testMeet.log(Status.PASS, "004:Number of Loans");
 					System.out.println("Error in Number of Loans:004----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -513,7 +507,7 @@ public class cutoffMeetings extends lokosTest {
 								++neg_test_count;
 							}
 							System.out.println("005:||Validation Failed||");
-							testCoff.log(Status.INFO, "005:||Validation||");
+							testMeet.log(Status.INFO, "005:||Validation||");
 							throw new Exception("005:||Validation Failed||");
 						}
 					} catch (Exception e) {						
@@ -521,7 +515,7 @@ public class cutoffMeetings extends lokosTest {
 							++neg_test_count;
 						}
 						System.out.println("005:||Validation Failed||");
-						testCoff.log(Status.INFO, "005:||Validation Failed||");
+						testMeet.log(Status.INFO, "005:||Validation Failed||");
 						throw new Exception("005:||Validation Failed||");
 					}
 
@@ -567,17 +561,17 @@ public class cutoffMeetings extends lokosTest {
 					pass++;
 					cutoff_check[1][id]=1;
 					if(neg_test_flag)
-						testCoff.log(Status.FAIL, "005:Amount of Loans");
+						testMeet.log(Status.FAIL, "005:Amount of Loans");
 					else
-						testCoff.log(Status.PASS, "005:Amount of Loans");
+						testMeet.log(Status.PASS, "005:Amount of Loans");
 					System.out.println("005:Amount of Loans");
 				} catch (Exception e) {					
 					fail++;
 					cutoff_check[1][id]=-1;
 					if(!neg_test_flag)
-						testCoff.log(Status.FAIL, "005:Amount of Loans");
+						testMeet.log(Status.FAIL, "005:Amount of Loans");
 					else
-						testCoff.log(Status.PASS, "005:Amount of Loans");
+						testMeet.log(Status.PASS, "005:Amount of Loans");
 					System.out.println("Error in Amount of Loans:005----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -599,12 +593,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -623,12 +617,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -647,12 +641,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -671,12 +665,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -695,12 +689,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -719,12 +713,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -743,12 +737,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -767,12 +761,12 @@ public class cutoffMeetings extends lokosTest {
 					appdriver.findElementById("").sendKeys(xc.getCellString(row, 1));
 					p = 1;
 					pass++;
-					testCoff.log(Status.PASS, "");
+					testMeet.log(Status.PASS, "");
 					System.out.println("");
 				} catch (Exception e) {
 					f = 1;
 					fail++;
-					testCoff.log(Status.FAIL, "");
+					testMeet.log(Status.FAIL, "");
 					System.out.println("Error in :----------------------Check Here////");
 					e.printStackTrace();
 				} finally {
@@ -791,5 +785,74 @@ public class cutoffMeetings extends lokosTest {
 		int[] val = { pass, fail, count };
 		return val;
 	}
+	
+	public static int validCheck(String loc, String locStrat, int row, int col, int id) {
+		if(locStrat.equalsIgnoreCase("xpath")) {
+			
+			
+		}else if(locStrat.equalsIgnoreCase("id")) {
+			if (!appdriver.findElementById(loc).getText()
+					.equals(xc.getCellString(row, col))) {
+				System.out.println(id+"||Validation Failed||");
+				if(neg_test_flag)
+					testMeet.log(Status.PASS, id+"||Validation Failed||");
+				else {
+					testMeet.log(Status.FAIL, id+"||Validation Failed||");
+				}
+			}else
+				return 1;
+		}else if(locStrat.equalsIgnoreCase("UiSelectorText")){
+			
+		}
+		return 0;
+	}
+	public static int validOnSave(String txt_msg, int row)throws Exception {
+		if (!appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+				.equals(txt_msg)
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+						.equals("Data saved successfully"))
+			return 0;
+		else {
+			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();			
+			if (neg_test_flag) {										
+				try {
+					String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
+					if (ex.contains(exp_errs)) {
+						System.out.println("|||||||||||||||||||||||||||||");
+						System.out.println("Expected Error is encountered");
+						System.out.println("   ((Negetive Test Passed))");
+						System.out.println("|||||||||||||||||||||||||||||");
+						++neg_test_count;
+					} else {
+						System.out.println("   (((Negetive Test Failed)))\n");
+					}
+				} catch (NullPointerException np) {
+					System.out.println("---->>Expected Errors is empty.");
+				}
+			}			
+			return 0;
+		}
+	}
+	
+	public static void navigateBackToScreen(String screen_title) throws Exception {
+		@SuppressWarnings("unused")
+		int i = 0;
+		String title = "";
+		try {
+			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+		} catch (Exception e) {
+			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+		}
+		try {
+			while (!title.equals(screen_title)) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+					break;
+				i++;
+			}
+		} catch (Exception e) {
+			throw new Exception("Cannot navigate to " + screen_title + " screen");
+		}
+	}	
 
 }

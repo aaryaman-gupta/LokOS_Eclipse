@@ -36,7 +36,7 @@ public class ExtentManager extends lokosTest {
 		ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportFolderPath);
 		sparkReporter.config().setReportName("NRLM LokOS App Test");
 		sparkReporter.config().setDocumentTitle("Automation Reports");
-		sparkReporter.config().setTheme(Theme.DARK);
+		sparkReporter.config().setTheme(Theme.STANDARD);
 		sparkReporter.config().setEncoding("utf-8");
 
 		reports.attachReporter(sparkReporter);

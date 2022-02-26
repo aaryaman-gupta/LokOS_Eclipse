@@ -2,10 +2,6 @@ package app;
 
 import org.testng.annotations.Test;
 
-import io.appium.java_client.MobileBy;
-import lokos.lokosTest;
-import util.dateLogic;
-
 public class testing{
 	@Test
 	public static void test() {
