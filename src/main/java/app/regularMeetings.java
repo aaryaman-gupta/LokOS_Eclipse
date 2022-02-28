@@ -15,7 +15,6 @@ public class regularMeetings extends lokosTest {
 	public static int neg_test_count = 0;
 	public static boolean invalid_flag = false;
 
-
 	public static int[] idSelectRegular(int row) throws InterruptedException {
 
 		String[] idList = { "000" };
@@ -30,10 +29,10 @@ public class regularMeetings extends lokosTest {
 		int[] val = regularMeetings.regular(row, idList);
 		return val;
 	}
-	
+
 	@SuppressWarnings("unused")
 	public static int[] regular(int row, String[] idList) throws InterruptedException {
-		
+
 		int count = 0;
 		int pass = 0;
 		int fail = 0;
@@ -59,10 +58,10 @@ public class regularMeetings extends lokosTest {
 				neg_test_flag = true;
 				testMeet.log(Status.INFO, "NEGETIVE TESTING");
 			}
-		} catch (NullPointerException np) {	
-			
+		} catch (NullPointerException np) {
+
 		}
-		
+
 		if (xc.getCellString(row, cutoffCons.typeColNum).equals("New")) {
 
 			try {
@@ -73,7 +72,7 @@ public class regularMeetings extends lokosTest {
 			}
 			newMtngNum = (int) xc.getCellDoubleValue(row, cutoffCons.newMeetingNumColNum);
 
-			if (newMtngNum == (oldMtngNum+1)) {
+			if (newMtngNum == (oldMtngNum + 1)) {
 				appdriver.findElementById("com.microware.cdfi:id/et_new_meeting_no").sendKeys("" + newMtngNum);
 				// validation
 				f = validCheckString("com.microware.cdfi:id/et_new_meeting_no", "id",
@@ -89,7 +88,7 @@ public class regularMeetings extends lokosTest {
 
 				Thread.sleep(1000);
 				appdriver.findElementById("com.microware.cdfi:id/btn_generate_open").click();
-				
+
 			} else {
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancelmeeting").click();
 				testMeet.log(Status.FAIL, "Incorrect meeting number for regular meeting");
@@ -98,15 +97,28 @@ public class regularMeetings extends lokosTest {
 				int[] val = { 0, 0, 0 };
 				return val;
 			}
-		}else {
-			//Edit meeting button
+		} else {
+			appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
+			try {
+				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+						.equals("No meeting exists for this SHG.")) {
+					testMeet.log(Status.FAIL, "No meeting exists for this SHG.");
+					System.out.println("No meeting exists for this SHG.");
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					navigateBackToScreen("SHG");
+					int[] val = { 0, 0, 0 };
+					return val;
+				}
+			} catch (Exception e) {
+
+			}
 		}
-		
+
 		int[] val = { 0, 0, 0 };
 		return val;
-		
+
 	}
-	
+
 	public static void enterValue_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");

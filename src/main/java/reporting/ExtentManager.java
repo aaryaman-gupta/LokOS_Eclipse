@@ -44,25 +44,25 @@ public class ExtentManager extends lokosTest {
 	}
 
 	public static void addScreenShotsToTest(String filename, ExtentTest test) throws IOException {
-		
+
 		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
 
 		test.addScreenCaptureFromPath(screenShot, filename);
 	}
-	
+
 	public static void addScreenShotsToLogFail(String filename, ExtentTest test) throws IOException {
-		
+
 		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
 
 		test.fail(filename, MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
 	}
-	
+
 	public static void addScreenShotsToLogPass(String filename, ExtentTest test) throws IOException {
-		
+
 		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
