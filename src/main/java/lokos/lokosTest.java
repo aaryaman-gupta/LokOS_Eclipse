@@ -91,7 +91,7 @@ public class lokosTest {
 						|| xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")))
 					testFlow = reports.createTest("[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum)
 							+ " (Flow: " + xc.getCellString(r, profileCons.typeColNum) + ")");
-				test.log(Status.INFO, "Flow number \" + r + \" begins");
+				test.log(Status.INFO, "Flow number " + r + " begins");
 				System.out.println("\nFlow number " + r + " begins");
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New Members")) {
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
@@ -323,14 +323,12 @@ public class lokosTest {
 					Thread.sleep(1000);
 					System.out.println("\n-----SHG Meetings-----");
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
-					testMeet = testFlow.createNode(
-							"Update SHG: " + shg + "(" + xc.getCellString(r, profileCons.flowTypeColNum) + ")");
 					System.out.println("\nFlow started for SHG Meetings " + xc.getCellString(r, profileCons.shgNameColNum));
 					/////////////////////////
 					int[] val = shgMeetings.meetingNum(r);
 					/////////////////////////					
-					String resultF = "Update of " + shg + " Failed: " + val[1] + "/" + val[2];
-					String resultP = "Update of " + shg + " Passed: " + val[0] + "/" + val[2];
+					String resultF = "SHG Meetings: " + shg + " Failed: " + val[1] + "/" + val[2];
+					String resultP = "SHG Meetings: " + shg + " Passed: " + val[0] + "/" + val[2];
 					testMeet.log(Status.INFO, resultF);
 					testMeet.log(Status.INFO, resultP);
 					testFlow.log(Status.INFO, resultF);
@@ -361,8 +359,7 @@ public class lokosTest {
 				test.log(Status.PASS, "Lokos Successfully Launched");
 				System.out.println("Lokos Successfully Launched");
 				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
-				app.loginTest.sync();
+				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
 				test.log(Status.PASS, "Login and Sync Complete");
 				System.out.println("Login and Sync Complete");
 				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);

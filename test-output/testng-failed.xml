@@ -3,11 +3,11 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="lokos.lokosTest">
+      <class name="app.regularMeetings">
         <methods>
           <include name="startApp"/>
         </methods>
-      </class> <!-- lokos.lokosTest -->
+      </class> <!-- app.regularMeetings -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
