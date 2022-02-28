@@ -17,6 +17,7 @@ public class cutoffMeetings extends lokosTest {
 
 	public static int[] idSelectCutoff(int row) throws Exception {
 
+		@SuppressWarnings("unused")
 		String[] idList = { "000" };
 
 		String type = xc.getCellString(row, cutoffCons.typeColNum);
@@ -26,8 +27,10 @@ public class cutoffMeetings extends lokosTest {
 			idList = typeList[0].split(",");
 		}
 
-		int[] val = cutoffMeetings.cutoff(row, idList);
+		int[] val = { 0, 0, 0 };
+//		int[] val = cutoffMeetings.cutoff(row, idList);
 		return val;
+		
 	}
 
 	@SuppressWarnings("unused")
@@ -1347,7 +1350,18 @@ public class cutoffMeetings extends lokosTest {
 
 		if (neg_test_flag)
 			pass = neg_test_count;
-
+		
+		appdriver.findElementById("com.microware.cdfi:id/btn_close").click();
+		f=validOnSave("Are you sure you want to close the meeting?",row);
+		if(f==1) {
+			navigateBackToScreen("Cut Off Menu");
+		}
+		appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+		reporting.ExtentManager.addScreenShotsToTest("Cutoff Result 1", testFlow);
+		mt.scrollToText("Bank Balance","top");
+		reporting.ExtentManager.addScreenShotsToTest("Cutoff Result 2", testFlow);
+		appdriver.findElementById("com.microware.cdfi:id/btn_sendApproval").click();	
+		
 		int[] val = { pass, fail, count };
 		return val;
 	}

@@ -2,16 +2,16 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2022-02-25T20:14:24 IST" name="Default suite" finished-at="2022-02-25T20:57:39 IST" duration-ms="2595412">
+  <suite started-at="2022-02-28T16:39:00 IST" name="Default suite" finished-at="2022-02-28T16:44:41 IST" duration-ms="340595">
     <groups>
     </groups>
-    <test started-at="2022-02-25T20:14:24 IST" name="Default test" finished-at="2022-02-25T20:57:39 IST" duration-ms="2595412">
-      <class name="lokos.lokosTest">
-        <test-method signature="startApp()[pri:0, instance:lokos.lokosTest@34b7ac2f]" started-at="2022-02-25T20:14:24 IST" name="startApp" finished-at="2022-02-25T20:57:39 IST" duration-ms="2595386" status="PASS">
+    <test started-at="2022-02-28T16:39:00 IST" name="Default test" finished-at="2022-02-28T16:44:41 IST" duration-ms="340595">
+      <class name="app.shgMeetings">
+        <test-method signature="startApp()[pri:0, instance:app.shgMeetings@10e41621]" started-at="2022-02-28T16:39:00 IST" name="startApp" finished-at="2022-02-28T16:44:41 IST" duration-ms="340561" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- startApp -->
-      </class> <!-- lokos.lokosTest -->
+      </class> <!-- app.shgMeetings -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

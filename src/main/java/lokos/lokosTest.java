@@ -21,7 +21,8 @@ import app.shgMeetings;
 import app.shgProfileCreation;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
-
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import readingXLS.xlsClasses;
 import reporting.ExtentManager;
 import util.DeviceUtil;
@@ -339,7 +340,8 @@ public class lokosTest {
 					System.out.println(resultP);
 					System.out.println("________________________");
 					
-					appdriver.findElementById("com.microware.cdfi:id/ic_Back").click();
+					navigateBackToScreen("SHG");
+					appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();
 
@@ -380,6 +382,27 @@ public class lokosTest {
 		reports.flush();
 
 		util.mail.ZipAndSendMail.send("Automation Test Reports","Please find the reports in attachment");
+	}
+	
+	public static void navigateBackToScreen(String screen_title) throws Exception {
+		@SuppressWarnings("unused")
+		int i = 0;
+		String title = "";
+		try {
+			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+		} catch (Exception e) {
+			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+		}
+		try {
+			while (!title.equals(screen_title)) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+					break;
+				i++;
+			}
+		} catch (Exception e) {
+			throw new Exception("Cannot navigate to " + screen_title + " screen");
+		}
 	}
 
 }

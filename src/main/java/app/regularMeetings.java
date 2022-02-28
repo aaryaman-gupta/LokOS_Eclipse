@@ -20,7 +20,7 @@ public class regularMeetings extends lokosTest {
 			idList = typeList[0].split(",");
 		}
 
-		int[] val = cutoffMeetings.cutoff(row, idList);
+		int[] val = regularMeetings.regular(row, idList);
 		return val;
 	}
 	
