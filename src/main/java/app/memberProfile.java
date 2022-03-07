@@ -6,10 +6,15 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
+import reporting.ExtentManager;
 import util.cameraLogic;
 import util.dateLogic;
 
 public class memberProfile extends lokosTest {
+	
+	public static boolean neg_test_flag = false;
+	public static int neg_test_count = 0;
+	public static boolean invalid_flag = false;
 
 	public static int[] idSelect_Mem(int row) throws Exception {
 
@@ -1197,6 +1202,147 @@ public class memberProfile extends lokosTest {
 		int[] val = { pass, fail, count };
 		return val;
 
+	}
+	
+	public static void enterValue_Id(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "id", (int) xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void enterValue_Xpath(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementByXPath(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "xpath", (int) xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+	public static void enterDouble_Id(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "id", xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void enterDouble_Xpath(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementByXPath(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "xpath", xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void enterString_Id(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
+		int f = validCheckString(loc, "id", xc.getCellString(row, cons), err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void enterString_Xpath(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementByXPath(loc).sendKeys(xc.getCellString(row, cons));
+		int f = validCheckString(loc, "xpath", xc.getCellString(row, cons), err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void select(String title, String dir, String loc, int row, int cons) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementByXPath(loc).click();
+		appdriver.findElement(
+				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")")).click();
+	}
+
+	public static int validCheckString(String loc, String locStrat, String field_txt, String text) {
+		if (locStrat.equalsIgnoreCase("xpath")) {
+			if (!appdriver.findElementByXPath(loc).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		} else if (locStrat.equalsIgnoreCase("id")) {
+			if (!appdriver.findElementById(loc).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
+			if (!appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().equals(field_txt)) {
+				System.out.println(text);
+				testMeet.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	public static int validOnSave(String txt_msg, int row) throws Exception {
+
+		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data Updated Successfully")
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+						.equals("Data saved successfully")
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals(txt_msg))
+			return 0;
+		else {
+			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			testMeet.log(Status.FAIL, "ex");
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
+			System.out.println("Error: " + ex);
+			if (neg_test_flag) {
+				try {
+					String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
+					if (ex.contains(exp_errs)) {
+						System.out.println("|||||||||||||||||||||||||||||");
+						System.out.println("Expected Error is encountered");
+						System.out.println("   ((Negetive Test Passed))");
+						System.out.println("|||||||||||||||||||||||||||||");
+						++neg_test_count;
+					} else {
+						System.out.println("   (((Negetive Test Failed)))\n");
+						testMeet.log(Status.INFO, "Negetive Test Failed");
+					}
+				} catch (NullPointerException np) {
+					System.out.println("---->>Expected Errors is empty.");
+					testMeet.log(Status.INFO, "Expected Errors is empty.");
+				}
+			}
+			return 1;
+		}
+
+	}
+
+	public static void navigateBackToScreen(String screen_title) throws Exception {
+		int i = 0;
+		String title = "";
+		while(i<3) {
+		try {
+			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+		} catch (Exception e) {
+			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+			i++;
+		}
+		break;
+		}
+		
+		i=0;
+		try {
+			while (!title.equals(screen_title)) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+					break;
+				i++;
+			}
+		} catch (Exception e) {
+			throw new Exception("Cannot navigate to " + screen_title + " screen");
+		}
 	}
 
 }

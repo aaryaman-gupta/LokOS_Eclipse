@@ -48,8 +48,8 @@ public class lokosTest {
 	public static boolean web_process_success_flag = false;
 	public static int[][] mem_check = new int[2][58];
 	public static int[][] shg_check = new int[2][59];
-	public static int[][] cutoff_check = new int[2][88];
-	public static int[][] reg_check = new int[2][88];
+	public static int[][] cutoff_check = new int[2][91];
+	public static int[][] reg_check = new int[2][91];
 	
 
 	@Test
@@ -90,9 +90,10 @@ public class lokosTest {
 				if (!(xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")
 						|| xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")))
 					testFlow = reports.createTest("[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum)
-							+ " (Flow: " + xc.getCellString(r, profileCons.typeColNum) + ")");
+							+ " (Flow: " + xc.getCellString(r, profileCons.typeColNum) +"->"+xc.getCellString(r, profileCons.flowTypeColNum)+ ")");
 				test.log(Status.INFO, "Flow number " + r + " begins");
 				System.out.println("\nFlow number " + r + " begins");
+				
 				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New Members")) {
 					String shg = xc.getCellString(r, profileCons.shgNameColNum);
 					System.out.println("Flow started for New Members in SHG " + shg + "("

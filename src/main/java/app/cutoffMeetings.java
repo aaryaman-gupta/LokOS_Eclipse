@@ -17,7 +17,6 @@ public class cutoffMeetings extends lokosTest {
 
 	public static int[] idSelectCutoff(int row) throws Exception {
 
-		@SuppressWarnings("unused")
 		String[] idList = { "000" };
 
 		String type = xc.getCellString(row, cutoffCons.typeColNum);
@@ -27,7 +26,6 @@ public class cutoffMeetings extends lokosTest {
 			idList = typeList[0].split(",");
 		}
 
-//		int[] val = { 0, 0, 0 };
 		int[] val = cutoffMeetings.cutoff(row, idList);
 		return val;
 
@@ -113,20 +111,20 @@ public class cutoffMeetings extends lokosTest {
 			}
 		} else {
 			// Edit Meeting button
-			appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
-			try {
-				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-						.equals("No meeting exists for this SHG.")) {
-					testMeet.log(Status.FAIL, "No meeting exists for this SHG.");
-					System.out.println("No meeting exists for this SHG.");
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					navigateBackToScreen("SHG");
-					int[] val = { 0, 0, 0 };
-					return val;
-				}
-			} catch (Exception e) {
-
-			}
+//			appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
+//			try {
+//				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+//						.equals("No meeting exists for this SHG.")) {
+//					testMeet.log(Status.FAIL, "No meeting exists for this SHG.");
+//					System.out.println("No meeting exists for this SHG.");
+//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//					navigateBackToScreen("SHG");
+//					int[] val = { 0, 0, 0 };
+//					return val;
+//				}
+//			} catch (Exception e) {
+//
+//			}
 		}
 
 		testMeet.log(Status.INFO, "Cutoff Entry Begin");
@@ -193,7 +191,6 @@ public class cutoffMeetings extends lokosTest {
 				} finally {
 					count++;
 					navigateBackToScreen("Cut Off Menu");
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				}
 				if (id != 000)
 					break;
@@ -856,6 +853,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Membership fee
 			case 10:
 				try {
@@ -909,6 +908,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Group Investment
 			case 11:
 				try {
@@ -966,6 +967,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Group's Closed Loan
 			case 12:
 				try {
@@ -1030,6 +1033,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Group's Active Loan
 			case 13:
 				try {
@@ -1174,6 +1179,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Fund Received
 			case 14:
 				try {
@@ -1237,6 +1244,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Group Cash Balance
 			case 15:
 				try {
@@ -1295,6 +1304,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 				// Group Bank Balance
 			case 16:
 				try {
@@ -1359,6 +1370,8 @@ public class cutoffMeetings extends lokosTest {
 					invalid_flag = false;
 					navigateBackToScreen("Cut Off Menu");
 				}
+				if (id != 000)
+					break;
 			default:
 				break;
 			}
@@ -1398,6 +1411,22 @@ public class cutoffMeetings extends lokosTest {
 			invalid_flag = true;
 	}
 
+	public static void enterDouble_Id(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "id", xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static void enterDouble_Xpath(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementByXPath(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+		int f = validCheckString(loc, "xpath", xc.getCellDoubleValue(row, cons) + "", err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
 	public static void enterString_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
@@ -1418,7 +1447,7 @@ public class cutoffMeetings extends lokosTest {
 		mt.scrollToText(title, dir);
 		appdriver.findElementByXPath(loc).click();
 		appdriver.findElement(
-				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"));
+				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")")).click();
 	}
 
 	public static int validCheckString(String loc, String locStrat, String field_txt, String text) {
@@ -1483,14 +1512,19 @@ public class cutoffMeetings extends lokosTest {
 	}
 
 	public static void navigateBackToScreen(String screen_title) throws Exception {
-		@SuppressWarnings("unused")
 		int i = 0;
 		String title = "";
-		try {
-			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
-		} catch (Exception e) {
-			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+		while (i < 3) {
+			try {
+				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+			} catch (Exception e) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				i++;
+			}
+			break;
 		}
+
+		i = 0;
 		try {
 			while (!title.equals(screen_title)) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));

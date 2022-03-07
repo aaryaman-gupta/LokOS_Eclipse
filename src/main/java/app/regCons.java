@@ -7,7 +7,7 @@ public class regCons {
 		public static final int typeColNum = 2;
 		public static final int newMeetingNumColNum = 3;
 		public static final int meetingDateColNum = 4;
-		
-	
+		public static final int Attendance_1=5;
+			
 
 }
