@@ -59,7 +59,8 @@ public class shgProfileCreation extends lokosTest {
 		int sig = 0;// count for signatory
 		boolean neg_test_flag = false;
 		int neg_test_count = 0;
-
+		invalid_flag=false;
+		
 		int k = 0;
 		if (Integer.valueOf(idList[0]) != 0) {
 			for (String s : idList) {
