@@ -1,5 +1,7 @@
 package app;
 
+import java.util.concurrent.TimeUnit;
+
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
@@ -59,8 +61,8 @@ public class shgProfileCreation extends lokosTest {
 		int sig = 0;// count for signatory
 		boolean neg_test_flag = false;
 		int neg_test_count = 0;
-		invalid_flag=false;
-		
+		invalid_flag = false;
+
 		int k = 0;
 		if (Integer.valueOf(idList[0]) != 0) {
 			for (String s : idList) {
@@ -252,13 +254,13 @@ public class shgProfileCreation extends lokosTest {
 									.click();
 						else {
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Special\")"))
-									.click();							
+									.click();
 							appdriver.findElementById("com.microware.cdfi:id/spin_tags").click();
 							appdriver
 									.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 											+ xc.getCellString(row, profileCons.tagsColNum).toUpperCase() + "\")"))
 									.click();
-							if (xc.getCellString(row, profileCons.tagsColNum).equals("OTHER")) {								
+							if (xc.getCellString(row, profileCons.tagsColNum).equals("OTHER")) {
 								enterString_Id("Other(specify)", "top", "com.microware.cdfi:id/et_OtherTags", row,
 										profileCons.tagsOtherColNum, "206:||Validation Error||");
 							}
@@ -498,25 +500,14 @@ public class shgProfileCreation extends lokosTest {
 								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 										+ xc.getCellString(row, memCons.statusColNum) + "\")")).click();
 							}
-
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "020:Status");
-							System.out.println("020:Status");
+							pseq(id, "018:Status");
 						} else
 							--count;
 
 					} catch (Exception e) {
-						f = 1;
-						fail++;
-						testSHG.log(Status.FAIL, "020:Status");
-						System.out.println("Error in Status:020-------------Check Here////");
-
+						fseq(id, "018:Status", e);
 					} finally {
 						count++;
-						p = 0;
-						f = 0;
-
 					}
 
 					if (id != 000)
@@ -533,7 +524,7 @@ public class shgProfileCreation extends lokosTest {
 				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 						.equals("Data saved successfully")
 						|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-								.equals("Data Updated Successfully")) {
+								.equals("Data Updated Successfully")||!invalid_flag) {
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 					testSHG.log(Status.INFO, "Necessary fields for saving SHG filled.");
 					System.out.println("Necessary fields for saving SHG filled.");
@@ -559,8 +550,8 @@ public class shgProfileCreation extends lokosTest {
 						System.out.println("---->>Expected Errors is empty.");
 					}
 
-					util.randomPressLogic.press(0.5, 0.05);
-					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/IvVector", "id", "bottom");
+					navigateBackToScreen("SHG Basic Details");
+					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/tv_shgName", "id", "bottom");
 					t = 1;
 					id = 9999;
 				}
@@ -585,7 +576,7 @@ public class shgProfileCreation extends lokosTest {
 				System.out.println("Error---->Atleast one field is incorrect");
 				testSHG.log(Status.INFO, "Data not saved: Cannot Proceed(Correct the Errors first)");
 				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
-				util.randomPressLogic.press(0.5, 0.05);
+				navigateBackToScreen("SHG Basic Details");
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 				fail++;
@@ -647,42 +638,45 @@ public class shgProfileCreation extends lokosTest {
 									}
 									throw new Exception(ex);
 								}
-								p = 1;
-								pass++;
-								testSHG.log(Status.PASS, "019:Phone Number");
-								System.out.println("019:Phone Number");
+								pseq(id, "019:Phone Number");
 							}
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "019:Phone Number", e);
 							randomPressLogic.press(0.5, 0.05);
-							testSHG.log(Status.FAIL, "019:Phone Number");
-							System.out.println("Error in Phone Number:019-------------Check Here////");
-							e.printStackTrace();
-
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 
 					case 20:
 						try {
-							Thread.sleep(1500);
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							appdriver.findElementById("com.microware.cdfi:id/lay_location").click();
-							Thread.sleep(1500);
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
-							Thread.sleep(1500);
-							appdriver.findElementById("com.microware.cdfi:id/et_address1")
-									.sendKeys(xc.getCellString(row, profileCons.add1ColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_address2")
-									.sendKeys(xc.getCellString(row, profileCons.add2ColNum));
-
-							appdriver.findElementById("com.microware.cdfi:id/et_pincode")
-									.sendKeys((int) xc.getCellDoubleValue(row, profileCons.pinColNum) + "");
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+							enterString_Id(
+									"Address Line 1",
+									"top",
+									"com.microware.cdfi:id/et_address1",
+									row, 
+									profileCons.add1ColNum,
+									"020:||Validation Error||");
+							enterString_Id(
+									"Address Line 2",
+									"top",
+									"com.microware.cdfi:id/et_address2",
+									row, 
+									profileCons.add2ColNum,
+									"120:||Validation Error||");
+							enterValue_Id(
+									"Pincode",
+									"top",
+									"com.microware.cdfi:id/et_pincode",
+									row, 
+									profileCons.pinColNum,
+									"220:||Validation Error||");
 							appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
 							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 									.equals("Data Updated Successfully")
@@ -712,35 +706,36 @@ public class shgProfileCreation extends lokosTest {
 								}
 								throw new Exception(ex);
 							}
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "020:Address");
-							System.out.println("020:Address");
+							pseq(id, "020:Address");
+
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "020:Address", e);
 							randomPressLogic.press(0.5, 0.05);
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							testSHG.log(Status.FAIL, "020:Address");
-							System.out.println("Error in Address:020-------------Check Here////");
-							e.printStackTrace();
-
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 					case 21:
+						invalid_flag=false;
 						try {
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							appdriver.findElementById("com.microware.cdfi:id/addBank").click();
-							appdriver.findElementById("com.microware.cdfi:id/et_nameinbankpassbook")
-									.sendKeys(xc.getCellString(row, profileCons.passNameColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_ifsc")
-									.sendKeys(xc.getCellString(row, profileCons.IFSCColNum));
+							enterString_Id("Name in Bank Passbook",
+									"top",
+									"com.microware.cdfi:id/et_nameinbankpassbook",
+									row, 
+									profileCons.passNameColNum,
+									"021:||Validation Error||");
+							enterString_Id("IFSC Code",
+									"top",
+									"com.microware.cdfi:id/et_ifsc",
+									row, 
+									profileCons.IFSCColNum,
+									"121:||Validation Error||");
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
 							Thread.sleep(1000);
@@ -765,18 +760,28 @@ public class shgProfileCreation extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							mt.scrollToText("Account number", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_Accountno")
-									.sendKeys(xc.getCellString(row, profileCons.accNoColNum).substring(1));
-							mt.scrollToText("Re-Type Account No.", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_retype_Accountno")
-									.sendKeys(xc.getCellString(row, profileCons.retypAccNoColNum).substring(1));
+							enterLongNum_Id("Re-Type Account No.", 
+									"top",
+									"com.microware.cdfi:id/et_Accountno",
+									row, 
+									profileCons.accNoColNum,
+									"421:||Validation Error||"
+									);
+							enterLongNum_Id("Account number", 
+									"top",
+									"com.microware.cdfi:id/et_retype_Accountno",
+									row, 
+									profileCons.retypAccNoColNum,
+									"521:||Validation Error||"
+									);
 							String date = xc.getCellString(row, profileCons.accOpDateColNum);
 							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
 							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
 							cameraLogic.click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 									+ xc.getCellString(row, profileCons.isDefaultColNum) + "\")")).click();
+							if(invalid_flag)
+								throw new Exception("");
 							appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
 							if (du.isElementPresent("new UiSelector().text(\"Please enter valid Account No.\")",
 									"androidUIAutomatior")) {
@@ -838,25 +843,13 @@ public class shgProfileCreation extends lokosTest {
 
 							}
 
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "021:Bank Account");
-							System.out.println("021:Bank Account");
-
+							pseq(id, "021:Bank Account");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "021:Bank Account", e);
 							randomPressLogic.press(0.5, 0.05);
-							testSHG.log(Status.FAIL, "021:Bank Account");
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							System.out.println("Error in Bank Account:021-------------Check Here////");
-							e.printStackTrace();
-
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
@@ -907,23 +900,12 @@ public class shgProfileCreation extends lokosTest {
 								System.out.println(e.getMessage());
 							}
 
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "022:President Signatory");
-							System.out.println("022:President Signatory");
+							pseq(id, "022:President Signatory");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "022:President Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
-							testSHG.log(Status.FAIL, "022:President Signatory");
-							System.out.println("Error in President Signatory:022-------------Check Here////");
-							e.printStackTrace();
-
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
@@ -975,23 +957,14 @@ public class shgProfileCreation extends lokosTest {
 								System.out.println(e.getMessage());
 							}
 
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "023:Secretary Signatory");
-							System.out.println("023:Secretary Signatory");
+							pseq(id, "023:Secretary Signatory");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "023:Secretary Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
-							testSHG.log(Status.FAIL, "023:Secretary Signatory");
-							System.out.println("Error in Secretary Signatory:023-------------Check Here////");
 							e.printStackTrace();
 
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
@@ -1042,18 +1015,10 @@ public class shgProfileCreation extends lokosTest {
 								System.out.println(e.getMessage());
 							}
 
-							p = 1;
-							pass++;
-							testSHG.log(Status.PASS, "024:Treasurer Signatory");
-							System.out.println("024:Treasurer Signatory");
+							pseq(id, "024:Treasurer Signatory");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+							fseq(id, "024:Treasurer Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
-							testSHG.log(Status.FAIL, "024:Treasurer Signatory");
-							System.out.println("Error in Treasurer Signatory:024-------------Check Here////");
-							e.printStackTrace();
-
 						} finally {
 							count++;
 							p = 0;
@@ -1068,11 +1033,12 @@ public class shgProfileCreation extends lokosTest {
 			}
 		}
 
-		Thread.sleep(1000);
 		if (t == 0)
-			appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
+			navigateBackToScreen("SHG");
 
-		if ((id != 9999) && (addMem)) {
+		if ((id != 9999) && (addMem))
+
+		{
 
 			int numMem = (int) xc.getCellDoubleValue(row, profileCons.numMemAddColNum);
 
