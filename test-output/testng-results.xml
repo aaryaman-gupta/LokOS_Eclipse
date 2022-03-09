@@ -2,16 +2,16 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2022-02-28T17:47:18 IST" name="Default suite" finished-at="2022-02-28T17:49:07 IST" duration-ms="109102">
+  <suite started-at="2022-03-07T15:57:33 IST" name="Default suite" finished-at="2022-03-07T16:01:15 IST" duration-ms="221956">
     <groups>
     </groups>
-    <test started-at="2022-02-28T17:47:18 IST" name="Default test" finished-at="2022-02-28T17:49:07 IST" duration-ms="109102">
-      <class name="app.regularMeetings">
-        <test-method signature="startApp()[pri:0, instance:app.regularMeetings@64cd705f]" started-at="2022-02-28T17:47:18 IST" name="startApp" finished-at="2022-02-28T17:49:07 IST" duration-ms="109008" status="PASS">
+    <test started-at="2022-03-07T15:57:33 IST" name="Default test" finished-at="2022-03-07T16:01:15 IST" duration-ms="221956">
+      <class name="app.shgProfileCreation">
+        <test-method signature="startApp()[pri:0, instance:app.shgProfileCreation@6a28ffa4]" started-at="2022-03-07T15:57:33 IST" name="startApp" finished-at="2022-03-07T16:01:15 IST" duration-ms="221915" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- startApp -->
-      </class> <!-- app.regularMeetings -->
+      </class> <!-- app.shgProfileCreation -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

@@ -115,7 +115,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 2:
 					try {
-						select("Grampanchayat", // title
+						selectById("Grampanchayat", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_panchayat", // location
 								row, // row
@@ -131,7 +131,7 @@ public class shgProfileCreation extends lokosTest {
 
 				case 3:
 					try {
-						select("Village", "top", "com.microware.cdfi:id/spin_village", row, profileCons.villageColNum);
+						selectById("Village", "top", "com.microware.cdfi:id/spin_village", row, profileCons.villageColNum);
 						pseq(id, "003:Village");
 					} catch (Exception e) {
 						fseq(id, "003:Village", e);
@@ -159,7 +159,7 @@ public class shgProfileCreation extends lokosTest {
 						mt.scrollToText("Promoted by", "top");
 
 						String promotedBy = xc.getCellString(row, profileCons.promotedByColNum);
-						select("Promoted by", "top", "com.microware.cdfi:id/spin_promotedby", row,
+						selectById("Promoted by", "top", "com.microware.cdfi:id/spin_promotedby", row,
 								profileCons.promotedByColNum);
 
 						if (promotedBy.equals("NRLM")) {
@@ -335,7 +335,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 8:
 					try {
-						select("Compulsory Saving Frequency", "top", "com.microware.cdfi:id/spin_savingfrequency", row,
+						selectById("Compulsory Saving Frequency", "top", "com.microware.cdfi:id/spin_savingfrequency", row,
 								profileCons.compSavFreqColNum);
 						pseq(id, "008:Compulsory Saving Frequency");
 					} catch (Exception e) {
@@ -357,7 +357,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 10:
 					try {
-						enterDouble_Id("Compulsory Saving Interest Rate(Annual)%", "top",
+						enterDouble_Id("Compulsory Saving Interest Rate (Annual) %", "top",
 								"com.microware.cdfi:id/et_ComsavingRoi", row, profileCons.compSavIRColNum,
 								"010:||Validation Erro||");
 						pseq(id, "010:Compulsory Saving Interest Rate");
@@ -375,9 +375,9 @@ public class shgProfileCreation extends lokosTest {
 						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 								+ xc.getCellString(row, profileCons.voluntarySavColNum) + "\")")).click();
 						if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes")) {
-							select("Voluntary Saving interest rate (Annual)%", "top",
+							enterDouble_Id("Voluntary Saving interest rate (Annual) %", "top",
 									"com.microware.cdfi:id/et_voluntarysavingROI", row,
-									profileCons.voluntarySavIRColNum);
+									profileCons.voluntarySavIRColNum,"010:||Validation Error");
 						}
 						pseq(id, "011:Voluntary Savings and Sub-parts");
 					} catch (Exception e) {
@@ -403,19 +403,19 @@ public class shgProfileCreation extends lokosTest {
 										"//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]")
 										.click();
 							} else
-								select("Bookkeeper Name", "top", "com.microware.cdfi:id/lay_spinmember", row,
+								selectById("Bookkeeper Name", "top", "com.microware.cdfi:id/lay_spinmember", row,
 										profileCons.bkNameColNum);
 							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
 									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
 									"212:||Validation Error");
 						} else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External")) {
-							enterString_Id("Bookkeeper Name", "top", "com.microware.cdfi:id/lay_spinmember", row,
+							enterString_Id("Bookkeeper Name", "top", "com.microware.cdfi:id/et_bookkeeper_name", row,
 									profileCons.bkNameColNum, "112:||Validation Error");
 							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
 									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
 									"212:||Validation Error");
 						}
-
+						
 						pseq(id, "012:Bookkeeper");
 					} catch (Exception e) {
 						fseq(id, "012:Bookkeeper", e);
@@ -426,7 +426,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 13:
 					try {
-						select("Primary Livelihood Activity", "top", "com.microware.cdfi:id/spin_primaryActivity", row,
+						selectById("Primary Livelihood Activity", "top", "com.microware.cdfi:id/spin_primaryActivity", row,
 								profileCons.primaryla);
 						pseq(id, "013:Primary Livelihood");
 					} catch (Exception e) {
@@ -438,7 +438,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 14:
 					try {
-						select("Secondary Livelihood Activity", "top", "com.microware.cdfi:id/spin_secondaryActivity",
+						selectById("Secondary Livelihood Activity", "top", "com.microware.cdfi:id/spin_secondaryActivity",
 								row, profileCons.secondaryla);
 						pseq(id, "014:Secondary Livelihood");
 					} catch (Exception e) {
@@ -450,7 +450,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 15:
 					try {
-						select("Tertiary Livelihood Activity", "top", "com.microware.cdfi:id/spin_tertiaryActivity",
+						selectById("Tertiary Livelihood Activity", "top", "com.microware.cdfi:id/spin_tertiaryActivity",
 								row, profileCons.tertiaryla);
 						pseq(id, "015:Tertiary Livelihood");
 					} catch (Exception e) {
@@ -902,8 +902,8 @@ public class shgProfileCreation extends lokosTest {
 
 							pseq(id, "022:President Signatory");
 						} catch (Exception e) {
-							fseq(id, "022:President Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
+							fseq(id, "022:President Signatory", e);
 						} finally {
 							count++;
 						}
@@ -959,10 +959,8 @@ public class shgProfileCreation extends lokosTest {
 
 							pseq(id, "023:Secretary Signatory");
 						} catch (Exception e) {
-							fseq(id, "023:Secretary Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
-							e.printStackTrace();
-
+							fseq(id, "023:Secretary Signatory", e);
 						} finally {
 							count++;
 						}
@@ -1017,13 +1015,10 @@ public class shgProfileCreation extends lokosTest {
 
 							pseq(id, "024:Treasurer Signatory");
 						} catch (Exception e) {
-							fseq(id, "024:Treasurer Signatory", e);
 							randomPressLogic.press(0.5, 0.05);
+							fseq(id, "024:Treasurer Signatory", e);							
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
@@ -1139,7 +1134,15 @@ public class shgProfileCreation extends lokosTest {
 			invalid_flag = true;
 	}
 
-	public static void select(String title, String dir, String loc, int row, int cons) {
+	public static void selectById(String title, String dir, String loc, int row, int cons) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).click();
+		appdriver
+				.findElement(
+						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+				.click();
+	}
+	public static void selectByXpath(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementByXPath(loc).click();
 		appdriver
@@ -1147,7 +1150,6 @@ public class shgProfileCreation extends lokosTest {
 						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
 				.click();
 	}
-
 	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
@@ -1160,21 +1162,21 @@ public class shgProfileCreation extends lokosTest {
 		if (locStrat.equalsIgnoreCase("xpath")) {
 			if (!appdriver.findElementByXPath(loc).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("id")) {
 			if (!appdriver.findElementById(loc).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
 			if (!appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
@@ -1184,23 +1186,23 @@ public class shgProfileCreation extends lokosTest {
 
 	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text) {
 		if (locStrat.equalsIgnoreCase("xpath")) {
-			if (!appdriver.findElementByXPath(loc).getText().equals("#" + field_txt)) {
+			if (!("#" + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("id")) {
-			if (!appdriver.findElementById(loc).getText().equals("#" + field_txt)) {
+			if (!("#" + appdriver.findElementById(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
-			if (!appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().equals("#" + field_txt)) {
+			if (!("#" + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
@@ -1217,7 +1219,7 @@ public class shgProfileCreation extends lokosTest {
 			return 0;
 		else {
 			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-			testMeet.log(Status.FAIL, "ex");
+			testSHG.log(Status.FAIL, "ex");
 			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
 			System.out.println("Error: " + ex);
 			if (neg_test_flag) {
@@ -1231,11 +1233,11 @@ public class shgProfileCreation extends lokosTest {
 						++neg_test_count;
 					} else {
 						System.out.println("   (((Negetive Test Failed)))\n");
-						testMeet.log(Status.INFO, "Negetive Test Failed");
+						testSHG.log(Status.INFO, "Negetive Test Failed");
 					}
 				} catch (NullPointerException np) {
 					System.out.println("---->>Expected Errors is empty.");
-					testMeet.log(Status.INFO, "Expected Errors is empty.");
+					testSHG.log(Status.INFO, "Expected Errors is empty.");
 				}
 			}
 			return 1;

@@ -11,10 +11,12 @@ import util.cameraLogic;
 import util.dateLogic;
 
 public class memberProfile extends lokosTest {
-	
+
 	public static boolean neg_test_flag = false;
 	public static int neg_test_count = 0;
 	public static boolean invalid_flag = false;
+	public static int pass = 0;
+	public static int fail = 0;
 
 	public static int[] idSelect_Mem(int row) throws Exception {
 
@@ -42,18 +44,29 @@ public class memberProfile extends lokosTest {
 		System.out.println("Member name: " + xc.getCellString(row, memCons.nameColNum));
 		System.out.println("Inside member profile creation");
 		int count = 0;
-		int pass = 0;
-		int fail = 0;
 		int p = 0;
 		int f = 0;
 		int id = 000;
 		int t = 0;// flag for back button
 		boolean neg_test_flag = false;
 		int neg_test_count = 0;
+		invalid_flag = false;
 
+		int k = 0;
+		if (Integer.valueOf(idList[0]) != 0) {
+			for (String s : idList) {
+				mem_check[0][Integer.valueOf(idList[k])] = Integer.valueOf(idList[k]);
+				++k;
+			}
+		} else {
+			for (int j = 0; j < mem_check[0].length; j++) {
+				mem_check[0][j] = j;
+			}
+		}
 		try {
 			if (xc.getCellString(row, memCons.typeColNum).contains("Check")) {
 				neg_test_flag = true;
+				testMem.log(Status.INFO, "NEGETIVE TESTING");
 			}
 		} catch (NullPointerException np) {
 		}
@@ -67,66 +80,37 @@ public class memberProfile extends lokosTest {
 
 			case 001:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/et_name")
-							.sendKeys(xc.getCellString(row, memCons.nameColNum));
-					p = 1;
-					pass++;
-					System.out.println("001:Name");
+					enterString_Id("Name (Including Surname)", "top", "com.microware.cdfi:id/et_name", row,
+							memCons.nameColNum, "001:||Validation Error");
+					pseq(id, "001:Name");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Name:001----------------------Check Here////");
-					e.printStackTrace();
+					fseq(id, "001:Name", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
 				}
 				if (id != 000)
 					break;
 			case 002:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/et_namelocal")
-							.sendKeys(xc.getCellString(row, memCons.nameLocalColNum));
-					p = 1;
-					pass++;
-					System.out.println("002:Name in Local");
+					enterString_Id("Name in Local", "top", "com.microware.cdfi:id/et_namelocal", row,
+							memCons.nameLocalColNum, "001:||Validation Error");
+					pseq(id, "002:Name in Local");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Name in Local:002------------Check Here////");
-					e.printStackTrace();
+					pseq(id, "002:Name in Local");
 
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 003:
 				try {
-					mt.scrollToText("Gender", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_gender").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.genderColNum) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("003:Gender");
-
+					selectById("Gender", "top", "com.microware.cdfi:id/spin_gender", row, memCons.genderColNum);
+					pseq(id, "003:Gender");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Gender:003----------------Check Here////");
-					e.printStackTrace();
-
+					fseq(id, "003:Gender", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
 				}
 				if (id != 000)
 					break;
@@ -146,102 +130,56 @@ public class memberProfile extends lokosTest {
 						dateLogic.datePicker(date, "com.microware.cdfi:id/et_dob");
 
 					} else {
-						mt.scrollToText("Age", "top");
-						appdriver.findElementById("com.microware.cdfi:id/et_age")
-								.sendKeys((int) xc.getCellDoubleValue(row, memCons.ageColNum) + "");
-
+						enterValue_Id("Age", "top", "com.microware.cdfi:id/et_age", row, memCons.ageColNum,
+								"204:||Validation Error");
 						mt.scrollToText("As on Date", "top");
 //							appdriver.findElementById("com.microware.cdfi:id/et_ason").click();
 						String date = xc.getCellString(row, memCons.ageAODColNum);
 						dateLogic.datePicker(date, "com.microware.cdfi:id/et_ason");
 					}
-					p = 1;
-					pass++;
-					System.out.println(" > Sub Parts Details filled");
-
+					pseq(id, "004:Member DOB Available and Sub Parts Details filled");
 				} catch (Exception e) {
-					fail++;
-					f = 1;
-					System.out.println("Error in Member DOB Available or Sub Parts:004-----Check Here////");
-					e.printStackTrace();
-
+					fseq(id, "004:Member DOB Available and Sub Parts Details filled", e);
 				} finally {
-
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 005:
 				try {
 					mt.scrollToText("Member Joining Date", "top");
-//						appdriver.findElementById("com.microware.cdfi:id/et_joiningDate").click();
 					String date = xc.getCellString(row, memCons.dateColNum);
 					appdriver.findElementById("com.microware.cdfi:id/et_joiningDate").clear();
 					dateLogic.datePicker(date, "com.microware.cdfi:id/et_joiningDate");
-					p = 1;
-					pass++;
-					System.out.println("005:Member Joining Date");
-
+					pseq(id, "005:Member Joining Date");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Joining Date:005-------Check Here////");
-					e.printStackTrace();
+					fseq(id, "005:Member Joining Date", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 006:
 				try {
-					mt.scrollToText("Marital Status", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_martial").click();
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.maritalStatColNum) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("006:Marital Status");
-
+					selectById("Marital Status", "top", "com.microware.cdfi:id/spin_martial", row,
+							memCons.maritalStatColNum);
+					pseq(id, "006:Marital Status");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Marital Stat:006------------Check Here////");
-					e.printStackTrace();
-
+					fseq(id, "006:Marital Status", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 007:
 				try {
-					mt.scrollToText("Mother / Father / Spouse", "top");
-					appdriver.findElementById("com.microware.cdfi:id/et_mother_father")
-							.sendKeys(xc.getCellString(row, memCons.M_F_SColNum));
-					p = 1;
-					pass++;
-					System.out.println("007:Mother/Father/Spouse");
+					enterString_Id("Mother / Father / Spouse", "top", "com.microware.cdfi:id/et_mother_father", row,
+							memCons.M_F_SColNum, "007:||Validation Error");
+					pseq(id, "007:Mother/Father/Spouse");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Mother/Father/Spouse:007------Check Here////");
-					e.printStackTrace();
-
+					fseq(id, "007:Mother/Father/Spouse", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -250,47 +188,27 @@ public class memberProfile extends lokosTest {
 					mt.scrollToText("Mother/Father/Spouse in local", "top");
 					appdriver.findElementById("com.microware.cdfi:id/et_mother_fatherlocal")
 							.sendKeys(xc.getCellString(row, memCons.M_F_SLocalColNum));
-					p = 1;
-					pass++;
-					System.out.println("008:Mother/Father/Spouse in Local");
-
+					enterString_Id("Mother/Father/Spouse in local", "top",
+							"com.microware.cdfi:id/et_mother_fatherlocal", row, memCons.M_F_SLocalColNum,
+							"008:||Validation Error");
+					pseq(id, "008:Mother/Father/Spouse in Local");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Mother/Father/Spouse in local:008----Check Here////");
-					e.printStackTrace();
-
+					fseq(id, "008:Mother/Father/Spouse in Local", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 
 			case 9:
 				try {
-					mt.scrollToText("Relation", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_relationmother").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.relationColNum) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("009:Relation");
-
+					selectById("Relation", "top", "com.microware.cdfi:id/spin_relationmother", row,
+							memCons.relationColNum);
+					pseq(id, "009:Relation");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Relation:009-------------Check Here////");
-					e.printStackTrace();
+					fseq(id, "009:Relation", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -300,19 +218,14 @@ public class memberProfile extends lokosTest {
 					appdriver.findElement(MobileBy.AndroidUIAutomator(
 							"new UiSelector().text(\"" + xc.getCellString(row, memCons.familyHeadColNum) + "\")"))
 							.click();
-					p = 1;
+					pseq(id, "010:Is member head of the family?");
 					pass++;
 					System.out.println("010:Is member head of the family?");
 
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Is member head of the family?:010-------------Check Here////");
-					e.printStackTrace();
+					fseq(id, "010:Is member head of the family?", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
 				}
 				if (id != 000)
 					break;
@@ -325,39 +238,24 @@ public class memberProfile extends lokosTest {
 							.click();
 
 					if (!xc.getCellString(row, memCons.disabilityColNum).equals("No disability")) {
-
-						mt.scrollToText("Disability Type", "top");
-						appdriver.findElementById("com.microware.cdfi:id/spin_disabilityType").click();
-						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-								+ xc.getCellString(row, memCons.disabilityTypeColNum) + "\")")).click();
+						selectById("Disability Type", "top", "com.microware.cdfi:id/spin_disabilityType", row,
+								memCons.disabilityTypeColNum);
 						if (du.isElementPresent("new UiSelector().text(\"Guardian Name/ Care Taker\")",
 								"androidUIAutomatior")) {
-							mt.scrollToText("Guardian Name/ Care Taker", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_guardianName")
-									.sendKeys(xc.getCellString(row, memCons.guardianNameColNum));
-							mt.scrollToText("Guardian Name/ Care Taker in local", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_guardianNamelocal")
-									.sendKeys(xc.getCellString(row, memCons.guardianNameLocalColNum));
-							mt.scrollToText("Relation with Guardian", "top");
-							appdriver.findElementById("com.microware.cdfi:id/spin_relationGuardian").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, memCons.relationGuardianColNum) + "\")")).click();
+							enterValue_Id("Guardian Name/ Care Taker", "top", "com.microware.cdfi:id/et_guardianName",
+									row, memCons.guardianNameColNum, "211:||Validation Error||");
+							enterValue_Id("Guardian Name/ Care Taker in local", "top",
+									"com.microware.cdfi:id/et_guardianNamelocal", row, memCons.guardianNameLocalColNum,
+									"311:||Validation Error||");
+							selectById("Relation with Guardian", "top", "com.microware.cdfi:id/spin_relationGuardian",
+									row, memCons.relationGuardianColNum);
 						}
-						p = 1;
-						pass++;
-						System.out.println("011:Disability and Sub Parts");
 					}
-
+					pseq(id, "011:Disability and Sub Parts");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Disability and Sub Parts:011-------------Check Here////");
-					e.printStackTrace();
+					fseq(id, "011:Disability and Sub Parts", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -371,90 +269,48 @@ public class memberProfile extends lokosTest {
 										"new UiSelector().text(\"" + xc.getCellString(row, memCons.postColNum) + "\")"))
 								.click();
 					}
-					p = 1;
-					pass++;
-					System.out.println("012:Post/Designation");
+					pseq(id, "012:Post/Designation");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Post/Designation:012-------------Check Here////");
-					e.printStackTrace();
+					fseq(id, "012:Post/Designation", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 13:
 				try {
-					mt.scrollToText("Social Category", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_socialCategory").click();
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.socialCatColNum) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("013:Social Category");
-
+					selectById("Social Category", "top", "com.microware.cdfi:id/spin_socialCategory", row,
+							memCons.socialCatColNum);
+					pseq(id, "013:Social Category");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Social Category:013-------------Check Here////");
-
+					fseq(id, "013:Social Category", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 14:
 				try {
-					mt.scrollToText("Religion", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_religion").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.religionColNum) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("014:Religion");
-
+					selectById("Religion", "top", "com.microware.cdfi:id/spin_religion", row, memCons.religionColNum);
+					pseq(id, "014:Religion");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Religion:014-------------Check Here////");
-
+					fseq(id, "014:Religion", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 15:
 				try {
-					mt.scrollToText("Highest Education Level", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_education").click();
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.highEduLvlColNum) + "\")"))
-							.click();
-					p = 1;
+					selectById("Highest Education Level", "top", "com.microware.cdfi:id/spin_education", row,
+							memCons.highEduLvlColNum);
+					pseq(id, "015:Highest Education Level");
 					pass++;
 					System.out.println("015:Highest Education Level");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Highest Education Level:015-------------Check Here////");
+					fseq(id, "015:Highest Education Level", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -464,93 +320,47 @@ public class memberProfile extends lokosTest {
 					appdriver.findElement(MobileBy.AndroidUIAutomator(
 							"new UiSelector().text(\"" + xc.getCellString(row, memCons.insuranceColNum) + "\")"))
 							.click();
-					p = 1;
-					pass++;
-					System.out.println("051:Insurance");
-					testMem.log(Status.PASS, "051:Insurance");
+					pseq(id, "051:Insurance");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Insurance:051-------------Check Here////");
-					testMem.log(Status.FAIL, "051:Error in Insurance");
+					fseq(id, "051:Insurance", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
 				}
 				if (id != 000)
 					break;
 			case 16:
 				try {
-					mt.scrollToText("Primary Livelihood", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_occupation").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.primaryla) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("016:Primary Livelihood");
-
+					selectById("Primary Livelihood", "top", "com.microware.cdfi:id/spin_occupation", row,
+							memCons.primaryla);
+					pseq(id, "016:Primary Livelihood");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Primary Livelihood:016-------------Check Here////");
-
+					fseq(id, "016:Primary Livelihood", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 17:
 				try {
-					mt.scrollToText("Secondary Livelihood", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_secondaryoccu").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.secondaryla) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("017:Secondary Livelihood");
-
+					selectById("Secondary Livelihood", "top", "com.microware.cdfi:id/spin_secondaryoccu", row,
+							memCons.secondaryla);
+					pseq(id, "017:Secondary Livelihood");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Secondary Livelihood:017-------------Check Here////");
-
+					fseq(id, "017:Secondary Livelihood", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
 			case 18:
 				try {
-					mt.scrollToText("Tertiary Livelihood", "top");
-					appdriver.findElementById("com.microware.cdfi:id/spin_tertiaryoccu").click();
-					appdriver
-							.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, memCons.tertiaryla) + "\")"))
-							.click();
-					p = 1;
-					pass++;
-					System.out.println("016:Tertiary Livelihood");
+					selectById("Tertiary Livelihood", "top", "com.microware.cdfi:id/spin_tertiaryoccu", row,
+							memCons.tertiaryla);
+					pseq(id, "016:Tertiary Livelihood");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Tertiary Livelihood:018-------------Check Here////");
-
+					fseq(id, "016:Tertiary Livelihood", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -559,19 +369,11 @@ public class memberProfile extends lokosTest {
 					mt.scrollToText("Member Image", "top");
 					appdriver.findElementById("com.microware.cdfi:id/Imgmember").click();
 					cameraLogic.click();
-					p = 1;
-					pass++;
-					System.out.println("019:Image Upload");
+					pseq(id, "019:Image Upload");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Image Upload:019-------------Check Here////");
-
+					fseq(id, "019:Image Upload", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -580,19 +382,14 @@ public class memberProfile extends lokosTest {
 					mt.scrollToText("Consent Form Image", "top");
 					appdriver.findElementById("com.microware.cdfi:id/ImgmemberConsent").click();
 					cameraLogic.click();
+					pseq(id, "050:Consent Form Image Upload");
 					p = 1;
 					pass++;
 					System.out.println("050:Consent Form Image Upload");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Consent Form Image Upload:050-------------Check Here////");
-
+					fseq(id, "050:Consent Form Image Upload", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
 				if (id != 000)
 					break;
@@ -600,33 +397,30 @@ public class memberProfile extends lokosTest {
 
 				try {
 					if (!xc.getCellString(row, memCons.typeColNum).equalsIgnoreCase("New")) {
-						mt.scrollToText("Status", "top");
-						appdriver.findElementById("com.microware.cdfi:id/spin_status").click();
-						appdriver.findElement(MobileBy.AndroidUIAutomator(
-								"new UiSelector().text(\"" + xc.getCellString(row, memCons.statusColNum) + "\")"))
-								.click();
+						selectById("Status", "top", "com.microware.cdfi:id/spin_status", row, memCons.statusColNum);
 					}
-					p = 1;
-					pass++;
-					System.out.println("020:Status");
-
+					pseq(id, "020:Status");
 				} catch (Exception e) {
-					f = 1;
-					fail++;
-					System.out.println("Error in Status:020-------------Check Here////");
-
+					fseq(id, "020:Status", e);
 				} finally {
 					count++;
-					p = 0;
-					f = 0;
-
 				}
-
 				if (id != 000)
 					break;
 			default:
 				break;
 
+			}
+
+			if (invalid_flag) {
+				System.out.println("Error---->Atleast one field is incorrect");
+				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+				navigateBackToScreen("SHG");
+				fail++;
+				t = 1;
+				id = 9999;
 			}
 			if (neg_test_flag) {
 
@@ -656,9 +450,8 @@ public class memberProfile extends lokosTest {
 					} catch (NullPointerException np) {
 						System.out.println("---->>Expected Errors is empty.");
 					}
-
 					util.randomPressLogic.press(0.5, 0.05);
-					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/IvVector", "id", "bottom");
+					mt.scrollToText("Name (Including Surname)", "bottom");
 					t = 1;
 					id = 9999;
 				}
@@ -681,6 +474,7 @@ public class memberProfile extends lokosTest {
 				util.randomPressLogic.press(0.5, 0.05);
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+				navigateBackToScreen("SHG");
 				fail++;
 				t = 1;
 				id = 9999;
@@ -694,6 +488,7 @@ public class memberProfile extends lokosTest {
 					switch (id) {
 					case 000:
 					case 21:
+						invalid_flag = false;
 						try {
 							appdriver.findElementById("com.microware.cdfi:id/IvPhone").click();
 							String[] phnos = xc.getCellString(row, memCons.phoneNosColNum).split(";");
@@ -701,6 +496,8 @@ public class memberProfile extends lokosTest {
 								appdriver.findElementById("com.microware.cdfi:id/addphone").click();
 								String[] s = phnos[i].split(":");
 								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys(s[1].trim());
+								validCheckLongNum("com.microware.cdfi:id/et_phoneno", "id", s[1].trim(),
+										"021:||Validation Error||");
 								appdriver.findElementById("com.microware.cdfi:id/spin_ownership").click();
 								appdriver
 										.findElement(MobileBy
@@ -732,28 +529,24 @@ public class memberProfile extends lokosTest {
 										}
 									}
 									throw new Exception(ex);
-								}
-								p = 1;
-								pass++;
-								System.out.println("021:Phone Number");
+								}	
+								System.out.println("021:Phone Number:"+s[1].trim());
+								testMem.log(Status.INFO, "Phone number:"+s[1].trim());
 							}
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
+							pseq(id, "021:Phone Number");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							System.out.println("Error in Phone Number:021-------------Check Here////");
-							e.printStackTrace();
-
+							fseq(id, "021:Phone Number", e);
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 
 					case 22:
+						invalid_flag = false;
 						try {
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/Ivloc").click();
@@ -765,14 +558,12 @@ public class memberProfile extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
 									"new UiSelector().text(\"" + xc.getCellString(row, memCons.addLocColNum) + "\")"))
 									.click();
-							mt.scrollToText("Address Line 1", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_address1")
-									.sendKeys(xc.getCellString(row, memCons.add1ColNum));
-							mt.scrollToText("Address Line 2", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_address2")
-									.sendKeys(xc.getCellString(row, memCons.add2ColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_pincode")
-									.sendKeys(xc.getCellDoubleValue(row, memCons.pinColNum) + "");
+							enterString_Id("Address Line 1", "top", "com.microware.cdfi:id/et_address1", row,
+									memCons.add1ColNum, "222:||Validation Error");
+							enterString_Id("Address Line 2", "top", "com.microware.cdfi:id/et_address2", row,
+									memCons.add2ColNum, "322:||Validation Error");
+							enterValue_Id("Pincode", "top", "com.microware.cdfi:id/et_pincode", row, memCons.pinColNum,
+									"422:||Validation Error");
 							appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
 							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 									.equals("Data Updated Successfully")
@@ -800,33 +591,28 @@ public class memberProfile extends lokosTest {
 								}
 								throw new Exception(ex);
 							}
-							p = 1;
-							pass++;
-							System.out.println("022:Address");
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
+							pseq(id, "022:Address");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							System.out.println("Error in Address:022-------------Check Here////");
-							e.printStackTrace();
-
+							fseq(id, "022:Address", e);
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 					case 23:
+						invalid_flag = false;
 						try {
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
 							appdriver.findElementById("com.microware.cdfi:id/addBank").click();
-							appdriver.findElementById("com.microware.cdfi:id/et_nameinbankpassbook")
-									.sendKeys(xc.getCellString(row, memCons.passNameColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_ifsc")
-									.sendKeys(xc.getCellString(row, memCons.IFSCColNum));
+							enterString_Id("Name in Bank Passbook", "top",
+									"com.microware.cdfi:id/et_nameinbankpassbook", row, memCons.passNameColNum,
+									"023:||Validation Error");
+							enterString_Id("IFSC Code", "top", "com.microware.cdfi:id/et_ifsc", row, memCons.IFSCColNum,
+									"123:||Validation Error||");
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
 							Thread.sleep(1000);
@@ -851,12 +637,10 @@ public class memberProfile extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							mt.scrollToText("Account number", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_Accountno")
-									.sendKeys(xc.getCellString(row, memCons.accNoColNum).substring(1));
-							mt.scrollToText("Re-Type Account No.", "top");
-							appdriver.findElementById("com.microware.cdfi:id/et_retype_Accountno")
-									.sendKeys(xc.getCellString(row, memCons.retypAccNoColNum).substring(1));
+							enterLongNum_Id("Account number", "top", "com.microware.cdfi:id/et_Accountno", row,
+									memCons.accNoColNum, "423:||Validation Error");
+							enterLongNum_Id("Re-Type Account No.", "top", "com.microware.cdfi:id/et_retype_Accountno",
+									row, memCons.retypAccNoColNum, "523:||Validation Error");
 							String date = xc.getCellString(row, memCons.accOpDateColNum);
 							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
 							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
@@ -922,29 +706,22 @@ public class memberProfile extends lokosTest {
 							} catch (Exception e) {
 
 							}
-
-							p = 1;
-							pass++;
-							System.out.println("023:Bank Account");
-
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
+							pseq(id, "023:Bank Account");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
 							if (!xc.getCellString(row, memCons.typeColNum).equals("New")) {
 								appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
 							}
-							System.out.println("Error in Bank Account:023-------------Check Here////");
-							e.printStackTrace();
-
+							fseq(id, "023:Bank Account", e);
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
 							Thread.sleep(3000);
 						}
 						if (id != 000)
 							break;
 					case 24:
+						invalid_flag = false;
 						try {
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/lay_kyc").click();
@@ -953,8 +730,8 @@ public class memberProfile extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
 									"new UiSelector().text(\"" + xc.getCellString(row, memCons.docTypeColNum) + "\")"))
 									.click();
-							appdriver.findElementById("com.microware.cdfi:id/et_kycno")
-									.sendKeys(xc.getCellString(row, memCons.docIDColNum).substring(1));
+							enterLongNum_Id("KYC ID", "top", "com.microware.cdfi:id/et_kycno", row, memCons.docIDColNum,
+									"124:||Validation Error||");
 							appdriver.findElementById("com.microware.cdfi:id/IvFrntUpload").click();
 							cameraLogic.click();
 							appdriver.findElementById("com.microware.cdfi:id/IvrearUpload").click();
@@ -986,24 +763,19 @@ public class memberProfile extends lokosTest {
 								}
 								throw new Exception(ex);
 							}
-							p = 1;
-							pass++;
-							System.out.println("024:KYC");
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
+							pseq(id, "024:KYC");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							System.out.println("Error in KYC:024-------------Check Here////");
-							e.printStackTrace();
+							fseq(id, "024:KYC", e);
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 					case 25:
+						invalid_flag = false;
 						try {
 							throw new Exception("Document cannot be updated before submission");
 //				appdriver.findElementById("com.microware.cdfi:id/lay_systemTag").click();
@@ -1026,16 +798,14 @@ public class memberProfile extends lokosTest {
 							fail++;
 //							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
 							System.out.println("Error in ID:025-------------Check Here////");
-							System.out.println("Error:"+e.getMessage());
+							System.out.println("Error:" + e.getMessage());
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 					case 26:
+						invalid_flag = false;
 						try {
 							appdriver.findElementById("com.microware.cdfi:id/lay_Cader").click();
 							appdriver.findElementById("com.microware.cdfi:id/addCader").click();
@@ -1083,25 +853,19 @@ public class memberProfile extends lokosTest {
 								}
 								throw new Exception(ex);
 							}
-							p = 1;
-							pass++;
-							System.out.println("026:Cadre");
-
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
+							pseq(id, "026:Cadre");
 						} catch (Exception e) {
-							f = 1;
-							fail++;
 							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-							System.out.println("Error in Cadre:026----------------Check Here////");
-							e.printStackTrace();
+							fseq(id, "026:Cadre", e);
 						} finally {
 							count++;
-							p = 0;
-							f = 0;
-
 						}
 						if (id != 000)
 							break;
 					case 27:
+						invalid_flag = false;
 						if (xc.getCellString(row, memCons.insuranceColNum).equals("Yes")) {
 							try {
 								Thread.sleep(1000);
@@ -1140,19 +904,12 @@ public class memberProfile extends lokosTest {
 									}
 									throw new Exception(ex);
 								}
-
-								p = 1;
-								pass++;
-								System.out.println("027:Insurance");
-								testMem.log(Status.PASS, "027:Insurance");
-
+								if (invalid_flag)
+									throw new Exception("Validation Failed");
+								pseq(id, "027:Insurance");
 							} catch (Exception e) {
-								f = 1;
-								fail++;
 								appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-								testMem.log(Status.FAIL, "027:Insurance");
-								System.out.println("Error in Insurance:027----------------Check Here////");
-								e.printStackTrace();
+								fseq(id, "027:Insurance", e);
 							} finally {
 								count++;
 								p = 0;
@@ -1180,21 +937,12 @@ public class memberProfile extends lokosTest {
 		}
 		try {
 			appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-			
+
 		} catch (Exception e) {
 			System.out.println("Error: com.microware.cdfi:id/ivBack");
 		}
-		
-		
 
-		try {
-			if (!appdriver.findElementById("om.microware.cdfi:id/tv_title").getText().equalsIgnoreCase("SHG"))
-				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-//				appdriver.findElementById("com.microware.cdfi:id/icBack").click();
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			System.out.println("Error: AndroidKey.BACK");
-		}
+		navigateBackToScreen("SHG");
 
 		if (neg_test_flag)
 			pass = neg_test_count;
@@ -1203,7 +951,7 @@ public class memberProfile extends lokosTest {
 		return val;
 
 	}
-	
+
 	public static void enterValue_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
@@ -1219,6 +967,7 @@ public class memberProfile extends lokosTest {
 		if (f == 1)
 			invalid_flag = true;
 	}
+
 	public static void enterDouble_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
@@ -1251,32 +1000,77 @@ public class memberProfile extends lokosTest {
 			invalid_flag = true;
 	}
 
-	public static void select(String title, String dir, String loc, int row, int cons) {
+	public static void selectById(String title, String dir, String loc, int row, int cons) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).click();
+		appdriver
+				.findElement(
+						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+				.click();
+	}
+
+	public static void selectByXpath(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementByXPath(loc).click();
-		appdriver.findElement(
-				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")")).click();
+		appdriver
+				.findElement(
+						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+				.click();
+	}
+
+	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
+		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err);
+		if (f == 1)
+			invalid_flag = true;
+	}
+
+	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text) {
+		if (locStrat.equalsIgnoreCase("xpath")) {
+			if (!("#" + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
+				System.out.println(text);
+				testMem.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		} else if (locStrat.equalsIgnoreCase("id")) {
+			if (!("#" + appdriver.findElementById(loc).getText()).equals(field_txt)) {
+				System.out.println(text);
+				testMem.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
+			if (!("#" + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
+				System.out.println(text);
+				testMem.log(Status.INFO, text);
+				++neg_test_count;
+				return 1;
+			}
+		}
+		return 0;
 	}
 
 	public static int validCheckString(String loc, String locStrat, String field_txt, String text) {
 		if (locStrat.equalsIgnoreCase("xpath")) {
 			if (!appdriver.findElementByXPath(loc).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testMem.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("id")) {
 			if (!appdriver.findElementById(loc).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testMem.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
 			if (!appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().equals(field_txt)) {
 				System.out.println(text);
-				testMeet.log(Status.INFO, text);
+				testMem.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
@@ -1293,8 +1087,8 @@ public class memberProfile extends lokosTest {
 			return 0;
 		else {
 			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-			testMeet.log(Status.FAIL, "ex");
-			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
+			testMem.log(Status.FAIL, "ex");
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMem);
 			System.out.println("Error: " + ex);
 			if (neg_test_flag) {
 				try {
@@ -1307,11 +1101,11 @@ public class memberProfile extends lokosTest {
 						++neg_test_count;
 					} else {
 						System.out.println("   (((Negetive Test Failed)))\n");
-						testMeet.log(Status.INFO, "Negetive Test Failed");
+						testMem.log(Status.INFO, "Negetive Test Failed");
 					}
 				} catch (NullPointerException np) {
 					System.out.println("---->>Expected Errors is empty.");
-					testMeet.log(Status.INFO, "Expected Errors is empty.");
+					testMem.log(Status.INFO, "Expected Errors is empty.");
 				}
 			}
 			return 1;
@@ -1322,17 +1116,17 @@ public class memberProfile extends lokosTest {
 	public static void navigateBackToScreen(String screen_title) throws Exception {
 		int i = 0;
 		String title = "";
-		while(i<3) {
-		try {
-			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
-		} catch (Exception e) {
-			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-			i++;
+		while (i < 3) {
+			try {
+				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+			} catch (Exception e) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				i++;
+			}
+			break;
 		}
-		break;
-		}
-		
-		i=0;
+
+		i = 0;
 		try {
 			while (!title.equals(screen_title)) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
@@ -1343,6 +1137,27 @@ public class memberProfile extends lokosTest {
 		} catch (Exception e) {
 			throw new Exception("Cannot navigate to " + screen_title + " screen");
 		}
+	}
+
+	public static void pseq(int id, String msg) {
+		pass++;
+		mem_check[1][id] = 1;
+		if (neg_test_flag)
+			testMem.log(Status.FAIL, msg);
+		else
+			testMem.log(Status.PASS, msg);
+		System.out.println(msg);
+	}
+
+	public static void fseq(int id, String msg, Exception e) {
+		fail++;
+		mem_check[1][id] = -1;
+		if (!neg_test_flag)
+			testMem.log(Status.FAIL, msg);
+		else
+			testMem.log(Status.PASS, msg);
+		System.out.println("Error in " + msg + "----------------------Check Here////");
+		e.printStackTrace();
 	}
 
 }
