@@ -933,13 +933,7 @@ public class memberProfile extends lokosTest {
 				appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
 			Thread.sleep(1000);
 		} catch (Exception e) {
-
-		}
-		try {
-			appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-
-		} catch (Exception e) {
-			System.out.println("Error: com.microware.cdfi:id/ivBack");
+			
 		}
 
 		navigateBackToScreen("SHG");
