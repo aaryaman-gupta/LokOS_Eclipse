@@ -49,8 +49,10 @@ public class memberProfile extends lokosTest {
 		int id = 000;
 		int t = 0;// flag for back button
 		boolean neg_test_flag = false;
-		int neg_test_count = 0;
+		neg_test_count = 0;
 		invalid_flag = false;
+		pass=0;
+		fail=0;
 
 		int k = 0;
 		if (Integer.valueOf(idList[0]) != 0) {
@@ -219,9 +221,6 @@ public class memberProfile extends lokosTest {
 							"new UiSelector().text(\"" + xc.getCellString(row, memCons.familyHeadColNum) + "\")"))
 							.click();
 					pseq(id, "010:Is member head of the family?");
-					pass++;
-					System.out.println("010:Is member head of the family?");
-
 				} catch (Exception e) {
 					fseq(id, "010:Is member head of the family?", e);
 				} finally {
@@ -242,9 +241,9 @@ public class memberProfile extends lokosTest {
 								memCons.disabilityTypeColNum);
 						if (du.isElementPresent("new UiSelector().text(\"Guardian Name/ Care Taker\")",
 								"androidUIAutomatior")) {
-							enterValue_Id("Guardian Name/ Care Taker", "top", "com.microware.cdfi:id/et_guardianName",
+							enterString_Id("Guardian Name/ Care Taker", "top", "com.microware.cdfi:id/et_guardianName",
 									row, memCons.guardianNameColNum, "211:||Validation Error||");
-							enterValue_Id("Guardian Name/ Care Taker in local", "top",
+							enterString_Id("Guardian Name/ Care Taker in local", "top",
 									"com.microware.cdfi:id/et_guardianNamelocal", row, memCons.guardianNameLocalColNum,
 									"311:||Validation Error||");
 							selectById("Relation with Guardian", "top", "com.microware.cdfi:id/spin_relationGuardian",
@@ -415,15 +414,15 @@ public class memberProfile extends lokosTest {
 			if (invalid_flag) {
 				System.out.println("Error---->Atleast one field is incorrect");
 				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				testMem.log(Status.INFO,"Error---->Atleast one field is incorrect");
+				testMem.log(Status.INFO,"Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 				navigateBackToScreen("SHG");
-				fail++;
 				t = 1;
 				id = 9999;
 			}
 			if (neg_test_flag) {
-
 				appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 						.equals("Data saved successfully")
@@ -434,6 +433,7 @@ public class memberProfile extends lokosTest {
 				} else {
 					String err = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 					System.out.println("Error---->" + err);
+					testMem.log(Status.INFO, "Error---->" + err);
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 					System.out.println("Error---->Data not saved: Cannot Proceed(Resume next text case)");
 					try {
@@ -465,15 +465,21 @@ public class memberProfile extends lokosTest {
 					|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 							.equals("Data Updated Successfully")) {
 				appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+				testMem.log(Status.INFO, "Necessary fields for saving SHG filled.");
 				System.out.println("Necessary fields for saving SHG filled.");
 			} else {
-				System.out.println("Error---->" + appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText());
+				String err = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+				testMem.log(Status.FAIL, "Error---->" + err);
+				System.out.println("Error---->" + err);
 				appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+				testMem.log(Status.INFO, "Atleast one field is incorrect");
 				System.out.println("Error---->Atleast one field is incorrect");
-				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				testMem.log(Status.INFO, "Data not saved: Cannot Proceed(Correct the Errors first)");
+				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");				
 				util.randomPressLogic.press(0.5, 0.05);
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+				ExtentManager.addScreenShotsToTest("Member Fail Back", testMem);
 				navigateBackToScreen("SHG");
 				fail++;
 				t = 1;
@@ -497,7 +503,7 @@ public class memberProfile extends lokosTest {
 								String[] s = phnos[i].split(":");
 								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys(s[1].trim());
 								validCheckLongNum("com.microware.cdfi:id/et_phoneno", "id", s[1].trim(),
-										"021:||Validation Error||");
+										"021:||Validation Error||","");
 								appdriver.findElementById("com.microware.cdfi:id/spin_ownership").click();
 								appdriver
 										.findElement(MobileBy
@@ -638,9 +644,9 @@ public class memberProfile extends lokosTest {
 
 							}
 							enterLongNum_Id("Account number", "top", "com.microware.cdfi:id/et_Accountno", row,
-									memCons.accNoColNum, "423:||Validation Error");
+									memCons.accNoColNum, "423:||Validation Error","#");
 							enterLongNum_Id("Re-Type Account No.", "top", "com.microware.cdfi:id/et_retype_Accountno",
-									row, memCons.retypAccNoColNum, "523:||Validation Error");
+									row, memCons.retypAccNoColNum, "523:||Validation Error","#");
 							String date = xc.getCellString(row, memCons.accOpDateColNum);
 							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
 							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
@@ -731,7 +737,7 @@ public class memberProfile extends lokosTest {
 									"new UiSelector().text(\"" + xc.getCellString(row, memCons.docTypeColNum) + "\")"))
 									.click();
 							enterLongNum_Id("KYC ID", "top", "com.microware.cdfi:id/et_kycno", row, memCons.docIDColNum,
-									"124:||Validation Error||");
+									"124:||Validation Error||","#");
 							appdriver.findElementById("com.microware.cdfi:id/IvFrntUpload").click();
 							cameraLogic.click();
 							appdriver.findElementById("com.microware.cdfi:id/IvrearUpload").click();
@@ -794,8 +800,8 @@ public class memberProfile extends lokosTest {
 //				System.out.println("025:Other ID");
 
 						} catch (Exception e) {
-							f = 1;
-							fail++;
+//							f = 1;
+//							fail++;
 //							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
 							System.out.println("Error in ID:025-------------Check Here////");
 							System.out.println("Error:" + e.getMessage());
@@ -927,15 +933,6 @@ public class memberProfile extends lokosTest {
 			}
 		}
 
-		Thread.sleep(1000);
-		try {
-			if (t == 0)
-				appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-			Thread.sleep(1000);
-		} catch (Exception e) {
-			
-		}
-
 		navigateBackToScreen("SHG");
 
 		if (neg_test_flag)
@@ -1012,31 +1009,31 @@ public class memberProfile extends lokosTest {
 				.click();
 	}
 
-	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err) {
+	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err, String prefix) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
-		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err);
+		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons).substring(1));
+		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err,prefix);
 		if (f == 1)
 			invalid_flag = true;
 	}
 
-	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text) {
+	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text,String prefix) {
 		if (locStrat.equalsIgnoreCase("xpath")) {
-			if (!("#" + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testMem.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("id")) {
-			if (!("#" + appdriver.findElementById(loc).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElementById(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testMem.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
-			if (!("#" + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testMem.log(Status.INFO, text);
 				++neg_test_count;

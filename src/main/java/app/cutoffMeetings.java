@@ -1,8 +1,11 @@
 package app;
 
+import java.util.concurrent.TimeUnit;
+
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
+import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
@@ -138,7 +141,11 @@ public class cutoffMeetings extends lokosTest {
 			case 1:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
+					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText")
+							.clear();
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.attendenceColNum) + "");
@@ -149,16 +156,44 @@ public class cutoffMeetings extends lokosTest {
 					if (f == 1) {
 						throw new Exception("Validation Failed");
 					}
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.attendenceColNum) + "");
+					
+					try {
+					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText");					
+					while(true) {
+						int k=0;
+						for(k=1;k<table.size();k++) {							
+							appdriver
+							.findElementByXPath("//android.widget.LinearLayout[" + k
+									+ "]/android.widget.LinearLayout/android.widget.EditText").clear();
+							appdriver
+							.findElementByXPath("//android.widget.LinearLayout[" + k
+									+ "]/android.widget.LinearLayout/android.widget.EditText")
+							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.Attendence_1) + "");
+						}
+						if(appdriver.findElementByXPath("/android.widget.LinearLayout[" + (k-1)
+								+ "]/android.widget.LinearLayout/android.widget.TextView[1]").getText().equals(memNum+""))
+						break;
+						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-2)
+									+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
+						if(appdriver.findElementByXPath("//android.widget.LinearLayout[" + (k-1)
+									+ "]/android.widget.LinearLayout/android.widget.EditText").getText().equals(memNum+""))
+							break;
 					}
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+
+//					for (int j = 2; j <= memNum; j++) {
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
+//						appdriver
+//						.findElementByXPath("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText").clear();
+//						appdriver
+//								.findElementByXPath("//android.widget.LinearLayout[" + j
+//										+ "]/android.widget.LinearLayout/android.widget.EditText")
+//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.attendenceColNum) + "");
+//					}
 
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 
@@ -176,6 +211,7 @@ public class cutoffMeetings extends lokosTest {
 						testMeet.log(Status.PASS, "001:Attendence");
 					System.out.println("001:Attendence");
 				} catch (Exception e) {
+					e.printStackTrace();
 					fail++;
 					cutoff_check[1][id] = -1;
 					if (!neg_test_flag)
@@ -210,16 +246,37 @@ public class cutoffMeetings extends lokosTest {
 					if (f == 1) {
 						throw new Exception("002:||Validation Failed||");
 					}
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+					
+					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText[1]");
+					
+					while(true) {
+						if(!appdriver
+						.findElementByXPath("//android.widget.LinearLayout[" + 2
+								+ "]/android.widget.LinearLayout/android.widget.EditText[1]").getText().equals("0"))
+							break;						
+						int k=0;
+						for(k=1;k<table.size();k++) {							
+							appdriver
+							.findElementByXPath("//android.widget.LinearLayout[" + k
+									+ "]/android.widget.LinearLayout/android.widget.EditText[1]").clear();
+							appdriver
+							.findElementByXPath("//android.widget.LinearLayout[" + k
+									+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
+							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+						}
+						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
+									+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
 					}
+					
+//					for (int j = 2; j <= memNum; j++) {
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
+//
+//						appdriver
+//								.findElementByXPath("//android.widget.LinearLayout[" + j
+//										+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
+//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+//					}
 
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 					f = validOnSave("", row);
@@ -424,7 +481,7 @@ public class cutoffMeetings extends lokosTest {
 						 * enterValue_Id( "",//title "top",//scroll direction "", //location row, //row
 						 * cutoffCons,//column number ":||Validation Error||");//Error Message
 						 */
-						select("Fund Source", // title
+						selectById("Fund Source", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_loan_type", // location
 								row, // row
@@ -441,6 +498,8 @@ public class cutoffMeetings extends lokosTest {
 								row, // row
 								cutoffCons.PrincipalRepaid_206, // column number
 								"306:||Validation Error||");// Error Message
+						mt.scrollToText("Principal Outstanding (including Arrears)", "top");
+						appdriver.findElementById("com.microware.cdfi:id/et_amount").clear();
 						enterValue_Id("Principal Outstanding (including Arrears)", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/et_amount", // location
@@ -471,6 +530,8 @@ public class cutoffMeetings extends lokosTest {
 								row, // row
 								cutoffCons.OverdueInterest_706, // column number
 								"706:||Validation Error||");// Error Message
+						mt.scrollToText("Total Overdue", "top");
+						appdriver.findElementById("com.microware.cdfi:id/et_overdue").clear();
 						enterValue_Id("Total Overdue", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/et_overdue", // location
@@ -480,7 +541,7 @@ public class cutoffMeetings extends lokosTest {
 						mt.scrollToText("Loan Disbursement Date", "top");
 						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDateDisbursement_906),
 								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
+						selectById("Mode of Receipt", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/tv_mode_of_payment", // location
 								row, // row
@@ -491,12 +552,12 @@ public class cutoffMeetings extends lokosTest {
 								row, // row
 								cutoffCons.PeriodMonths_1106, // column number
 								"1106:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
+						selectById("Loan Repayment Frequency", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_frequency", // location
 								row, // row
 								cutoffCons.LoanRepaymentFrequency_1206);// column number
-						select("Purpose", // title
+						selectById("Purpose", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_purpose", // location
 								row, // row
@@ -554,7 +615,7 @@ public class cutoffMeetings extends lokosTest {
 						 * enterValue_Id( "",//title "top",//scroll direction "", //location row, //row
 						 * cutoffCons,//column number ":||Validation Error||");//Error Message
 						 */
-						select("Fund Source", // title
+						selectById("Fund Source", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_loan_type", // location
 								row, // row
@@ -610,7 +671,7 @@ public class cutoffMeetings extends lokosTest {
 						mt.scrollToText("Loan Disbursement Date", "top");
 						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDateDisbursement_907),
 								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
+						selectById("Mode of Receipt", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/tv_mode_of_payment", // location
 								row, // row
@@ -621,12 +682,12 @@ public class cutoffMeetings extends lokosTest {
 								row, // row
 								cutoffCons.PeriodMonths_1107, // column number
 								"1107:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
+						selectById("Loan Repayment Frequency", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_frequency", // location
 								row, // row
 								cutoffCons.LoanRepaymentFrequency_1207);// column number
-						select("Purpose", // title
+						selectById("Purpose", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_purpose", // location
 								row, // row
@@ -684,7 +745,7 @@ public class cutoffMeetings extends lokosTest {
 						 * enterValue_Id( "", //title "top", //scroll direction "", //location row,//row
 						 * cutoffCons,//column number ":||Validation Error||");//Error Message
 						 */
-						select("Fund Source", // title
+						selectById("Fund Source", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_loan_type", // location
 								row, // row
@@ -740,7 +801,7 @@ public class cutoffMeetings extends lokosTest {
 						mt.scrollToText("Loan Disbursement Date", "top");
 						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDate_908),
 								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
+						selectById("Mode of Receipt", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/tv_mode_of_payment", // location
 								row, // row
@@ -751,12 +812,12 @@ public class cutoffMeetings extends lokosTest {
 								row, // row
 								cutoffCons.PeriodMonths_1108, // column number
 								"1108:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
+						selectById("Loan Repayment Frequency", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_frequency", // location
 								row, // row
 								cutoffCons.LoanRepaymentFrequency_1208);// column number
-						select("Purpose", // title
+						selectById("Purpose", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_purpose", // location
 								row, // row
@@ -919,12 +980,12 @@ public class cutoffMeetings extends lokosTest {
 					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
 					 * cutoffCons,//column number ":||Validation Error||");//Error Message
 					 */
-					select("Investment at", // title
+					selectById("Investment at", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_source", // location
 							row, // row
 							cutoffCons.InvestmentAtGroup_11); // column number
-					select("Type of Saving", // title
+					selectById("Type of Saving", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_saving_type", // location
 							row, // row
@@ -979,7 +1040,7 @@ public class cutoffMeetings extends lokosTest {
 					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
 					 * cutoffCons,//column number ":||Validation Error||");//Error Message
 					 */
-					select("Institution", // title
+					selectById("Institution", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_loan_source", // location
 							row, // row
@@ -990,7 +1051,7 @@ public class cutoffMeetings extends lokosTest {
 							row, // row
 							cutoffCons.BorrowedFrom_112, // column number
 							"112:||Validation Error||");// Error Message
-					select("Fund Source", // title
+					selectById("Fund Source", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_fund_type", // location
 							row, // row
@@ -1045,7 +1106,7 @@ public class cutoffMeetings extends lokosTest {
 					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
 					 * cutoffCons,//column number ":||Validation Error||");//Error Message
 					 */
-					select("Institution", // title
+					selectById("Institution", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_loan_source", // location
 							row, // row
@@ -1058,12 +1119,12 @@ public class cutoffMeetings extends lokosTest {
 							"112:||Validation Error||");// Error Message
 					if (xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("VO")
 							|| xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("CLF"))
-						select("Fund Source", // title
+						selectById("Fund Source", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_fund_type", // location
 								row, // row
 								cutoffCons.FundSource_212); // column number
-					select("Type of Loan", // title
+					selectById("Type of Loan", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_type_loan", // location
 							row, // row
@@ -1071,13 +1132,13 @@ public class cutoffMeetings extends lokosTest {
 					mt.scrollToText("Loan Disbursement Date", "top");
 					dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDate_513),
 							"com.microware.cdfi:id/et_loanDisbursmentDate");
-					select("Mode of Receipt", // title
+					selectById("Mode of Receipt", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_mode_of_payment", // location
 							row, // row
 							cutoffCons.ModeofReceipt_813); // column number
 					if (xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("Bank")) {
-						select("Name of the Bank", // title
+						selectById("Name of the Bank", // title
 								"top", // scroll direction
 								"com.microware.cdfi:id/spin_bankname", // location
 								row, // row
@@ -1140,7 +1201,7 @@ public class cutoffMeetings extends lokosTest {
 							row, // row
 							cutoffCons.InterestArrears_1613, // column number
 							"1613:||Validation Error||");// Error Message
-					select("Repayment Frequency", // title
+					selectById("Repayment Frequency", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/tv_repayment_frequency", // location
 							row, // row
@@ -1191,17 +1252,17 @@ public class cutoffMeetings extends lokosTest {
 					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
 					 * cutoffCons,//column number ":||Validation Error||");//Error Message
 					 */
-					select("Source", // title
+					selectById("Source", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_received_from", // location
 							row, // row
 							cutoffCons.SourceFundReceived_14); // column number
-					select("Fund Source", // title
+					selectById("Fund Source", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_receipt", // location
 							row, // row
 							cutoffCons.FundSource_114); // column number
-					select("Mode of Receipt", // title
+					selectById("Mode of Receipt", // title
 							"top", // scroll direction
 							"com.microware.cdfi:id/spin_mode_of_payment", // location
 							row, // row
@@ -1443,9 +1504,9 @@ public class cutoffMeetings extends lokosTest {
 			invalid_flag = true;
 	}
 
-	public static void select(String title, String dir, String loc, int row, int cons) {
+	public static void selectById(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).click();
+		appdriver.findElementById(loc).click();
 		appdriver.findElement(
 				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")")).click();
 	}
@@ -1528,11 +1589,13 @@ public class cutoffMeetings extends lokosTest {
 		try {
 			while (!title.equals(screen_title)) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
 					break;
 				i++;
 			}
 		} catch (Exception e) {
+			ExtentManager.addScreenShotsToTest("Navigate Back to Screen", testMem);
+			e.printStackTrace();
 			throw new Exception("Cannot navigate to " + screen_title + " screen");
 		}
 	}

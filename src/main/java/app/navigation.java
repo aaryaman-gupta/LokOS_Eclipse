@@ -11,7 +11,7 @@ public class navigation extends lokosTest {
 	public static void shgButton() throws InterruptedException {
 		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/tbl_shg").click();
-		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		Thread.sleep(2000);
 	}
 
 	public static void navToVillage(int row) throws InterruptedException {

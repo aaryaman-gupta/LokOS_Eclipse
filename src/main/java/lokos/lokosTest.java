@@ -128,7 +128,7 @@ public class lokosTest {
 						System.out.println("________________________");
 					}
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update Member")) {
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update Member")) {
 
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
@@ -166,7 +166,7 @@ public class lokosTest {
 					System.out.println("________________________");
 
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New SHG")) {
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("New SHG")) {
 
 					navigation.navToVillage(r);
 					navigation.newSHG();
@@ -191,7 +191,7 @@ public class lokosTest {
 					System.out.println("________________________");
 
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update SHG")) {
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Update SHG")) {
 
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
@@ -220,7 +220,7 @@ public class lokosTest {
 					System.out.println("________________________");
 
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")) {
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")) {
 
 					boolean webProcess_flag = true;
 					try {
@@ -291,13 +291,14 @@ public class lokosTest {
 					app.loginTest.sync();
 					test.log(Status.PASS, "Login and Sync Complete");
 					System.out.println("Login and Sync Complete");
+					Thread.sleep(2000);
 					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
 					navigation.shgButton();
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {
-
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {					
+					testSHG=test.createNode("Status Check");
 					++shg_row_counter;
-					test.log(Status.INFO, "Starting status process...");
+					testSHG.log(Status.INFO, "Starting status process...");
 					System.out.println("\nStarting status process...");
 					appdriver.findElementById("com.microware.cdfi:id/icBack").click();
 					Thread.sleep(1000);
@@ -308,17 +309,17 @@ public class lokosTest {
 					System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 					appdriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 					String s = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-					test.log(Status.PASS, "Status: " + s);
+					testSHG.log(Status.PASS, "Status: " + s);
 					System.out.println("Status: " + s);
 					ExtentManager.addScreenShotsToTest("Status "+r, test);
 					appdriver.findElementById(loginConstants.alertOK2).click();
 					appdriver.findElementById(loginConstants.syncHome).click();
 					System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-					test.log(Status.INFO, "...status record processed.");
+					testSHG.log(Status.INFO, "...status record processed.");
 					System.out.println("...status record processed.\n");
 					navigation.shgButton();
 				}
-				if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("SHG Meetings")) {
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("SHG Meetings")) {
 
 					appdriver.findElementById("com.microware.cdfi:id/icBack").click();
 					Thread.sleep(1000);
@@ -354,18 +355,19 @@ public class lokosTest {
 				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
 				test.log(Status.INFO,"Flow " + r + " failed in between" );
 				System.out.println("Flow " + r + " failed in between");
-				test.log(Status.INFO, "Restarting App");
-				appdriver.quit();
-				app.launchLokOS.launchLokos();
-				test.log(Status.PASS, "Lokos Successfully Launched");
-				System.out.println("Lokos Successfully Launched");
-				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
-				test.log(Status.PASS, "Login and Sync Complete");
-				System.out.println("Login and Sync Complete");
-				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
-				navigation.shgButton();
-				test.log(Status.INFO, "Continuing next Flow");
+//				test.log(Status.INFO, "Restarting App");
+//				appdriver.quit();
+//				app.launchLokOS.launchLokos();
+//				test.log(Status.PASS, "Lokos Successfully Launched");
+//				System.out.println("Lokos Successfully Launched");
+//				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+//				test.log(Status.PASS, "Login and Sync Complete");
+//				System.out.println("Login and Sync Complete");
+//				Thread.sleep(2000);
+//				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+//				navigation.shgButton();
+//				test.log(Status.INFO, "Continuing next Flow");
 				e.printStackTrace();
 			}
 			Thread.sleep(2000);

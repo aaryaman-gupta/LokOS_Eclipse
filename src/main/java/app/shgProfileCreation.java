@@ -36,6 +36,17 @@ public class shgProfileCreation extends lokosTest {
 			String[] typeList = xc.getCellString(row, profileCons.flowTypeColNum).split(" ");
 			idList = typeList[0].split(",");
 		}
+		int k = 0;
+		if (Integer.valueOf(idList[0]) != 0) {
+			for (@SuppressWarnings("unused") String s : idList) {
+				shg_check[0][Integer.valueOf(idList[k])] = Integer.valueOf(idList[k]);
+				++k;
+			}
+		} else {
+			for (int j = 0; j < shg_check[0].length; j++) {
+				shg_check[0][j] = j;
+			}
+		}
 
 		int[] val = null;
 		if ((int) xc.getCellDoubleValue(row, profileCons.numMemAddColNum) == 0)
@@ -60,20 +71,11 @@ public class shgProfileCreation extends lokosTest {
 		int t = 0;// flag for back button
 		int sig = 0;// count for signatory
 		boolean neg_test_flag = false;
-		int neg_test_count = 0;
+		neg_test_count = 0;
 		invalid_flag = false;
-
-		int k = 0;
-		if (Integer.valueOf(idList[0]) != 0) {
-			for (String s : idList) {
-				shg_check[0][Integer.valueOf(idList[k])] = Integer.valueOf(idList[k]);
-				++k;
-			}
-		} else {
-			for (int j = 0; j < shg_check[0].length; j++) {
-				shg_check[0][j] = j;
-			}
-		}
+		pass=0;
+		fail=0;		
+		
 		try {
 			if (xc.getCellString(row, profileCons.flowTypeColNum).contains("Check")) {
 				neg_test_flag = true;
@@ -407,13 +409,13 @@ public class shgProfileCreation extends lokosTest {
 										profileCons.bkNameColNum);
 							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
 									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
-									"212:||Validation Error");
+									"212:||Validation Error||","#");
 						} else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External")) {
 							enterString_Id("Bookkeeper Name", "top", "com.microware.cdfi:id/et_bookkeeper_name", row,
 									profileCons.bkNameColNum, "112:||Validation Error");
 							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
 									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
-									"212:||Validation Error");
+									"212:||Validation Error","#");
 						}
 						
 						pseq(id, "012:Bookkeeper");
@@ -517,6 +519,18 @@ public class shgProfileCreation extends lokosTest {
 
 				}
 			}
+			
+			if (invalid_flag) {
+				System.out.println("Error---->Atleast one field is incorrect");
+				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				testSHG.log(Status.INFO,"Error---->Atleast one field is incorrect");
+				testSHG.log(Status.INFO,"Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+				navigateBackToScreen("SHG");
+				t = 1;
+				id = 9999;
+			}
 
 			if (neg_test_flag) {
 
@@ -549,7 +563,7 @@ public class shgProfileCreation extends lokosTest {
 					} catch (NullPointerException np) {
 						System.out.println("---->>Expected Errors is empty.");
 					}
-
+					util.randomPressLogic.press(0.5, 0.05);
 					navigateBackToScreen("SHG Basic Details");
 					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/tv_shgName", "id", "bottom");
 					t = 1;
@@ -765,15 +779,15 @@ public class shgProfileCreation extends lokosTest {
 									"com.microware.cdfi:id/et_Accountno",
 									row, 
 									profileCons.accNoColNum,
-									"421:||Validation Error||"
-									);
+									"421:||Validation Error||",
+									"#");
 							enterLongNum_Id("Account number", 
 									"top",
 									"com.microware.cdfi:id/et_retype_Accountno",
 									row, 
 									profileCons.retypAccNoColNum,
-									"521:||Validation Error||"
-									);
+									"521:||Validation Error||",
+									"#");
 							String date = xc.getCellString(row, profileCons.accOpDateColNum);
 							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
 							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
@@ -1071,7 +1085,6 @@ public class shgProfileCreation extends lokosTest {
 			navigation.openSHGProfile(row);
 			String[] s = { "012", "019", "020", "021", "022", "023" };
 			int[] val2 = shgProfileCreation.shg(row, s, false);
-			count += val2[2];
 			pass += val2[0];
 			fail += val2[1];
 			count += val2[2];
@@ -1150,10 +1163,10 @@ public class shgProfileCreation extends lokosTest {
 						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
 				.click();
 	}
-	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err) {
+	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err,String prefix) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
-		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err);
+		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons).substring(1));
+		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err,prefix);
 		if (f == 1)
 			invalid_flag = true;
 	}
@@ -1184,23 +1197,23 @@ public class shgProfileCreation extends lokosTest {
 		return 0;
 	}
 
-	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text) {
+	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text,String prefix) {
 		if (locStrat.equalsIgnoreCase("xpath")) {
-			if (!("#" + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("id")) {
-			if (!("#" + appdriver.findElementById(loc).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElementById(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testSHG.log(Status.INFO, text);
 				++neg_test_count;
 				return 1;
 			}
 		} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
-			if (!("#" + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
+			if (!(prefix + appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText()).equals(field_txt)) {
 				System.out.println(text);
 				testSHG.log(Status.INFO, text);
 				++neg_test_count;
