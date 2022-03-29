@@ -239,7 +239,7 @@ public class lokosTest {
 						if (s.contains("(0)")) {
 							testSHG.log(Status.FAIL, "Data not sufficient to upload");
 							System.out.println("Data not sufficient to upload");
-							webProcess_flag = false;
+							webProcess_flag = true;
 							appdriver.quit();
 						} else {
 							appdriver.findElementById("com.microware.cdfi:id/tvUploadData").click();
@@ -279,7 +279,7 @@ public class lokosTest {
 					if (webProcess_flag) {
 						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
 						System.out.println("Web Flow Commencing in 3 minutes");
-						Thread.sleep(180000);
+//						Thread.sleep(180000);
 						web.LoginTest.startWeb();
 					}
 					
@@ -340,8 +340,6 @@ public class lokosTest {
 					System.out.println(resultP);
 					System.out.println("________________________");
 					
-					navigateBackToScreen("SHG");
-					appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();
 
@@ -355,19 +353,19 @@ public class lokosTest {
 				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
 				test.log(Status.INFO,"Flow " + r + " failed in between" );
 				System.out.println("Flow " + r + " failed in between");
-//				test.log(Status.INFO, "Restarting App");
-//				appdriver.quit();
-//				app.launchLokOS.launchLokos();
-//				test.log(Status.PASS, "Lokos Successfully Launched");
-//				System.out.println("Lokos Successfully Launched");
-//				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
-//				test.log(Status.PASS, "Login and Sync Complete");
-//				System.out.println("Login and Sync Complete");
-//				Thread.sleep(2000);
-//				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
-//				navigation.shgButton();
-//				test.log(Status.INFO, "Continuing next Flow");
+				test.log(Status.INFO, "Restarting App");
+				appdriver.quit();
+				app.launchLokOS.launchLokos();
+				test.log(Status.PASS, "Lokos Successfully Launched");
+				System.out.println("Lokos Successfully Launched");
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+				test.log(Status.PASS, "Login and Sync Complete");
+				System.out.println("Login and Sync Complete");
+				Thread.sleep(2000);
+				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+				navigation.shgButton();
+				test.log(Status.INFO, "Continuing next Flow");
 				e.printStackTrace();
 			}
 			Thread.sleep(2000);
@@ -396,12 +394,22 @@ public class lokosTest {
 		try {
 			while (!title.equals(screen_title)) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
 					break;
 				i++;
 			}
 		} catch (Exception e) {
-			throw new Exception("Cannot navigate to " + screen_title + " screen");
+				try {
+					while (!title.equals(screen_title)) {
+						appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+						if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
+							break;
+						i++;
+					}
+				}catch(Exception ex) {
+					System.out.println("Error:Cannot navigate back to screen");
+				}
+			
 		}
 	}
 

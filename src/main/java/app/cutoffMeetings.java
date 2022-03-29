@@ -65,7 +65,7 @@ public class cutoffMeetings extends lokosTest {
 		} catch (NullPointerException np) {
 		}
 
-		if (xc.getCellString(row, cutoffCons.typeColNum).equals("New")) {
+		if (xc.getCellString(row, cutoffCons.typeColNum).contains("New")) {
 
 			try {
 				oldMtngNum = Integer
@@ -141,6 +141,7 @@ public class cutoffMeetings extends lokosTest {
 			case 1:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
+					Thread.sleep(1500);
 					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 					appdriver.findElementByXPath(
@@ -157,31 +158,41 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("Validation Failed");
 					}
 					
-					try {
-					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText");					
-					while(true) {
-						int k=0;
-						for(k=1;k<table.size();k++) {							
-							appdriver
-							.findElementByXPath("//android.widget.LinearLayout[" + k
-									+ "]/android.widget.LinearLayout/android.widget.EditText").clear();
-							appdriver
-							.findElementByXPath("//android.widget.LinearLayout[" + k
-									+ "]/android.widget.LinearLayout/android.widget.EditText")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.Attendence_1) + "");
-						}
-						if(appdriver.findElementByXPath("/android.widget.LinearLayout[" + (k-1)
-								+ "]/android.widget.LinearLayout/android.widget.TextView[1]").getText().equals(memNum+""))
-						break;
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-2)
-									+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
-						if(appdriver.findElementByXPath("//android.widget.LinearLayout[" + (k-1)
-									+ "]/android.widget.LinearLayout/android.widget.EditText").getText().equals(memNum+""))
-							break;
-					}
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
+					fillColumnFields(row,
+							cutoffCons.Attendence_1,
+							memNum,
+							"//android.widget.EditText",
+							"]/android.widget.LinearLayout/android.widget.EditText",
+							"]/android.widget.LinearLayout/android.widget.TextView[1]");
+//					try {
+//						boolean flag=false;
+//					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText");					
+//					while(true) {
+//						int k=0;
+//						for(k=1;k<table.size();k++) {							
+//							appdriver
+//							.findElementByXPath("//android.widget.LinearLayout[" + k
+//									+ "]/android.widget.LinearLayout/android.widget.EditText").clear();
+//							appdriver
+//							.findElementByXPath("//android.widget.LinearLayout[" + k
+//									+ "]/android.widget.LinearLayout/android.widget.EditText")
+//							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.Attendence_1) + "");
+//							if(appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+//									+ "]/android.widget.LinearLayout/android.widget.TextView[1]").getText().equals(memNum+"")) {
+//								flag=true;
+//								break;								
+//							}
+//							
+//						}	
+//						if(flag) 
+//							break;						
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-2)
+//									+ "]/android.widget.LinearLayout/android.widget.EditText", "xpath", "top");
+//						
+//					}
+//					}catch(Exception e) {
+//						e.printStackTrace();
+//					}
 
 //					for (int j = 2; j <= memNum; j++) {
 //						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
@@ -238,6 +249,9 @@ public class cutoffMeetings extends lokosTest {
 
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
+					.clear();
+					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
 					f = validCheckString(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]",
@@ -247,26 +261,33 @@ public class cutoffMeetings extends lokosTest {
 						throw new Exception("002:||Validation Failed||");
 					}
 					
-					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText[1]");
+					fillColumnFields(row,
+							cutoffCons.compSavColNum,
+							memNum,
+							"//android.widget.EditText[1]",
+							"]/android.widget.LinearLayout/android.widget.EditText[1]",
+							"]/android.widget.LinearLayout/android.widget.TextView[1]");
 					
-					while(true) {
-						if(!appdriver
-						.findElementByXPath("//android.widget.LinearLayout[" + 2
-								+ "]/android.widget.LinearLayout/android.widget.EditText[1]").getText().equals("0"))
-							break;						
-						int k=0;
-						for(k=1;k<table.size();k++) {							
-							appdriver
-							.findElementByXPath("//android.widget.LinearLayout[" + k
-									+ "]/android.widget.LinearLayout/android.widget.EditText[1]").clear();
-							appdriver
-							.findElementByXPath("//android.widget.LinearLayout[" + k
-									+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
-						}
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
-									+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
-					}
+//					java.util.List<AndroidElement> table= appdriver.findElementsByXPath("//android.widget.EditText[1]");
+//					
+//					while(true) {
+//						if(!appdriver
+//						.findElementByXPath("//android.widget.LinearLayout[" + 2
+//								+ "]/android.widget.LinearLayout/android.widget.EditText[1]").getText().equals("0"))
+//							break;						
+//						int k=0;
+//						for(k=1;k<table.size();k++) {							
+//							appdriver
+//							.findElementByXPath("//android.widget.LinearLayout[" + k
+//									+ "]/android.widget.LinearLayout/android.widget.EditText[1]").clear();
+//							appdriver
+//							.findElementByXPath("//android.widget.LinearLayout[" + k
+//									+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
+//							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+//						}
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
+//									+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
+//					}
 					
 //					for (int j = 2; j <= memNum; j++) {
 //						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
@@ -306,64 +327,75 @@ public class cutoffMeetings extends lokosTest {
 				if (id != 000)
 					break;
 			case 3:
-				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
-							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
-							"003:||Validation Failed||");
-					if (f == 1) {
-						throw new Exception("003:||Validation Failed||");
-					}
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
-					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1)
-						throw new Exception("");
-
-					pass++;
-					cutoff_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-					else
-						testMeet.log(Status.PASS, "003:Voluntary Saving");
-					System.out.println("003:Voluntary Saving");
-				} catch (Exception e) {
-					fail++;
-					cutoff_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-					else
-						testMeet.log(Status.PASS, "003:Voluntary Saving");
-					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-				}
-				if (id != 000)
-					break;
+//				try {
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
+//					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+//					appdriver.findElementByXPath(
+//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]").clear();
+//					appdriver.findElementByXPath(
+//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
+//							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
+//					f = validCheckString(
+//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
+//							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
+//							"003:||Validation Failed||");
+//					if (f == 1) {
+//						throw new Exception("003:||Validation Failed||");
+//					}
+//					
+//
+//					fillColumnFields(row,
+//							cutoffCons.compSavColNum,
+//							memNum,
+//							"//android.widget.EditText[2]",
+//							"]/android.widget.LinearLayout/android.widget.EditText[2]",
+//							"]/android.widget.LinearLayout/android.widget.TextView[1]");
+////					for (int j = 2; j <= memNum; j++) {
+////						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+////								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
+////
+////						appdriver
+////								.findElementByXPath("//android.widget.LinearLayout[" + j
+////										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
+////								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+////					}
+//
+//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+//					f = validOnSave("", row);
+//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//					if (f == 1)
+//						throw new Exception("");
+//
+//					pass++;
+//					cutoff_check[1][id] = 1;
+//					if (neg_test_flag)
+//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+//					else
+//						testMeet.log(Status.PASS, "003:Voluntary Saving");
+//					System.out.println("003:Voluntary Saving");
+//				} catch (Exception e) {
+//					fail++;
+//					cutoff_check[1][id] = -1;
+//					if (!neg_test_flag)
+//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+//					else
+//						testMeet.log(Status.PASS, "003:Voluntary Saving");
+//					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
+//					e.printStackTrace();
+//				} finally {
+//					count++;
+//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//				}
+//				if (id != 000)
+//					break;
 				// Member's Closed Loan
 			case 4:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 
+					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]").clear();
 					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
@@ -374,15 +406,23 @@ public class cutoffMeetings extends lokosTest {
 					if (f == 1)
 						throw new Exception("004:||Validation Failed||");
 
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
 
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
-					}
+					fillColumnFields(row,
+							cutoffCons.noLoansColNum,
+							memNum,
+							"//android.widget.EditText[1]",
+							"]/android.widget.LinearLayout/android.widget.EditText[1]",
+							"]/android.widget.LinearLayout/android.widget.TextView[1]");
+					
+//					for (int j = 2; j <= memNum; j++) {
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
+//
+//						appdriver
+//								.findElementByXPath("//android.widget.LinearLayout[" + j
+//										+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
+//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
+//					}
 
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 					f = validOnSave("", row);
@@ -408,7 +448,7 @@ public class cutoffMeetings extends lokosTest {
 					e.printStackTrace();
 				} finally {
 					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+					navigateBackToScreen("Cut Off Menu");
 				}
 				if (id != 000)
 					break;
@@ -419,6 +459,8 @@ public class cutoffMeetings extends lokosTest {
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 
 					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]").clear();
+					appdriver.findElementByXPath(
 							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
 							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
 					f = validCheckString(
@@ -428,16 +470,21 @@ public class cutoffMeetings extends lokosTest {
 					if (f == 1)
 						throw new Exception("005:||Validation Failed||");
 
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
-					}
-
+					fillColumnFields(row,
+							cutoffCons.amtLoansColNum,
+							memNum,
+							"//android.widget.EditText[2]",
+							"]/android.widget.LinearLayout/android.widget.EditText[2]",
+							"]/android.widget.LinearLayout/android.widget.TextView[1]");
+//					for (int j = 2; j <= memNum; j++) {
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
+//
+//						appdriver
+//								.findElementByXPath("//android.widget.LinearLayout[" + j
+//										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
+//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
+//					}
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 					f = validOnSave("", row);
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
@@ -462,7 +509,7 @@ public class cutoffMeetings extends lokosTest {
 					e.printStackTrace();
 				} finally {
 					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+					navigateBackToScreen("Cut Off Menu");
 				}
 				if (id != 000)
 					break;
@@ -1507,8 +1554,10 @@ public class cutoffMeetings extends lokosTest {
 	public static void selectById(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementById(loc).click();
-		appdriver.findElement(
-				MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")")).click();
+		appdriver
+				.findElement(
+						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+				.click();
 	}
 
 	public static int validCheckString(String loc, String locStrat, String field_txt, String text) {
@@ -1597,6 +1646,34 @@ public class cutoffMeetings extends lokosTest {
 			ExtentManager.addScreenShotsToTest("Navigate Back to Screen", testMem);
 			e.printStackTrace();
 			throw new Exception("Cannot navigate to " + screen_title + " screen");
+		}
+	}
+	
+	public static void fillColumnFields(int row,int col,int memNum,String a, String b, String c) {
+		try {
+			boolean flag=false;
+		java.util.List<AndroidElement> table= appdriver.findElementsByXPath(a);					
+		while(true) {
+			int k=0;
+			for(k=1;k<table.size();k++) {
+				appdriver
+				.findElementByXPath("//android.widget.LinearLayout[" + k+ b).clear();
+				appdriver
+				.findElementByXPath("//android.widget.LinearLayout[" + k+ b)
+				.sendKeys((int) xc.getCellDoubleValue(row, col) + "");
+				if(appdriver.findElementByXPath("//android.widget.LinearLayout[" + k+ c).getText().equals(memNum+"")) {						
+					flag=true;
+					break;								
+				}
+				
+			}	
+			if(flag) 
+				break;						
+			mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-2)+ b, "xpath", "top");
+			
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 

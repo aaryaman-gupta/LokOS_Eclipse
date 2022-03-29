@@ -1,5 +1,7 @@
 package app;
 
+import java.util.concurrent.TimeUnit;
+
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
@@ -496,9 +498,12 @@ public class memberProfile extends lokosTest {
 					case 21:
 						invalid_flag = false;
 						try {
-							appdriver.findElementById("com.microware.cdfi:id/IvPhone").click();
+							Thread.sleep(2000);
+							appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
 							String[] phnos = xc.getCellString(row, memCons.phoneNosColNum).split(";");
 							for (int i = 0; i < phnos.length; i++) {
+								Thread.sleep(2000);
+								appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 								appdriver.findElementById("com.microware.cdfi:id/addphone").click();
 								String[] s = phnos[i].split(":");
 								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys(s[1].trim());

@@ -774,14 +774,14 @@ public class shgProfileCreation extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							enterLongNum_Id("Re-Type Account No.", 
+							enterLongNum_Id("Account number", 
 									"top",
 									"com.microware.cdfi:id/et_Accountno",
 									row, 
 									profileCons.accNoColNum,
 									"421:||Validation Error||",
 									"#");
-							enterLongNum_Id("Account number", 
+							enterLongNum_Id("Re-Type Account No.", 
 									"top",
 									"com.microware.cdfi:id/et_retype_Accountno",
 									row, 
