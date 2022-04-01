@@ -12,8 +12,8 @@ public class ZipAndSendMail {
 	Properties emailProperties;
 	Session mailSession;
 	MimeMessage emailMessage;
-//	static String[] toEmails = { "aaryamantesting@gmail.com","daaryamangupta@gmail.com","vandana.v@viewzen@gmail.com"};
-	static String[] toEmails = { "aaryamantesting@gmial.com"};
+	static String[] toEmails = { "aaryamantesting@gmail.com","daaryamangupta@gmail.com"};
+//	static String[] toEmails = { "aaryamantesting@gmail.com"};
 	static String fromUser = "aaryamantesting@gmail.com";// imap on, other devices on, no recovery phone
 	static String password = "aaryamantesting123";
 

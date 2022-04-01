@@ -392,6 +392,7 @@ public class cutoffMeetings extends lokosTest {
 			case 4:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
+					Thread.sleep(1000);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 
 					appdriver.findElementByXPath(
