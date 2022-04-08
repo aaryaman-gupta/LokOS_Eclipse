@@ -1596,8 +1596,8 @@ public class cutoffMeetings extends lokosTest {
 			return 0;
 		else {
 			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-			testMeet.log(Status.FAIL, "ex");
-			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
+			testMeet.log(Status.FAIL, ex);
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings:"+ex, testMeet);
 			System.out.println("Error: " + ex);
 			if (neg_test_flag) {
 				try {

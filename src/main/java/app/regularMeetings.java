@@ -1,16 +1,12 @@
 
 package app;
 
-import static org.testng.Assert.assertEquals;
-
 import java.util.concurrent.TimeUnit;
 
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidElement;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
 import reporting.ExtentManager;
 import util.backButton;
@@ -130,193 +126,193 @@ public class regularMeetings extends lokosTest {
 			// Attendance
 			switch (id) {
 			case 0:
-//			case 1:
-//				try {
-//					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
-//					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-//					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-//
-//					if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Present")) {
-//
-//					} else if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Absent")) {
-//						try {
-//							boolean flag = false;
-//							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
-//									"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView");
-//							while (true) {
-//								int k = 0;
-//								for (k = 1; k <= table.size(); k++) {
-//									appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
-//											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView")
-//											.click();
-//
-//									if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
-//											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]")
-//											.getText().equals(memNum + "")) {
-//										flag = true;
-//										break;
-//									}
-//								}
-//								if (flag)
-//									break;
-//								mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
-//										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView",
-//										"xpath", "top");
-//							}
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
-//					}
-//
-//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-//					Thread.sleep(2000);
-//					f = validOnSave("Blank", row);
-//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-//					if (f == 1) {
-//						throw new Exception("Save Failed");
-//					}
-//
-//					pass++;
-//					reg_check[1][id] = 1;
-//					if (neg_test_flag)
-//						testMeet.log(Status.FAIL, "001:Attendance");
-//					else
-//						testMeet.log(Status.PASS, "001:Attendance");
-//					System.out.println("001:Attendence");
-//				} catch (Exception e) {
-//					fail++;
-//					reg_check[1][id] = -1;
-//					if (!neg_test_flag)
-//						testMeet.log(Status.FAIL, "001:Attendance");
-//					else
-//						testMeet.log(Status.PASS, "001:Attendance");
-//					System.out.println("Error in Attendance:001----------------------Check Here////");
-//					navigateBackToScreen("SHG");
-//					int[] val = { 0, 0, 0 };
-//					e.printStackTrace();
-//					return val;
-//
-//				} finally {
-//					count++;
-//					navigateBackToScreen("Meeting Menu");
-//				}
-//				if (id != 000)
-//					break;
-//				// Compulsory Savings
-//			case 2:
-//				try {
-//					appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
-//					int memNum = Integer.valueOf(appdriver.findElementByXPath("//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView").getText());
-//					
-//					String[] cs=((int)xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "").split(";");
-//					String comp_sav="";
-//					for(String sav: cs) {
-//						sav=sav.trim();
-//						f=0;
-//						appdriver.findElementByXPath(
-//								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]").clear();
-//					appdriver.findElementByXPath(
-//							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]")
-//							.sendKeys(sav);
-//					f = validCheckString(
-//							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
-//							"xpath", sav,
-//							"002");
-//					comp_sav=sav;
-//					}
-//					if (f == 1) {
-//						throw new Exception("002:||Validation Failed||");
-//					}
-//
-//					fillColumnFields(comp_sav, 
-//							memNum,
-//							"//android.widget.TableRow/android.widget.EditText", 
-//							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText", 
-//							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]");
-//				
-//
-//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-//					f = validOnSave("", row);
-//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-//					if (f == 1)
-//						throw new Exception("");
-//					pass++;
-//					reg_check[1][id] = 1;
-//					if (neg_test_flag)
-//						testMeet.log(Status.FAIL, "002:Compulsory Saving");
-//					else
-//						testMeet.log(Status.PASS, "002:Compulsory Saving");
-//					System.out.println("002:Compulsory Saving");
-//				} catch (Exception e) {
-//					fail++;
-//					reg_check[1][id] = -1;
-//					if (!neg_test_flag)
-//						testMeet.log(Status.FAIL, "002:Compulsory Saving");
-//					else
-//						testMeet.log(Status.PASS, "002:Compulsory Saving");
-//					System.out.println("Error in Compulsory Saving:002----------------------Check Here////");
-//					e.printStackTrace();
-//				} finally {
-//					count++;
-//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-//				}
-//				if (id != 000)
-//					break;
+			case 1:
+				try {
+					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
+					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+
+					if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Present")) {
+
+					} else if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Absent")) {
+						try {
+							boolean flag = false;
+							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
+									"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView");
+							while (true) {
+								int k = 0;
+								for (k = 1; k <= table.size(); k++) {
+									appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView")
+											.click();
+
+									if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]")
+											.getText().equals(memNum + "")) {
+										flag = true;
+										break;
+									}
+								}
+								if (flag)
+									break;
+								mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
+										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView",
+										"xpath", "top");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+					Thread.sleep(2000);
+					f = validOnSave("Blank", row);
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+					if (f == 1) {
+						throw new Exception("Save Failed");
+					}
+
+					pass++;
+					reg_check[1][id] = 1;
+					if (neg_test_flag)
+						testMeet.log(Status.FAIL, "001:Attendance");
+					else
+						testMeet.log(Status.PASS, "001:Attendance");
+					System.out.println("001:Attendence");
+				} catch (Exception e) {
+					fail++;
+					reg_check[1][id] = -1;
+					if (!neg_test_flag)
+						testMeet.log(Status.FAIL, "001:Attendance");
+					else
+						testMeet.log(Status.PASS, "001:Attendance");
+					System.out.println("Error in Attendance:001----------------------Check Here////");
+					navigateBackToScreen("SHG");
+					int[] val = { 0, 0, 0 };
+					e.printStackTrace();
+					return val;
+
+				} finally {
+					count++;
+					navigateBackToScreen("Meeting Menu");
+				}
+				if (id != 000)
+					break;
+				// Compulsory Savings
+			case 2:
+				try {
+					appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
+					int memNum = Integer.valueOf(appdriver.findElementByXPath("//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView").getText());
+					
+					String[] cs=((int)xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "").split(";");
+					String comp_sav="";
+					for(String sav: cs) {
+						sav=sav.trim();
+						f=0;
+						appdriver.findElementByXPath(
+								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]").clear();
+					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]")
+							.sendKeys(sav);
+					f = validCheckString(
+							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
+							"xpath", sav,
+							"002");
+					comp_sav=sav;
+					}
+					if (f == 1) {
+						throw new Exception("002:||Validation Failed||");
+					}
+
+					fillColumnFields(comp_sav, 
+							memNum,
+							"//android.widget.TableRow/android.widget.EditText", 
+							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText", 
+							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]");
+				
+
+					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+					f = validOnSave("", row);
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					if (f == 1)
+						throw new Exception("");
+					pass++;
+					reg_check[1][id] = 1;
+					if (neg_test_flag)
+						testMeet.log(Status.FAIL, "002:Compulsory Saving");
+					else
+						testMeet.log(Status.PASS, "002:Compulsory Saving");
+					System.out.println("002:Compulsory Saving");
+				} catch (Exception e) {
+					fail++;
+					reg_check[1][id] = -1;
+					if (!neg_test_flag)
+						testMeet.log(Status.FAIL, "002:Compulsory Saving");
+					else
+						testMeet.log(Status.PASS, "002:Compulsory Saving");
+					System.out.println("Error in Compulsory Saving:002----------------------Check Here////");
+					e.printStackTrace();
+				} finally {
+					count++;
+					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+				}
+				if (id != 000)
+					break;
 			//Loan Repayments
 			case 3:
-//				try {
-//					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
-//					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-//					appdriver.findElementByXPath(
-//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
-//							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
-//					f = validCheckString(
-//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
-//							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
-//							"003:||Validation Failed||");
-//					if (f == 1) {
-//						throw new Exception("003:||Validation Failed||");
-//					}
-//
-//					for (int j = 2; j <= memNum; j++) {
-//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-//								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
-//
-//						appdriver
-//								.findElementByXPath("//android.widget.LinearLayout[" + j
-//										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
-//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
-//					}
-//
-//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-//					f = validOnSave("", row);
-//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-//					if (f == 1)
-//						throw new Exception("");
-//
-//					pass++;
-//					reg_check[1][id] = 1;
-//					if (neg_test_flag)
-//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-//					else
-//						testMeet.log(Status.PASS, "003:Voluntary Saving");
-//					System.out.println("003:Voluntary Saving");
-//				} catch (Exception e) {
-//					fail++;
-//					reg_check[1][id] = -1;
-//					if (!neg_test_flag)
-//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-//					else
-//						testMeet.log(Status.PASS, "003:Voluntary Saving");
-//					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
-//					e.printStackTrace();
-//				} finally {
-//					count++;
-//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-//				}
-//				if (id != 000)
-//					break;
+				try {
+					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
+					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+					appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
+							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
+					f = validCheckString(
+							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
+							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
+							"003:||Validation Failed||");
+					if (f == 1) {
+						throw new Exception("003:||Validation Failed||");
+					}
+
+					for (int j = 2; j <= memNum; j++) {
+						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
+
+						appdriver
+								.findElementByXPath("//android.widget.LinearLayout[" + j
+										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
+								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+					}
+
+					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+					f = validOnSave("", row);
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					if (f == 1)
+						throw new Exception("");
+
+					pass++;
+					reg_check[1][id] = 1;
+					if (neg_test_flag)
+						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+					else
+						testMeet.log(Status.PASS, "003:Voluntary Saving");
+					System.out.println("003:Voluntary Saving");
+				} catch (Exception e) {
+					fail++;
+					reg_check[1][id] = -1;
+					if (!neg_test_flag)
+						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+					else
+						testMeet.log(Status.PASS, "003:Voluntary Saving");
+					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
+					e.printStackTrace();
+				} finally {
+					count++;
+					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+				}
+				if (id != 000)
+					break;
 			// Share Capital/Other/Receipts
 			case 4:
 				try {
@@ -338,7 +334,7 @@ public class regularMeetings extends lokosTest {
 						}
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_4999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -389,7 +385,7 @@ public class regularMeetings extends lokosTest {
 						}
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_5999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -452,7 +448,7 @@ public class regularMeetings extends lokosTest {
 						
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_6999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -508,7 +504,7 @@ public class regularMeetings extends lokosTest {
 						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_7999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -546,55 +542,61 @@ public class regularMeetings extends lokosTest {
 					
 					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+									
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Fund_Source_8)));j++) {
+						
+						try {
+							boolean flag = false;
+							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
+									"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]");
 
-					try {
-						boolean flag = false;
-						java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
-								"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]");
-
-						while (true) {
-							int k = 0;
-							for (k = 1; k <= table.size(); k++) {
-								if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
-										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]")
-										.getText().equals("0")) {
-									continue;
-								} else {
-									flag = true;
-									name=appdriver.findElementByXPath("//android.widget.LinearLayout["+k+"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[2]").getText();
-									editbtn=k;
+							while (true) {
+								int k = 0;
+								for (k = 1; k <= table.size(); k++) {
+									if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]")
+											.getText().equals("0")) {
+										continue;
+									} else {
+										flag = true;
+										appdriver.findElementByXPath("//android.widget.LinearLayout["+k+"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow/android.widget.ImageView").click();
+										
+									}
 								}
+								if (flag)
+									break;
+								mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k - 1)
+										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]",
+										"xpath", "top");
 							}
-							if (flag)
-								break;
-							mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k - 1)
-									+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]",
-									"xpath", "top");
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					
-					
-					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Fund_Source_406)));j++) {
-						
-						
-						
-						if(f==1)
-						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_membername",
-								"/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
-						
-						enterString_Id("Demand (Amount)","top","com.microware.cdfi:id/et_demand_amount",j,regCons.Demand_Amount_7,"007");
 												
-						selectById("Demand (Purpose)", "top", "com.microware.cdfi:id/spin_demand_purpose", j, regCons.Demand_Purpose_107);
-																		
-						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_Upto_207), "com.microware.cdfi:id/et_priority_valid_upto");
+						enterString_Id("Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Amount_108,"108");
+												
+						selectById("Loan Purpose", "top", "com.microware.cdfi:id/spin_loan_source", j, regCons.Loan_Purpose_208);
 						
-						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
+						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_308);
+
+						if (!xc.getCellString(j, regCons.Mode_of_Receipt_210).equals("Cash")) {
+							selectById("Source Bank", "top", "com.microware.cdfi:id/spin_source_bank", j, regCons.Source_Bank_408);
+							enterString_Id("Cheque No./Transaction No.", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_508,
+									"508");
+						}
 						
+						enterString_Id("Period (Months)","top","com.microware.cdfi:id/et_no_of_installment",j,regCons.Period_Months_608,"608");
+						
+						enterString_Id("Interest Rate (Annualy)","top","com.microware.cdfi:id/et_monthly_interest_rate",j,regCons.Interest_Rate_Annually_708,"708");
+						
+						enterString_Id("Moratorium Period","top","com.microware.cdfi:id/et_moratorium_period",j,regCons.Moratorium_Period_808,"808");
+						
+						//selectById("Loan Repayment Frequency", "top", "com.microware.cdfi:id/spin_frequency", j, regCons.Loan_Repayment_Frequency_908);
+												
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_8999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -633,7 +635,7 @@ public class regularMeetings extends lokosTest {
 						enterString_Id("Amount","top","com.microware.cdfi:id/et_amount_paid_to_member",j,regCons.Amount_9,"009");
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_9999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -711,7 +713,7 @@ public class regularMeetings extends lokosTest {
 						}
 												
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_10999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -789,7 +791,7 @@ public class regularMeetings extends lokosTest {
 
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_11999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -846,7 +848,7 @@ public class regularMeetings extends lokosTest {
 								"512");
 
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_12999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if (f == 1) {
 							try {
@@ -922,7 +924,7 @@ public class regularMeetings extends lokosTest {
 						enterString_Id("", "top", "", j, regCons.Amount_514, "514");
 
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave("", row);
+						f = validOnSave2("", j,regCons.Exp_Err_Msg_14999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if (f == 1) {
 							try {
@@ -1100,6 +1102,41 @@ public class regularMeetings extends lokosTest {
 	}
 
 	public static int validOnSave(String txt_msg, int row) throws Exception {
+
+		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data Updated Successfully")
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+						.equals("Data saved successfully")
+				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals(txt_msg))
+			return 0;
+		else {
+			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			testMeet.log(Status.FAIL, "ex");
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings "+ex, testMeet);
+			System.out.println("Error: " + ex);
+			if (neg_test_flag) {
+				try {
+					String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
+					if (ex.contains(exp_errs)) {
+						System.out.println("|||||||||||||||||||||||||||||");
+						System.out.println("Expected Error is encountered");
+						System.out.println("   ((Negetive Test Passed))");
+						System.out.println("|||||||||||||||||||||||||||||");
+						++neg_test_count;
+					} else {
+						System.out.println("   (((Negetive Test Failed)))\n");
+						testMeet.log(Status.INFO, "Negetive Test Failed");
+					}
+				} catch (NullPointerException np) {
+					System.out.println("---->>Expected Errors is empty.");
+					testMeet.log(Status.INFO, "Expected Errors is empty.");
+				}
+			}
+			return 1;
+		}
+
+	}
+	
+	public static int validOnSave2(String txt_msg, int row,int col) throws Exception {
 
 		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data Updated Successfully")
 				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
