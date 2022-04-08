@@ -41,7 +41,7 @@ public class lokosTest {
 	public static ExtentTest testMeet = null;
 	public static int memberRow = 0;
 	public static int cutoffRow = 0;
-	public static int regularRow = 0;
+	public static int regularRow = 2;
 	public static MobileTouch mt = null;
 	public static DeviceUtil du = null;
 	public static int shg_row_counter = 0;
@@ -349,6 +349,7 @@ public class lokosTest {
 				System.out.println("Flow number " + r + " complete");
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				ExtentManager.addScreenShotsToTest("Failed Flow" +r, testFlow);
 				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
 				test.log(Status.INFO,"Flow " + r + " failed in between" );
@@ -366,7 +367,7 @@ public class lokosTest {
 				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
 				navigation.shgButton();
 				test.log(Status.INFO, "Continuing next Flow");
-				e.printStackTrace();
+				
 			}
 			Thread.sleep(2000);
 		}

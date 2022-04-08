@@ -1084,7 +1084,7 @@ public class memberProfile extends lokosTest {
 		else {
 			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 			testMem.log(Status.FAIL, "ex");
-			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMem);
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings "+ex, testMem);
 			System.out.println("Error: " + ex);
 			if (neg_test_flag) {
 				try {

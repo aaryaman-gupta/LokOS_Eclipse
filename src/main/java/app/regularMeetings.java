@@ -1,6 +1,10 @@
 
 package app;
 
+import static org.testng.Assert.assertEquals;
+
+import java.util.concurrent.TimeUnit;
+
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
@@ -9,13 +13,17 @@ import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
 import reporting.ExtentManager;
+import util.backButton;
 import util.dateLogic;
+import util.randomPressLogic;
 
 public class regularMeetings extends lokosTest {
 
 	public static boolean neg_test_flag = false;
 	public static int neg_test_count = 0;
 	public static boolean invalid_flag = false;
+	public static int pass = 0;
+	public static int fail = 0;
 
 	public static int[] idSelectRegular(int row) throws Exception {
 
@@ -36,8 +44,6 @@ public class regularMeetings extends lokosTest {
 	public static int[] regular(int row, String[] idList) throws Exception {
 
 		int count = 0;
-		int pass = 0;
-		int fail = 0;
 		int p = 0;
 		int f = 0;
 		int id = 000;
@@ -72,13 +78,13 @@ public class regularMeetings extends lokosTest {
 			} catch (Exception e) {
 				oldMtngNum = 0;
 			}
-			newMtngNum = (int) xc.getCellDoubleValue(row, cutoffCons.newMeetingNumColNum);
+			newMtngNum = Integer.valueOf(xc.getCellString(row, cutoffCons.newMeetingNumColNum));
 
 			if (newMtngNum == (oldMtngNum + 1)) {
 				appdriver.findElementById("com.microware.cdfi:id/et_new_meeting_no").sendKeys("" + newMtngNum);
 				// validation
 				f = validCheckString("com.microware.cdfi:id/et_new_meeting_no", "id",
-						(int) xc.getCellDoubleValue(row, cutoffCons.newMeetingNumColNum) + "",
+						xc.getCellString(row, cutoffCons.newMeetingNumColNum),
 						"Validation Failed: New Meeting Number");
 				if (f == 1) {
 					testMeet.log(Status.FAIL, "New Meeting Number is Not Valid");
@@ -101,7 +107,6 @@ public class regularMeetings extends lokosTest {
 			}
 		} else {
 			// Edit Meeting button
-//			appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
 //			try {
 //				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 //						.equals("No meeting exists for this SHG.")) {
@@ -125,137 +130,139 @@ public class regularMeetings extends lokosTest {
 			// Attendance
 			switch (id) {
 			case 0:
-			case 1:
-				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-
-					if (xc.getCellString(row, regCons.Attendance_1).equals("Present")) {
-
-					} else if (xc.getCellString(row, regCons.Attendance_1).equals("Absent")) {
-						try {
-							boolean flag = false;
-							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
-									"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView");
-							while (true) {
-								int k = 0;
-								for (k = 1; k < table.size(); k++) {
-									appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
-											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView")
-											.click();
-
-									if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
-											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]")
-											.getText().equals(memNum + "")) {
-										flag = true;
-										break;
-									}
-								}
-								if (flag)
-									break;
-								mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k - 1)
-										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView",
-										"xpath", "top");
-
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "001:Attendance");
-					else
-						testMeet.log(Status.PASS, "001:Attendance");
-					System.out.println("001:Attendence");
-				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "001:Attendance");
-					else
-						testMeet.log(Status.PASS, "001:Attendance");
-					System.out.println("Error in Attendance:001----------------------Check Here////");
-					navigateBackToScreen("SHG");
-					int[] val = { 0, 0, 0 };
-					e.printStackTrace();
-					return val;
-
-				} finally {
-					count++;
-					navigateBackToScreen("Meeting Menu");
-				}
-				if (id != 000)
-					break;
-				// Member's Saving
-			case 2:
-				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
-					int memNum = Integer.valueOf(appdriver.findElementByXPath("//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView").getText());
-					
-					String[] cs=((int)xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "").split(";");
-					String comp_sav="";
-					for(String sav: cs) {
-						sav=sav.trim();
-						f=0;
-						appdriver.findElementByXPath(
-								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]").clear();
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]")
-							.sendKeys(sav);
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
-							"xpath", sav,
-							"002");
-					comp_sav=sav;
-					}
-					if (f == 1) {
-						throw new Exception("002:||Validation Failed||");
-					}
-
-					fillColumnFields(comp_sav, 
-							memNum,
-							"//android.widget.TableRow/android.widget.EditText", 
-							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText", 
-							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]");
-				
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1)
-						throw new Exception("");
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "002:Compulsory Saving");
-					else
-						testMeet.log(Status.PASS, "002:Compulsory Saving");
-					System.out.println("002:Compulsory Saving");
-				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "002:Compulsory Saving");
-					else
-						testMeet.log(Status.PASS, "002:Compulsory Saving");
-					System.out.println("Error in Compulsory Saving:002----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-				}
-				if (id != 000)
-					break;
+//			case 1:
+//				try {
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
+//					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+//
+//					if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Present")) {
+//
+//					} else if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Absent")) {
+//						try {
+//							boolean flag = false;
+//							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
+//									"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView");
+//							while (true) {
+//								int k = 0;
+//								for (k = 1; k <= table.size(); k++) {
+//									appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+//											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView")
+//											.click();
+//
+//									if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+//											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]")
+//											.getText().equals(memNum + "")) {
+//										flag = true;
+//										break;
+//									}
+//								}
+//								if (flag)
+//									break;
+//								mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-1)
+//										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView",
+//										"xpath", "top");
+//							}
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//					}
+//
+//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+//					Thread.sleep(2000);
+//					f = validOnSave("Blank", row);
+//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//					if (f == 1) {
+//						throw new Exception("Save Failed");
+//					}
+//
+//					pass++;
+//					reg_check[1][id] = 1;
+//					if (neg_test_flag)
+//						testMeet.log(Status.FAIL, "001:Attendance");
+//					else
+//						testMeet.log(Status.PASS, "001:Attendance");
+//					System.out.println("001:Attendence");
+//				} catch (Exception e) {
+//					fail++;
+//					reg_check[1][id] = -1;
+//					if (!neg_test_flag)
+//						testMeet.log(Status.FAIL, "001:Attendance");
+//					else
+//						testMeet.log(Status.PASS, "001:Attendance");
+//					System.out.println("Error in Attendance:001----------------------Check Here////");
+//					navigateBackToScreen("SHG");
+//					int[] val = { 0, 0, 0 };
+//					e.printStackTrace();
+//					return val;
+//
+//				} finally {
+//					count++;
+//					navigateBackToScreen("Meeting Menu");
+//				}
+//				if (id != 000)
+//					break;
+//				// Compulsory Savings
+//			case 2:
+//				try {
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
+//					int memNum = Integer.valueOf(appdriver.findElementByXPath("//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView").getText());
+//					
+//					String[] cs=((int)xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "").split(";");
+//					String comp_sav="";
+//					for(String sav: cs) {
+//						sav=sav.trim();
+//						f=0;
+//						appdriver.findElementByXPath(
+//								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]").clear();
+//					appdriver.findElementByXPath(
+//							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]")
+//							.sendKeys(sav);
+//					f = validCheckString(
+//							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
+//							"xpath", sav,
+//							"002");
+//					comp_sav=sav;
+//					}
+//					if (f == 1) {
+//						throw new Exception("002:||Validation Failed||");
+//					}
+//
+//					fillColumnFields(comp_sav, 
+//							memNum,
+//							"//android.widget.TableRow/android.widget.EditText", 
+//							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText", 
+//							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]");
+//				
+//
+//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+//					f = validOnSave("", row);
+//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//					if (f == 1)
+//						throw new Exception("");
+//					pass++;
+//					reg_check[1][id] = 1;
+//					if (neg_test_flag)
+//						testMeet.log(Status.FAIL, "002:Compulsory Saving");
+//					else
+//						testMeet.log(Status.PASS, "002:Compulsory Saving");
+//					System.out.println("002:Compulsory Saving");
+//				} catch (Exception e) {
+//					fail++;
+//					reg_check[1][id] = -1;
+//					if (!neg_test_flag)
+//						testMeet.log(Status.FAIL, "002:Compulsory Saving");
+//					else
+//						testMeet.log(Status.PASS, "002:Compulsory Saving");
+//					System.out.println("Error in Compulsory Saving:002----------------------Check Here////");
+//					e.printStackTrace();
+//				} finally {
+//					count++;
+//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//				}
+//				if (id != 000)
+//					break;
 			//Loan Repayments
 			case 3:
 //				try {
@@ -310,1073 +317,631 @@ public class regularMeetings extends lokosTest {
 //				}
 //				if (id != 000)
 //					break;
-				// Share Capital/Other/Receipts
+			// Share Capital/Other/Receipts
 			case 4:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[1]",
-							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "",
-							"004:||Validation Failed||");
-					if (f == 1)
-						throw new Exception("004:||Validation Failed||");
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[1]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[1]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.noLoansColNum) + "");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_share_capital").click();
+					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Receipt_Type_4)));j++) {
+						
+						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ImageView[1]").click();
+												
+						selectById("Receipt Type", "top", "com.microware.cdfi:id/spin_TypeofReceipt", j, regCons.Receipt_Type_4 );
+						
+						enterString_Id("Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_104, "104");
+						
+						selectById("Mode of Receipt","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_204);
+						
+						if(!xc.getCellString(j, regCons.Mode_of_Recept_204).equalsIgnoreCase("Cash")) {							
+							selectById("Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_304);
+							enterString_Id("Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_404,"404");
+						}
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
 					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+									
+					
 					if (f == 1)
 						throw new Exception("");
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "004:Number of Loans");
-					else
-						testMeet.log(Status.PASS, "004:Number of Loans");
-					System.out.println("004:Number of Loans");
+					pseq(4,"004:Share Capital/Other Receipts");					
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "004:Number of Loans");
-					else
-						testMeet.log(Status.PASS, "004:Number of Loans");
-					System.out.println("Error in Number of Loans:004----------------------Check Here////");
-					e.printStackTrace();
+					fseq(4,"004:Share Capital/Other Receipts",e);
 				} finally {
 					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+					try {
+					navigateBackToScreen("Meeting Menu");
+					}catch(Exception e) {
+						
+					}
 				}
 				if (id != 000)
 					break;
-
+				//Other Payments
 			case 5:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_closed_loan").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+					appdriver.findElementById("com.microware.cdfi:id/tbl_other_payments").click();
 
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
-							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "",
-							"005:||Validation Failed||");
-					if (f == 1)
-						throw new Exception("005:||Validation Failed||");
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.amtLoansColNum) + "");
-					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Payment_Type_5)));j++) {
+						
+						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ImageView[1]").click();
+												
+						selectById("Payment Type", "top", "com.microware.cdfi:id/spin_TypeofPayment", j, regCons.Payment_Type_5 );
+						
+						enterString_Id("Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_105, "105");
+						
+						selectById("Mode of Receipt","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_205);
+						
+						if(!xc.getCellString(j, regCons.Mode_of_Recept_204).equalsIgnoreCase("Cash")) {							
+							selectById("Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_305);
+							enterString_Id("Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_405,"405");
+						}
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
+					}		
+					
 					if (f == 1)
 						throw new Exception("");
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "005:Amount of Loans");
-					else
-						testMeet.log(Status.PASS, "005:Amount of Loans");
-					System.out.println("005:Amount of Loans");
+					pseq(5,"005:Other Payments");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "005:Amount of Loans");
-					else
-						testMeet.log(Status.PASS, "005:Amount of Loans");
-					System.out.println("Error in Amount of Loans:005----------------------Check Here////");
-					e.printStackTrace();
+					fseq(5,"005:Other Payments",e);					
 				} finally {
 					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
-				// Member's Active Loans
+				// Loan Request(Demand)
 			case 6:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_active_loan").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-
-					if (memNum >= 1) {
-
-						appdriver.findElementByXPath("/android.widget.LinearLayout[1]/android.widget.FrameLayout/"
-								+ "android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow/"
-								+ "android.widget.ImageView").click();
-						/*
-						 * enterValue_Id( "",//title "top",//scroll direction "", //location row, //row
-						 * cutoffCons,//column number ":||Validation Error||");//Error Message
-						 */
-						select("Fund Source", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_loan_type", // location
-								row, // row
-								cutoffCons.FundSource_6);// column number
-						enterValue_Id("Disbursed Loan Amount", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_original_loan_amount", // location
-								row, // row
-								cutoffCons.DisbursedLoanAmount_106, // column number
-								"106:||Validation Error||");// Error Message
-						enterValue_Id("Principal Repaid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_repaid", // location
-								row, // row
-								cutoffCons.PrincipalRepaid_206, // column number
-								"306:||Validation Error||");// Error Message
-						enterValue_Id("Principal Outstanding (including Arrears)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_amount", // location
-								row, // row
-								cutoffCons.PrincipalOutstandingIncludingArrears_306, // column number
-								"306:||Validation Error||");// Error Message
-						enterValue_Id("Principal Arrears", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_overdue", // location
-								row, // row
-								cutoffCons.PrincipalArrears_406, // column number
-								"406:||Validation Error||");// Error Message
-						enterValue_Id("Interest Rate (Annualy)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_monthly_interest_rate", // location
-								row, // row
-								cutoffCons.InterestRateAnnually_506, // column number
-								"506:||Validation Error||");// Error Message
-						enterValue_Id("Interest Paid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_paid", // location
-								row, // row
-								cutoffCons.InterestPaid_606, // column number
-								"606:||Validation Error||");// Error Message
-						enterValue_Id("Overdue Interest (if any)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_overdue", // location
-								row, // row
-								cutoffCons.OverdueInterest_706, // column number
-								"706:||Validation Error||");// Error Message
-						enterValue_Id("Total Overdue", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_overdue", // location
-								row, // row
-								cutoffCons.TotalOverdue_806, // column number
-								"806:||Validation Error||");// Error Message
-						mt.scrollToText("Loan Disbursement Date", "top");
-						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDateDisbursement_906),
-								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/tv_mode_of_payment", // location
-								row, // row
-								cutoffCons.ModeofReceipt_1006);// column number
-						enterValue_Id("Period (Months)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_no_of_installment", // location
-								row, // row
-								cutoffCons.PeriodMonths_1106, // column number
-								"1106:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_frequency", // location
-								row, // row
-								cutoffCons.LoanRepaymentFrequency_1206);// column number
-						select("Purpose", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_purpose", // location
-								row, // row
-								cutoffCons.Purpose_1306);// column number
-
-					} else {
-						invalid_flag = true;
-					}
-
-					if (invalid_flag)
+					mt.scrollToText("Loan Request", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_loanRequest").click();
+					
+					String purpose="";
+					f=0;
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.MCP_link_6)));j++) {
+						
+						if((f==1)&&(j>(row+1)))
+							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+						else if(j==(row+1))
+							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+						else
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
+						
+						if(f==1)
+						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_member_name",
+								"//android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
+						
+						//selectById("MCP link","top","com.microware.cdfi:id/spin_mcp_link",j,regCons.MCP_link_6);
+						
+						enterString_Id("Proposed Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Proposed_Amount_106,"106");
+						
+						purpose=xc.getCellString(j, regCons.Purpose_206);
+						selectById("Purpose", "top", "com.microware.cdfi:id/spin_purpose", j, regCons.Purpose_206);
+						
+						enterString_Id("Sanction Amount","top","com.microware.cdfi:id/et_sanction_amount",j,regCons.Sanction_Amount_306,"306");
+						
+						selectById("Fund Source","top","com.microware.cdfi:id/spin_source",j,regCons.Fund_Source_406);
+						
+						enterString_Id("Priority","top","com.microware.cdfi:id/et_priority",j,regCons.Priority_506,"506");
+						
+						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_up_to_606), "com.microware.cdfi:id/et_priority_valid_upto");
+						
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
+					}		
+					
+					if (f == 1)
 						throw new Exception("");
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Do you want to change the EMI schedule?", row);
-					if (f == 1) {
-						navigateBackToScreen("Cut off Member Active Loan");
-						throw new Exception("");
-					}
-					appdriver.findElementById("com.microware.cdfi:id/btn_no").click();
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "006:First Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "006:First Member's Active Loans");
-					System.out.println("006:First Member's Active Loans");
+					pseq(6,"006: Loan Request(Add Demand)");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "006:First Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "006:First Member's Active Loans");
-					System.out.println("Error in First Member's Active Loans:006----------------------Check Here////");
-					e.printStackTrace();
+					fseq(6,"006: Loan Request(Add Demand)",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
+				//Loan Request(MCP)
 			case 7:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_active_loan").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+					mt.scrollToText("Loan Request", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_loanRequest").click();
+					appdriver.findElementById("com.microware.cdfi:id/img_AddMcp").click();
 
-					if (memNum >= 2) {
-
-						appdriver.findElementByXPath("/android.widget.LinearLayout[2]/android.widget.FrameLayout/"
-								+ "android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow/"
-								+ "android.widget.ImageView").click();
-						/*
-						 * enterValue_Id( "",//title "top",//scroll direction "", //location row, //row
-						 * cutoffCons,//column number ":||Validation Error||");//Error Message
-						 */
-						select("Fund Source", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_loan_type", // location
-								row, // row
-								cutoffCons.FundSource_7);// column number
-						enterValue_Id("Disbursed Loan Amount", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_original_loan_amount", // location
-								row, // row
-								cutoffCons.DisbursedLoanAmount_107, // column number
-								"107:||Validation Error||");// Error Message
-						enterValue_Id("Principal Repaid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_repaid", // location
-								row, // row
-								cutoffCons.PrincipalRepaid_207, // column number
-								"307:||Validation Error||");// Error Message
-						enterValue_Id("Principal Outstanding (including Arrears)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_amount", // location
-								row, // row
-								cutoffCons.PrincipalOutstandingIncludingArrears_307, // column number
-								"307:||Validation Error||");// Error Message
-						enterValue_Id("Principal Arrears", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_overdue", // location
-								row, // row
-								cutoffCons.PrincipalArrears_407, // column number
-								"407:||Validation Error||");// Error Message
-						enterValue_Id("Interest Rate (Annualy)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_monthly_interest_rate", // location
-								row, // row
-								cutoffCons.InterestRateAnnually_507, // column number
-								"507:||Validation Error||");// Error Message
-						enterValue_Id("Interest Paid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_paid", // location
-								row, // row
-								cutoffCons.InterestPaid_607, // column number
-								"607:||Validation Error||");// Error Message
-						enterValue_Id("Overdue Interest (if any)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_overdue", // location
-								row, // row
-								cutoffCons.OverdueInterest_707, // column number
-								"707:||Validation Error||");// Error Message
-						enterValue_Id("Total Overdue", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_overdue", // location
-								row, // row
-								cutoffCons.TotalOverdue_807, // column number
-								"807:||Validation Error||");// Error Message
-						mt.scrollToText("Loan Disbursement Date", "top");
-						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDateDisbursement_907),
-								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/tv_mode_of_payment", // location
-								row, // row
-								cutoffCons.ModeofReceipt_1007);// column number
-						enterValue_Id("Period (Months)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_no_of_installment", // location
-								row, // row
-								cutoffCons.PeriodMonths_1107, // column number
-								"1107:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_frequency", // location
-								row, // row
-								cutoffCons.LoanRepaymentFrequency_1207);// column number
-						select("Purpose", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_purpose", // location
-								row, // row
-								cutoffCons.Purpose_1307);// column number
-
-					} else {
-						invalid_flag = true;
-					}
-
-					if (invalid_flag)
+					String purpose="";
+					f=0;					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
+						
+						if((f==1)&&(j>(row+1)))
+							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
+						else if(j==(row+1))
+							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
+						else
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
+						
+						if(f==1)
+						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_membername",
+								"/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
+						
+						enterString_Id("Demand (Amount)","top","com.microware.cdfi:id/et_demand_amount",j,regCons.Demand_Amount_7,"007");
+												
+						selectById("Demand (Purpose)", "top", "com.microware.cdfi:id/spin_demand_purpose", j, regCons.Demand_Purpose_107);
+																		
+						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_Upto_207), "com.microware.cdfi:id/et_priority_valid_upto");
+						
+						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
+					}		
+					
+					if (f == 1)
 						throw new Exception("");
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Do you want to change the EMI schedule?", row);
-					if (f == 1) {
-						navigateBackToScreen("Cut off Member Active Loan");
-						throw new Exception("");
-					}
-					appdriver.findElementById("com.microware.cdfi:id/btn_no").click();
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "007:Second Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "007:Second Member's Active Loans");
-					System.out.println("007:Second Member's Active Loans");
+					pseq(7,"007: Loan Request(MCP)");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "007:Second Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "007:Second Member's Active Loans");
-					System.out.println("Error in Second Member's Active Loans:007----------------------Check Here////");
-					e.printStackTrace();
+					fseq(7,"007: Loan Request(MCP)",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
+				//Loan Disbursement
 			case 8:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_active_loan").click();
+					mt.scrollToText("Loan Disbursement", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_loandisbursement").click();
+					
+					String name="";
+					int editbtn=0;
+					String purpose="";
+					f=0;
+					
+					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 
-					if (memNum >= 2) {
+					try {
+						boolean flag = false;
+						java.util.List<AndroidElement> table = appdriver.findElementsByXPath(
+								"//android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]");
 
-						appdriver.findElementByXPath("/android.widget.LinearLayout[3]/android.widget.FrameLayout/"
-								+ "android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow/"
-								+ "android.widget.ImageView").click();
-						/*
-						 * enterValue_Id( "", //title "top", //scroll direction "", //location row,//row
-						 * cutoffCons,//column number ":||Validation Error||");//Error Message
-						 */
-						select("Fund Source", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_loan_type", // location
-								row, // row
-								cutoffCons.FundSource_8);// column number
-						enterValue_Id("Disbursed Loan Amount", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_original_loan_amount", // location
-								row, // row
-								cutoffCons.DisbursedLoanAmount_108, // column number
-								"108:||Validation Error||");// Error Message
-						enterValue_Id("Principal Repaid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_repaid", // location
-								row, // row
-								cutoffCons.PrincipalRepaid_208, // column number
-								"308:||Validation Error||");// Error Message
-						enterValue_Id("Principal Outstanding (including Arrears)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_amount", // location
-								row, // row
-								cutoffCons.PrincipalOutstandingIncludingArrears_308, // column number
-								"308:||Validation Error||");// Error Message
-						enterValue_Id("Principal Arrears", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_principal_overdue", // location
-								row, // row
-								cutoffCons.PrincipalArrears_408, // column number
-								"408:||Validation Error||");// Error Message
-						enterValue_Id("Interest Rate (Annualy)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_monthly_interest_rate", // location
-								row, // row
-								cutoffCons.InterestRateAnnually_508, // column number
-								"508:||Validation Error||");// Error Message
-						enterValue_Id("Interest Paid", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_paid", // location
-								row, // row
-								cutoffCons.InterestPaid_608, // column number
-								"608:||Validation Error||");// Error Message
-						enterValue_Id("Overdue Interest (if any)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_interest_overdue", // location
-								row, // row
-								cutoffCons.OverdueInterest_708, // column number
-								"708:||Validation Error||");// Error Message
-						enterValue_Id("Total Overdue", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_overdue", // location
-								row, // row
-								cutoffCons.TotalOverdue_808, // column number
-								"808:||Validation Error||");// Error Message
-						mt.scrollToText("Loan Disbursement Date", "top");
-						dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDate_908),
-								"com.microware.cdfi:id/et_date_loan_taken");
-						select("Mode of Receipt", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/tv_mode_of_payment", // location
-								row, // row
-								cutoffCons.ModeofReceipt_1008);// column number
-						enterValue_Id("Period (Months)", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_no_of_installment", // location
-								row, // row
-								cutoffCons.PeriodMonths_1108, // column number
-								"1108:||Validation Error||");// Error Message
-						select("Loan Repayment Frequency", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_frequency", // location
-								row, // row
-								cutoffCons.LoanRepaymentFrequency_1208);// column number
-						select("Purpose", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_purpose", // location
-								row, // row
-								cutoffCons.Purpose_1308);// column number
-
-					} else {
-						invalid_flag = true;
+						while (true) {
+							int k = 0;
+							for (k = 1; k <= table.size(); k++) {
+								if (appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
+										+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]")
+										.getText().equals("0")) {
+									continue;
+								} else {
+									flag = true;
+									name=appdriver.findElementByXPath("//android.widget.LinearLayout["+k+"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[2]").getText();
+									editbtn=k;
+								}
+							}
+							if (flag)
+								break;
+							mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k - 1)
+									+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TextView[4]",
+									"xpath", "top");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 
-					if (invalid_flag)
+					
+					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Fund_Source_406)));j++) {
+						
+						
+						
+						if(f==1)
+						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_membername",
+								"/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
+						
+						enterString_Id("Demand (Amount)","top","com.microware.cdfi:id/et_demand_amount",j,regCons.Demand_Amount_7,"007");
+												
+						selectById("Demand (Purpose)", "top", "com.microware.cdfi:id/spin_demand_purpose", j, regCons.Demand_Purpose_107);
+																		
+						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_Upto_207), "com.microware.cdfi:id/et_priority_valid_upto");
+						
+						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
+					}		
+					
+					if (f == 1)
 						throw new Exception("");
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Do you want to change the EMI schedule?", row);
-					if (f == 1) {
-						navigateBackToScreen("Cut off Member Active Loan");
-						throw new Exception("");
-					}
-					appdriver.findElementById("com.microware.cdfi:id/btn_no").click();
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "008:Third Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "008:Third Member's Active Loans");
-					System.out.println("008:Third Member's Active Loans");
+					pseq(8,"008: Loan Disbursement");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "008:Third Member's Active Loans");
-					else
-						testMeet.log(Status.PASS, "008:Third Member's Active Loans");
-					System.out.println("Error in Third Member's Active Loans:008----------------------Check Here////");
-					e.printStackTrace();
+					fseq(8,"008: Loan Disbursement",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
-				// Member's Share Capital
+				//Withdrawal
 			case 9:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_share_capital").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					enterValue_Id("Share Capital", // title
-							"top", // scroll direction
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText", // location
-							row, // row
-							cutoffCons.ShareCapital_9, // column number
-							"009:||Validation Error||");// Error Message
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
+					mt.scrollToText("Withdrawal", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_withdrawl").click();
 
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText",
-								"xpath", "top");
+					String purpose="";
+					f=0;					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Amount_9)));j++) {
+						
+						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[4]").click();
+						enterString_Id("Amount","top","com.microware.cdfi:id/et_amount_paid_to_member",j,regCons.Amount_9,"009");
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+						
+					}		
+					
+					if (f == 1)
+						throw new Exception("");
 
-						appdriver.findElementByXPath("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.ShareCapital_9) + "");
-					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "009:Member's Share Capital");
-					else
-						testMeet.log(Status.PASS, "009:Member's Share Capital");
-					System.out.println("009:Member's Share Capital");
+					pseq(9,"009: Withdrawal");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "009:Member's Share Capital");
-					else
-						testMeet.log(Status.PASS, "009:Member's Share Capital");
-					System.out.println("Error in Member's Share Capital:009----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(9,"009: Withdrawal",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
-				// Membership fee
+				//Group Investment
 			case 10:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_membership_fee").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					enterValue_Id("Membership Fee", // title
-							"top", // scroll direction
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText", // location
-							row, // row
-							cutoffCons.MembershipFee_10, // column number
-							"010:||Validation Error||");// Error Message
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
+					mt.scrollToText("New Borrowings", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_group_investment").click();
 
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText",
-								"xpath", "top");
+					String purpose="";
+					f=0;					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Investment_at_10)));j++) {
+						
+						if((f==1)&&(j>(row+1)))
+							appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
+						else if(j==(row+1))
+							appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
+						else
+							appdriver.findElementById("com.microware.cdfi:id/ivEdit").click();
+						
+						selectById("Investment at","top","com.microware.cdfi:id/spin_source",j,regCons.Investment_at_10);
 
-						appdriver.findElementByXPath("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.FrameLayout/android.widget.TableRow/android.widget.EditText")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.MembershipFee_10) + "");
-					}
+						selectById("Type of Saving", "top", "com.microware.cdfi:id/spin_saving_type", j, regCons.Type_of_Saving_110);
+																							
+						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_210);
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
+						if (!xc.getCellString(j, regCons.Mode_of_Receipt_210).equals("Cash")) {
+							selectById("Bank name", "top", "com.microware.cdfi:id/spin_BankName", j, regCons.Bank_310);
+							enterString_Id("Cheque number/Transaction number", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_410,
+									"410");
+						}
+						selectById("Type of Loan", "top", "com.microware.cdfi:id/spin_type_of_loan", j, regCons.Type_of_Loan_511);
+												
+						enterString_Id("Amount Withdrawn","top","com.microware.cdfi:id/et_amount_disbursed",j,regCons.Amount_Withdrawn_611,"611");
+						
+						enterString_Id("Interest Rate (Annualy)","top","com.microware.cdfi:id/et_interest_rate",j,regCons.Interest_Rate_Annualy_711,"711");
+						
+						enterString_Id("Period (Months)","top","com.microware.cdfi:id/et_period_months",j,regCons.Period_Months_811,"811");
+						
+						enterString_Id("Moratorium Period","top","com.microware.cdfi:id/et_moratorium_period",j,regCons.Period_Months_811,"811");
+						
+						selectById("Loan Repayment Frequency","top","com.microware.cdfi:id/spin_frequency",j,regCons.Loan_Repayment_Frequency_1011);
+						
+						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_1111);
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "010:Membership Fee");
-					else
-						testMeet.log(Status.PASS, "010:Membership Fee");
-					System.out.println("010:Membership Fee");
+						if (!xc.getCellString(j, regCons.Mode_of_Receipt_1111).equals("Cash")) {
+							selectById("Bank name", "top", "com.microware.cdfi:id/spin_BankName", j, regCons.Bank_1211);
+							enterString_Id("Cheque number/Transaction number", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_1311,
+									"1311");
+						}
+												
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
+
+						
+						
+					}		
+					
+					if (f == 1)
+						throw new Exception("");
+
+					pseq(10,"010: Group Investment");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "010:Membership Fee");
-					else
-						testMeet.log(Status.PASS, "010:Membership Fee");
-					System.out.println("Error in Membership Fee:010----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(10,"010: Group Investment",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
-					break;
-				// Group Investment
+					break;				
+				//New Borrowings
 			case 11:
 				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_group_investment").click();
-					appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-					select("Investment at", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_source", // location
-							row, // row
-							cutoffCons.InvestmentAtGroup_11); // column number
-					select("Type of Saving", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_saving_type", // location
-							row, // row
-							cutoffCons.TypeofSaving_111); // column number
-					enterValue_Id("Amount", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_amount", // location
-							row, // row
-							cutoffCons.Amount_211, // column number
-							"211:||Validation Error||");// Error Message
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
+					mt.scrollToText("New Borrowings", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_new_borrowing").click();
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
+					String purpose="";
+					f=0;					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Institution_11)));j++) {
+						
+						if((f==1)&&(j>(row+1)))
+							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+						else if(j==(row+1))
+							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+						else
+							appdriver.findElementById("com.microware.cdfi:id/img_edit").click();
+						
+						selectById("Institution","top","com.microware.cdfi:id/spin_institution",j,regCons.Institution_11);
+												
+						enterString_Id("Loan Account No","top","com.microware.cdfi:id/et_loan_Refno",j,regCons.Loan_Account_No_111,"111");
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "011:Group Investment");
-					else
-						testMeet.log(Status.PASS, "011:Group Investment");
-					System.out.println("011:Group Investment");
+						dateLogic.datePicker(xc.getCellString(j, regCons.Disbursal_Date_211), "com.microware.cdfi:id/et_date_loan_taken");
+						
+						dateLogic.datePicker(xc.getCellString(j, regCons.Effective_Date_311), "com.microware.cdfi:id/tv_effective_date");
+						
+						selectById("Fund Source", "top", "com.microware.cdfi:id/spin_loan_type", j, regCons.Fund_Source_411);
+																							
+						selectById("Type of Loan", "top", "com.microware.cdfi:id/spin_type_of_loan", j, regCons.Type_of_Loan_511);
+												
+						enterString_Id("Amount Withdrawn","top","com.microware.cdfi:id/et_amount_disbursed",j,regCons.Amount_Withdrawn_611,"611");
+						
+						enterString_Id("Interest Rate (Annualy)","top","com.microware.cdfi:id/et_interest_rate",j,regCons.Interest_Rate_Annualy_711,"711");
+						
+						enterString_Id("Period (Months)","top","com.microware.cdfi:id/et_period_months",j,regCons.Period_Months_811,"811");
+						
+						enterString_Id("Moratorium Period","top","com.microware.cdfi:id/et_moratorium_period",j,regCons.Period_Months_811,"811");
+						
+						selectById("Loan Repayment Frequency","top","com.microware.cdfi:id/spin_frequency",j,regCons.Loan_Repayment_Frequency_1011);
+						
+						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_1111);
+
+						if (!xc.getCellString(j, regCons.Mode_of_Receipt_1111).equals("Cash")) {
+							selectById("Bank name", "top", "com.microware.cdfi:id/spin_BankName", j, regCons.Bank_1211);
+							enterString_Id("Cheque number/Transaction number", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_1311,
+									"1311");
+						}
+
+						
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if(f==1) {
+							try {
+							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							mt.scrollToText("New Borrowings","top");
+							appdriver.findElementById("com.microware.cdfi:id/tbl_new_borrowing").click();
+							}catch(Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+								mt.scrollToText("New Borrowings","top");
+								appdriver.findElementById("com.microware.cdfi:id/tbl_new_borrowing").click();
+							}
+						}						
+					}		
+					
+					if (f == 1)
+						throw new Exception("");
+
+					pseq(11,"011: New Borrowings");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "011:Group Investment");
-					else
-						testMeet.log(Status.PASS, "011:Group Investment");
-					System.out.println("Error in 011:Group Investment----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(11,"011: New Borrowings",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
-					break;
-				// Group's Closed Loan
+					break;				
+				//Receipt and income
 			case 12:
 				try {
-					mt.scrollToText("Group's Closed Loan", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_group_closed_loan_summarry").click();
-					appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-					select("Institution", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_loan_source", // location
-							row, // row
-							cutoffCons.InstitutionGrpClosedLoan_12); // column number
-					enterString_Id("Borrowed From", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_Org_name", // location
-							row, // row
-							cutoffCons.BorrowedFrom_112, // column number
-							"112:||Validation Error||");// Error Message
-					select("Fund Source", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_fund_type", // location
-							row, // row
-							cutoffCons.FundSource_212); // column number
-					enterValue_Id("Number of Loans", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/tv_number_loan", // location
-							row, // row
-							cutoffCons.NumberofLoans_312, // column number
-							"312:||Validation Error||");// Error Message
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
+					mt.scrollToText("Receipt & Income", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_recepient_and_income").click();
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
+					String purpose="";
+					f=0;					
+					for (int j = row + 1; j <= (row
+							+ Integer.valueOf(xc.getCellString(row, regCons.Received_from_12))); j++) {
+
+						appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
+
+						selectById("Received from", "top", "com.microware.cdfi:id/spin_received_from", j,
+								regCons.Received_from_12);
+						selectById("Receipt", "top", "com.microware.cdfi:id/spin_receipt", j, regCons.Receipt_112);
+						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_212);
+
+						if (!xc.getCellString(j, regCons.Mode_of_Receipt_212).equals("Cash")) {
+							selectById("Bank name", "top", "com.microware.cdfi:id/spin_BankName", j, regCons.Bank_312);
+							enterString_Id("Cheque number/Transaction number", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_412,
+									"412");
+						}
+						enterString_Id("Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_512,
+								"512");
+
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if (f == 1) {
+							try {
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							} catch (Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
 					}
+					
+					if (f == 1)
+						throw new Exception("");
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "012:Group's Closed Loans");
-					else
-						testMeet.log(Status.PASS, "012:Group's Closed Loans");
-					System.out.println("012:Group's Closed Loans");
+					pseq(12,"012: Receipt and Income");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "012:Group's Closed Loans");
-					else
-						testMeet.log(Status.PASS, "012:Group's Closed Loans");
-					System.out.println("Error in Group's Closed Loans:012----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(12,"012: Receipt and Income",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
-				// Group's Active Loan
+				//Loan Repayments
 			case 13:
 				try {
-					mt.scrollToText("Group Active Loan", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_group_summarry").click();
-					appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-					select("Institution", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_loan_source", // location
-							row, // row
-							cutoffCons.InstitutionGrpActiveLoan_13); // column number
-					enterString_Id("Borrowed From", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_Org_name", // location
-							row, // row
-							cutoffCons.BorrowedFrom_112, // column number
-							"112:||Validation Error||");// Error Message
-					if (xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("VO")
-							|| xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("CLF"))
-						select("Fund Source", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_fund_type", // location
-								row, // row
-								cutoffCons.FundSource_212); // column number
-					select("Type of Loan", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_type_loan", // location
-							row, // row
-							cutoffCons.TypeofLoan_413); // column number
-					mt.scrollToText("Loan Disbursement Date", "top");
-					dateLogic.datePicker(xc.getCellString(row, cutoffCons.LoanDisbursementDate_513),
-							"com.microware.cdfi:id/et_loanDisbursmentDate");
-					select("Mode of Receipt", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_mode_of_payment", // location
-							row, // row
-							cutoffCons.ModeofReceipt_813); // column number
-					if (xc.getCellString(row, cutoffCons.InstitutionGrpActiveLoan_13).equals("Bank")) {
-						select("Name of the Bank", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_bankname", // location
-								row, // row
-								cutoffCons.BankName_613); // column number
-						mt.scrollToText("Cheque number/Transaction number", "top");
-						appdriver.findElementById("com.microware.cdfi:id/et_cheque_no_transactio_no")
-								.sendKeys(xc.getCellString(row, cutoffCons.TransactionNumber_713).substring(1));
-						f = validCheckString("com.microware.cdfi:id/et_cheque_no_transactio_no", "id",
-								xc.getCellString(row, cutoffCons.TransactionNumber_713).substring(1),
-								"713:||Validation Error||");
-						if (f == 1)
-							invalid_flag = true;
-					}
-					enterValue_Id("Interest Rate (Annualy)", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_interest_rate", // location
-							row, // row
-							cutoffCons.InterestRateAnnually_913, // column number
-							"912:||Validation Error||");// Error Message
-					enterValue_Id("Amount Withdrawn", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_amount_disbursed", // location
-							row, // row
-							cutoffCons.AmountWithdrawn_1013, // column number
-							"1013:||Validation Error||");// Error Message
-					enterValue_Id("Original Period(in Months)", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_original_period_months", // location
-							row, // row
-							cutoffCons.OriginalPeriodInMonths_1113, // column number
-							"1113:||Validation Error||");// Error Message
-					enterValue_Id("Total Outstanding Period(in Months)", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/tv_outstanding_period_months", // location
-							row, // row
-							cutoffCons.TotalOutstandingPeriod_1213, // column number
-							"1213:||Validation Error||");// Error Message
-					enterValue_Id("Remaining Period(in Months)", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_remaining_period_months", // location
-							row, // row
-							cutoffCons.RemainingPeriod_1313, // column number
-							"1313:||Validation Error||");// Error Message
-					enterValue_Id("Principal Repaid", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_principal_repaid", // location
-							row, // row
-							cutoffCons.PrincipalRepaid_1413, // column number
-							"1413:||Validation Error||");// Error Message
-					enterValue_Id("Principal Arrears", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_principal_overdue", // location
-							row, // row
-							cutoffCons.PrincipalArrears_1513, // column number
-							"1513:||Validation Error||");// Error Message
+					mt.scrollToText("Loan Repayment", "top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_group_loan_repayment").click();
 
-					enterValue_Id("Interest Arrears", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_interest_overdue", // location
-							row, // row
-							cutoffCons.InterestArrears_1613, // column number
-							"1613:||Validation Error||");// Error Message
-					select("Repayment Frequency", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/tv_repayment_frequency", // location
-							row, // row
-							cutoffCons.RepaymentFrequency_1713);// column number
+					String purpose="";
+					f=0;					
+					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
+						
+						
+						
+					}		
+					
+					if (f == 1)
+						throw new Exception("");
 
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Do you want to change the EMI schedule?", row);
-					if (f == 1) {
-						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						throw new Exception("Save Failed");
-					}
-					appdriver.findElementById("com.microware.cdfi:id/btn_no");
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "013:Group's Active Loans");
-					else
-						testMeet.log(Status.PASS, "013:Group's Active Loans");
-					System.out.println("013:Group's Active Loans");
+					pseq(13,"013: Loan repayment");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "013:Group's Active Loans");
-					else
-						testMeet.log(Status.PASS, "013:Group's Active Loans");
-					System.out.println("Error in Group's Active Loans:013----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(13,"013: Loan Repayment",e);
 				} finally {
 					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
-				// Fund Received
+				//Expenditure and Payment
 			case 14:
 				try {
-					mt.scrollToText("Fund Received", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tv_fundReceived").click();
-					appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-					select("Source", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_received_from", // location
-							row, // row
-							cutoffCons.SourceFundReceived_14); // column number
-					select("Fund Source", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_receipt", // location
-							row, // row
-							cutoffCons.FundSource_114); // column number
-					select("Mode of Receipt", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/spin_mode_of_payment", // location
-							row, // row
-							cutoffCons.ModeofReceipt_214); // column number
-					enterValue_Id("Total Amount Received", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_amount", // location
-							row, // row
-							cutoffCons.TotalAmountReceived_314, // column number
-							"314:||Validation Error||");// Error Message
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
+					mt.scrollToText("Expenditure & Payment","top");
+					appdriver.findElementById("com.microware.cdfi:id/tbl_expenditure_and_payment").click();
 
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
+					f = 0;
+					for (int j = row + 1; j <= (row
+							+ Integer.valueOf(xc.getCellString(row, regCons.Paid_To_14))); j++) {
+
+						appdriver.findElementById("com.microware.cdfi:id/ivAdd").click();
+
+						selectById("Paid To", "top", "com.microware.cdfi:id/spin_paidTo", j, regCons.Paid_To_14);
+						selectById("Payment", "top", "com.microware.cdfi:id/spin_payment", j, regCons.Payment_114);
+						selectById("Mode of payment", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Payment_214);
+
+						if (!xc.getCellString(j, regCons.Mode_of_Payment_214).equals("Cash")) {
+							selectById("Bank name", "top", "com.microware.cdfi:id/spin_BankName", j, regCons.Bank_314);
+							enterString_Id("Cheque number/Transaction number", "top",
+									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_414,
+									"414");
+						}
+						enterString_Id("", "top", "", j, regCons.Amount_514, "514");
+
+						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+						f = validOnSave("", row);
+						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+						if (f == 1) {
+							try {
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							} catch (Exception e) {
+								randomPressLogic.press(0.5, 0.05);
+								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+							}
+						}
 					}
+					
+					if (f == 1)
+						throw new Exception("");
 
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "014:Funds Received");
-					else
-						testMeet.log(Status.PASS, "014:Funds Received");
-					System.out.println("014:Funds Received");
+					pseq(14,"014: Expenditure and Payment");
 				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "014:Funds Received");
-					else
-						testMeet.log(Status.PASS, "014:Funds Received");
-					System.out.println("Error in Funds Received:014----------------------Check Here////");
-					e.printStackTrace();
-
+					fseq(14,"014: Expenditure and Payment",e);
 				} finally {
 					count++;
-					invalid_flag = false;
-					navigateBackToScreen("Meeting Menu");
-				}
-				if (id != 000)
-					break;
-				// Group Cash Balance
-			case 15:
-				try {
-					mt.scrollToText("Group Cash Balance", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_cashBox").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-
-					enterValue_Id("Cash In Hand", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_cashInHand", // location
-							row, // row
-							cutoffCons.CashinHand_15, // column number
-							"015:||Validation Error||");// Error Message
-
-					enterValue_Id("Cash In Transit", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_TransitCash", // location
-							row, // row
-							cutoffCons.CashinTransit_115, // column number
-							"115:||Validation Error||");// Error Message
-					mt.scrollToText("Date of Balance taken", "top");
-					dateLogic.datePicker(xc.getCellString(row, cutoffCons.DateofBalanceofTaken_215),
-							"com.microware.cdfi:id/et_BalanceDate");
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "015:Group Cash Balance");
-					else
-						testMeet.log(Status.PASS, "015:Group Cash Balance");
-					System.out.println("015:Group Cash Balance");
-				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "015:Group Cash Balance");
-					else
-						testMeet.log(Status.PASS, "015:Group Cash Balance");
-					System.out.println("Error in Group Cash Balance:015----------------------Check Here////");
-					e.printStackTrace();
-
-				} finally {
-					count++;
-					invalid_flag = false;
-					navigateBackToScreen("Meeting Menu");
-				}
-				if (id != 000)
-					break;
-				// Group Bank Balance
-			case 16:
-				try {
-					mt.scrollToText("Group Bank Balance", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_bank").click();
-					appdriver.findElementById("com.microware.cdfi:id/ivEdit").click();
-					/*
-					 * enterValue_Id( "",//title "top",//scroll direction "",//location row,//row
-					 * cutoffCons,//column number ":||Validation Error||");//Error Message
-					 */
-					enterValue_Id("Cash at Bank", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_cashatBank", // location
-							row, // row
-							cutoffCons.CashinHand_15, // column number
-							"015:||Validation Error||");// Error Message
-
-					enterValue_Id("Cheque issued but amount not debited", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_amountNotRealised", // location
-							row, // row
-							cutoffCons.ChequeIssuedNotDebited_216, // column number
-							"216:||Validation Error||");// Error Message
-					enterValue_Id("Cheque received but amount not credited", // title
-							"top", // scroll direction
-							"com.microware.cdfi:id/et_amountNotCredited", // location
-							row, // row
-							cutoffCons.ChequeReceivedNotCredited_316, // column number
-							"316:||Validation Error||");// Error Message
-					mt.scrollToText("Date of Balance taken", "top");
-					dateLogic.datePicker(xc.getCellString(row, cutoffCons.DateofBalance_416),
-							"com.microware.cdfi:id/et_BalanceDate");
-					if (invalid_flag)
-						throw new Exception("Validation Failed");
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("Blank", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1) {
-						throw new Exception("Save Failed");
-					}
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "016:Group Bank Balance");
-					else
-						testMeet.log(Status.PASS, "016:Group Bank Balance");
-					System.out.println("016:Group Bank Balance");
-				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "016:Group Bank Balance");
-					else
-						testMeet.log(Status.PASS, "016:Group Bank Balance");
-					System.out.println("Error in Group Bank Balance:016----------------------Check Here////");
-					e.printStackTrace();
-
-				} finally {
-					count++;
-					invalid_flag = false;
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
@@ -1453,13 +1018,26 @@ public class regularMeetings extends lokosTest {
 			invalid_flag = true;
 	}
 
-	public static void select(String title, String dir, String loc, int row, int cons) {
+	public static void selectById(String title, String dir, String loc, int row, int cons) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).click();
+		appdriver
+				.findElement(
+						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+				.click();
+	}
+	public static void selectByXpath(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
 		appdriver.findElementByXPath(loc).click();
 		appdriver
 				.findElement(
 						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
 				.click();
+	}
+	public static void selectFirstOptionById(String title, String dir, String loc, String xpath) {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).click();
+		appdriver.findElementByXPath(xpath).click();
 	}
 	
 	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err, String prefix) {
@@ -1531,7 +1109,7 @@ public class regularMeetings extends lokosTest {
 		else {
 			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 			testMeet.log(Status.FAIL, "ex");
-			ExtentManager.addScreenShotsToLogFail("SHG Meetings:ex", testMeet);
+			ExtentManager.addScreenShotsToLogFail("SHG Meetings "+ex, testMeet);
 			System.out.println("Error: " + ex);
 			if (neg_test_flag) {
 				try {
@@ -1557,13 +1135,14 @@ public class regularMeetings extends lokosTest {
 	}
 
 	public static void navigateBackToScreen(String screen_title) throws Exception {
+		Thread.sleep(1000);
 		int i = 0;
 		String title = "";
 		while (i < 3) {
 			try {
 				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
 			} catch (Exception e) {
-				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				backButton.back();
 				i++;
 			}
 			break;
@@ -1572,13 +1151,15 @@ public class regularMeetings extends lokosTest {
 		i = 0;
 		try {
 			while (!title.equals(screen_title)) {
-				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
+				backButton.back();
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
 					break;
 				i++;
 			}
 		} catch (Exception e) {
-			throw new Exception("Cannot navigate to " + screen_title + " screen");
+			ExtentManager.addScreenShotsToTest("Navigate Back to Screen", testMem);
+			System.out.println("Cannot navigate to " + screen_title + " screen");
+			e.printStackTrace();
 		}
 	}
 	public static void fillColumnFields(String entry,int memNum,String a, String b, String c) {
@@ -1607,6 +1188,27 @@ public class regularMeetings extends lokosTest {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void pseq(int id, String msg) {
+		pass++;
+		reg_check[1][id] = 1;
+		if (neg_test_flag)
+			testMeet.log(Status.FAIL, msg);
+		else
+			testMeet.log(Status.PASS, msg);
+		System.out.println(msg);
+	}
+
+	public static void fseq(int id, String msg, Exception e) {
+		fail++;
+		reg_check[1][id] = -1;
+		if (!neg_test_flag)
+			testMeet.log(Status.FAIL, msg);
+		else
+			testMeet.log(Status.PASS, msg);
+		System.out.println("Error in " + msg + "----------------------Check Here////");
+		e.printStackTrace();
 	}
 
 }
