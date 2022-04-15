@@ -17,6 +17,20 @@ public class cameraLogic extends lokosTest {
 			Thread.sleep(3000);
 			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"OK\")")).click();
 			Thread.sleep(1000);
+			appdriver.findElementById("com.microware.cdfi:id/crop_image_menu_crop").click();
+			Thread.sleep(1000);
+		} else if (app.launchAppConstants.UDID.equals("")) {
+			Thread.sleep(3000);
+			appdriver.findElementById("com.sec.android.app.camera:id/normal_center_button").click();
+			Thread.sleep(3000);
+			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"OK\")")).click();
+			Thread.sleep(1000);
+		} else if (app.launchAppConstants.UDID.equals("")) {
+			Thread.sleep(3000);
+			appdriver.findElementById("com.sec.android.app.camera:id/normal_center_button").click();
+			Thread.sleep(3000);
+			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"OK\")")).click();
+			Thread.sleep(1000);
 		}
 	}
 }

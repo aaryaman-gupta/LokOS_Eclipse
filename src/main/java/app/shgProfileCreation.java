@@ -493,7 +493,6 @@ public class shgProfileCreation extends lokosTest {
 						break;
 
 				case 18:
-
 					try {
 						if (!xc.getCellString(row, profileCons.typeColNum).equals("New SHG")) {
 							if (!xc.getCellString(row, memCons.typeColNum).equals("New")) {

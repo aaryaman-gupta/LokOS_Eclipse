@@ -2,16 +2,16 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2022-04-05T16:57:17 IST" name="Default suite" finished-at="2022-04-05T16:59:35 IST" duration-ms="138568">
+  <suite started-at="2022-04-14T18:18:17 IST" name="Default suite" finished-at="2022-04-14T18:27:05 IST" duration-ms="528235">
     <groups>
     </groups>
-    <test started-at="2022-04-05T16:57:17 IST" name="Default test" finished-at="2022-04-05T16:59:35 IST" duration-ms="138568">
-      <class name="app.regularMeetings">
-        <test-method signature="startApp()[pri:0, instance:app.regularMeetings@48ae9b55]" started-at="2022-04-05T16:57:17 IST" name="startApp" finished-at="2022-04-05T16:59:35 IST" duration-ms="138531" status="PASS">
+    <test started-at="2022-04-14T18:18:17 IST" name="Default test" finished-at="2022-04-14T18:27:05 IST" duration-ms="528235">
+      <class name="app.memberProfile">
+        <test-method signature="startApp()[pri:0, instance:app.memberProfile@6a28ffa4]" started-at="2022-04-14T18:18:17 IST" name="startApp" finished-at="2022-04-14T18:27:05 IST" duration-ms="528207" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- startApp -->
-      </class> <!-- app.regularMeetings -->
+      </class> <!-- app.memberProfile -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

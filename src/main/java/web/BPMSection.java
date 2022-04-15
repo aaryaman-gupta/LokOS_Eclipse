@@ -37,12 +37,12 @@ public class BPMSection extends LoginTest {
 			for (int i = 0; i < shgListPageCount; i++) {
 				Thread.sleep(1500);
 				System.out.println("Name SHG: " + xc.getCellString(row, profileCons.shgNameColNum));
-				shgPresent_flag = LoginTest.isElementPresent(By.linkText(shg));
+				shgPresent_flag = LoginTest.isElementPresent(By.partialLinkText(shg));
 				if ((!shgPresent_flag) && (i < shgListPageCount - 1))
 					driver.findElement(By.xpath(BPMConstants.selectSHG_NextPageButtonPath)).click();
 				else if (shgPresent_flag) {
 					Thread.sleep(1500);
-					driver.findElement(By.linkText(shg)).click();
+					driver.findElement(By.partialLinkText(shg)).click();
 					Thread.sleep(5000);
 					driver.findElement(By.linkText("Members")).click();
 					Thread.sleep(2000);

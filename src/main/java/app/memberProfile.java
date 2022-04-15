@@ -648,8 +648,8 @@ public class memberProfile extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							enterLongNum_Id("Account number", "top", "com.microware.cdfi:id/et_Accountno", row,
-									memCons.accNoColNum, "423:||Validation Error","#");
+							mt.scrollToText("Account number", "top");							
+							appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(xc.getCellString(row,memCons.accNoColNum).substring(1));
 							enterLongNum_Id("Re-Type Account No.", "top", "com.microware.cdfi:id/et_retype_Accountno",
 									row, memCons.retypAccNoColNum, "523:||Validation Error","#");
 							String date = xc.getCellString(row, memCons.accOpDateColNum);
@@ -664,7 +664,9 @@ public class memberProfile extends lokosTest {
 								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 								throw new Exception("Invalid Account Number");
 							}
-
+							
+							if (invalid_flag)
+								throw new Exception("Validation Failed");
 							try {
 								if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 										.equals("Data Updated Successfully")
@@ -1131,7 +1133,14 @@ public class memberProfile extends lokosTest {
 				i++;
 			}
 		} catch (Exception e) {
-			throw new Exception("Cannot navigate to " + screen_title + " screen");
+			if(!title.equals("Member")) {
+				System.out.println("Cannot navigate to " + screen_title + " screen");
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+			}
+			else {
+				e.printStackTrace();	
+				throw new Exception("Cannot navigate to " + screen_title + " screen");
+			}
 		}
 	}
 

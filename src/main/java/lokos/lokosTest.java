@@ -60,6 +60,7 @@ public class lokosTest {
 		System.out.println("=====================================================================================");
 		test.log(Status.INFO, "Start Test");
 		xc = new xlsClasses(System.getProperty("user.dir") + flowCons.xlsName, flowCons.sheetName);
+//		web.LoginTest.startWeb();
 		app.launchLokOS.launchLokos();
 		test.log(Status.PASS, "LokOS Successfully Launched");
 		System.out.println("Lokos Successfully Launched");
@@ -279,7 +280,7 @@ public class lokosTest {
 					if (webProcess_flag) {
 						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
 						System.out.println("Web Flow Commencing in 3 minutes");
-//						Thread.sleep(180000);
+						Thread.sleep(180000);
 						web.LoginTest.startWeb();
 					}
 					
@@ -343,6 +344,8 @@ public class lokosTest {
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();
 
+				}else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Web")) {
+					web.LoginTest.startWeb();
 				}
 
 				test.log(Status.PASS, "Flow number " + r + " complete");
