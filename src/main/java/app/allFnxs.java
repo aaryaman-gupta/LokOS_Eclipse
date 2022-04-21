@@ -1,5 +1,7 @@
 package app;
 
+import java.io.IOException;
+
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 
@@ -35,240 +37,536 @@ public class allFnxs {
 	}
 	
 	
-	public String enterStringById(ExtentTest test,String title, String dir, String loc, int row, int col, String id, String errid,Boolean neg_test) {
-		String err="";
-		if(neg_test) {
-			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
-			}
-		}
-		
+	public String enterStringById(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			String errid, boolean neg_test) {
 		try {
-		System.out.println("Processing Details: "+title+"(id"+id+")");
-		String entry=xc.getCellString(row, col);
-		if(!dir.equals(""))
-			mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(entry);
-		String f = validCheckString(test, loc, "id", entry, errid);
-		if (f.equals("fail"))
-			throw new Exception("Validation Failed");
-		}catch(Exception e) {
-			e.printStackTrace();
-			System.out.println("Failed Field Entry");
-			if(!err.equals("n"))
-				test.log(Status.FAIL, title+"(id"+id+")");
-			else
-				test.log(Status.PASS, title+"(id"+id+")");
-			return "fail";
-		}
-		System.out.println("Field Processed");
-		if(!err.equals("n"))
-			test.log(Status.PASS, title+"(id"+id+")");
-		else
-			test.log(Status.FAIL, title+"(id"+id+")");
-		return "pass";
-	}
-
-	public  String enterStringByXpath(ExtentTest test,String title, String dir, String loc, int row, int col, String id, String errid,boolean neg_test) {
-		String err="p";
-		if(neg_test) {
-			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
-			}
-		}
-		try {
-		System.out.println("Processing Details: "+title+"(id"+id+")");
-		String entry=xc.getCellString(row, col);
-		if(!dir.equals(""))
-			mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).sendKeys(entry);
-		String f = validCheckString(test, loc, "xpath", entry, errid);
-		if (f.equals("fail"))
-			throw new Exception("Validation Failed");
-		}catch(Exception e) {
-			e.printStackTrace();
-			System.out.println("Failed Field Entry");
-			if(!err.equals("n"))
-				test.log(Status.FAIL, title+"(id"+id+")");
-			else
-				test.log(Status.PASS, title+"(id"+id+")");
-			return "fail";
-		}
-		System.out.println("Field Processed");
-
-		if(!err.equals("n"))
-			test.log(Status.PASS, title+"(id"+id+")");
-		else
-			test.log(Status.FAIL, title+"(id"+id+")");
-		return "pass";
-	}
-
-	public String selectById(ExtentTest test,String title, String dir, String loc, int row, int col,String id,boolean neg_test) {
-		@SuppressWarnings("unused")
-		String err="p";
-		if(neg_test) {
-			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
-			}
-		}
-		try {
-			System.out.println("Processing Details: " + title + "(id" + id + ")");
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			Thread.sleep(1500);
 			String entry = xc.getCellString(row, col);
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir);
-			appdriver.findElementById(loc).click();
-			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+			appdriver.findElementById(loc).clear();
+			try {
+				appdriver.findElementById(loc).sendKeys(entry);
+			} catch (Exception e) {
+				String err = "p";
+				if (neg_test) {
+					try {
+						err = xc.getCellString(row, col + 1);
+					} catch (Exception e2) {
+						err = "p";
+					}
+					if (!err.equals("n")) {
+						System.out.println(e.getMessage());
+						ExtentManager.addScreenShotsToLogFail("Failed Entry", test);
+						System.out.println("Failed Field Entry");
+						test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "fail";
+
+					} else {
+						System.out.println("Field Processed");
+						test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "pass";
+					}
+				}
+			}
+			String f = validCheckString(test, loc, "id", row, col, entry, errid, neg_test);
+			if (f.equals("fail"))
+				throw new Exception("Validation Failed");
 		} catch (Exception e) {
-			util.randomPressLogic.press(0.5, 0.05);
-			e.printStackTrace();
-			System.out.println("Failed Selection");
-			test.log(Status.FAIL, title + "(id" + id + ")");
+			System.out.println(e.getMessage());
+			System.out.println("Failed Field Entry");
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
 			return "fail";
 		}
 		System.out.println("Field Processed");
-		test.log(Status.PASS, title + "(id" + id + ")");
+		test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
 		return "pass";
-		
 	}
-	public String selectByXpath(ExtentTest test,String title, String dir, String loc, int row, int col, String id,boolean neg_test) {
-		@SuppressWarnings("unused")
-		String err="p";
-		if(neg_test) {
-			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
-			}
-		}
+
+	public String enterStringByXpath(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			String errid, boolean neg_test) {
 		try {
-			System.out.println("Processing Details: " + title + "(id" + id + ")");
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			Thread.sleep(1500);
 			String entry = xc.getCellString(row, col);
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir);
-			appdriver.findElementByXPath(loc).click();
-			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+			appdriver.findElementById(loc).clear();
+			try {
+				appdriver.findElementById(loc).sendKeys(entry);
+			} catch (Exception e) {
+				String err = "p";
+				if (neg_test) {
+					try {
+						err = xc.getCellString(row, col + 1);
+					} catch (Exception e2) {
+						err = "p";
+					}
+					if (!err.equals("n")) {
+						System.out.println(e.getMessage());
+						ExtentManager.addScreenShotsToLogFail("Failed Entry", test);
+						System.out.println("Failed Field Entry");
+						test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "fail";
+
+					} else {
+						System.out.println("Field Processed");
+						test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "pass";
+					}
+				}
+			}
+			String f = validCheckString(test, loc, "id", row, col, entry, errid, neg_test);
+			if (f.equals("fail"))
+				throw new Exception("Validation Failed");
 		} catch (Exception e) {
-			util.randomPressLogic.press(0.5, 0.05);
-			e.printStackTrace();
-			System.out.println("Failed Selection");
-			test.log(Status.FAIL, title + "(id" + id + ")");
+			System.out.println(e.getMessage());
+			System.out.println("Failed Field Entry");
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
 			return "fail";
 		}
 		System.out.println("Field Processed");
-		test.log(Status.PASS, title + "(id" + id + ")");
+		test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
 		return "pass";
 	}
-	public String selectCustomById(ExtentTest test,String title, String dir, String loc, String xpath,int row,int col, String id,boolean neg_test) {
-		@SuppressWarnings("unused")
-		String err="p";
-		if(neg_test) {
+
+	public String enterNumById(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			String errid, boolean neg_test) {
+
+		try {
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			Thread.sleep(1500);
+			String entry = xc.getCellString(row, col);
+			if (!dir.equals(""))
+				mt.scrollToText(title, dir);
+			appdriver.findElementById(loc).clear();
 			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
+				appdriver.findElementById(loc).sendKeys(entry);
+			} catch (Exception e) {
+				String err = "p";
+				if (neg_test) {
+					try {
+						err = xc.getCellString(row, col + 1);
+					} catch (Exception e2) {
+						err = "p";
+					}
+					if (!err.equals("n")) {
+						System.out.println(e.getMessage());
+						ExtentManager.addScreenShotsToLogFail("Failed Entry", test);
+						System.out.println("Failed Field Entry");
+						test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "fail";
+
+					} else {
+						System.out.println("Field Processed");
+						test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "pass";
+					}
+				}
+			}
+			String f = validCheckNum(test, loc, "id", row, col, entry, errid, neg_test);
+			if (f.equals("fail"))
+				throw new Exception("Validation Failed");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println("Failed Field Entry");
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			return "fail";
+		}
+		System.out.println("Field Processed");
+		test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+		return "pass";
+	}
+
+	public String enterNumByXpath(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			String errid, boolean neg_test) {
+
+		try {
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			Thread.sleep(1500);
+			String entry = xc.getCellString(row, col);
+			if (!dir.equals(""))
+				mt.scrollToText(title, dir);
+			appdriver.findElementByXPath(loc).clear();
+			try {
+				appdriver.findElementByXPath(loc).sendKeys(entry);
+			} catch (Exception e) {
+				String err = "p";
+				if (neg_test) {
+					try {
+						err = xc.getCellString(row, col + 1);
+					} catch (Exception e2) {
+						err = "p";
+					}
+					if (!err.equals("n")) {
+						System.out.println(e.getMessage());
+						ExtentManager.addScreenShotsToLogFail("Failed Entry", test);
+						System.out.println("Failed Field Entry");
+						test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "fail";
+
+					} else {
+						System.out.println("Field Processed");
+						test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+						return "pass";
+					}
+				}
+			}
+			String f = validCheckNum(test, loc, "xpath", row, col, entry, errid, neg_test);
+			if (f.equals("fail"))
+				throw new Exception("Validation Failed");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println("Failed Field Entry");
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			return "fail";
+		}
+		System.out.println("Field Processed");
+		test.log(Status.PASS, title + "(id" + id + ")>>" + xc.getCellString(row, col));
+		return "pass";
+	}
+
+	public String selectById(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			boolean neg_test) {
+		String entry="";
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
 			}
 		}
-		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).click();
-		appdriver.findElementByXPath(xpath).click();
 		try {
-			System.out.println("Processing Details: " + title + "(id" + id + ")");
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>"+xc.getCellString(row, col));
+			entry = xc.getCellString(row, col);
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir);
 			appdriver.findElementById(loc).click();
-			appdriver.findElementByXPath(xpath).click();
-		} catch (Exception e) {
-			util.randomPressLogic.press(0.5, 0.05);
+			try {
+			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+			}catch(Exception e) {
+				System.out.println(e.getMessage());
+				backButton.back();
+				throw new Exception("Cannot detect option");
+			}
+		} catch (Exception e) {			
 			e.printStackTrace();
 			System.out.println("Failed Selection");
-			test.log(Status.FAIL, title + "(id" + id + ")");
-			return "fail";
-		}
-		System.out.println("Field Processed");
-		test.log(Status.PASS, title + "(id" + id + ")");
-		return "pass";
-	}
-	public String selectCustomByXPath(ExtentTest test,String title, String dir, String loc, String xpath,int row, int col,String id,boolean neg_test) {
-		@SuppressWarnings("unused")
-		String err="p";
-		if(neg_test) {
-			try {
-				err=xc.getCellString(row,col+1);
-			}catch(Exception e) {
-				err="p";
+			if (err.equals("n")) {
+				test.log(Status.PASS, title + "(id" + id + ")>>"+entry);
+				return "pass";
+			}else {
+				test.log(Status.FAIL, title + "(id" + id + ")>>"+entry);
+				return "fail";
 			}
 		}
-		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).click();
-		appdriver.findElementByXPath(xpath).click();
+		System.out.println("Field Processed");
+		if (err.equals("n")) {
+			test.log(Status.FAIL, title + "(id" + id + ")>>"+entry);
+			return "fail";
+		}else {
+			test.log(Status.PASS, title + "(id" + id + ")>>"+entry);
+			return "pass";
+		}		
+	}
+
+	public String selectByXPath(ExtentTest test, String title, String dir, String loc, int row, int col, String id,
+			boolean neg_test) {
+		String entry = "";
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
+			}
+		}
 		try {
-			System.out.println("Processing Details: " + title + "(id" + id + ")");
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			entry = xc.getCellString(row, col);
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir);
 			appdriver.findElementByXPath(loc).click();
-			appdriver.findElementByXPath(xpath).click();
+			try {
+				appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				backButton.back();
+				throw new Exception("Cannot detect option");
+			}
 		} catch (Exception e) {
-			util.randomPressLogic.press(0.5, 0.05);
 			e.printStackTrace();
 			System.out.println("Failed Selection");
-			test.log(Status.FAIL, title + "(id" + id + ")");
-			return "fail";
+			if (err.equals("n")) {
+				test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+				return "pass";
+			} else {
+				test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+				return "fail";
+			}
 		}
 		System.out.println("Field Processed");
-		test.log(Status.PASS, title + "(id" + id + ")");
-		return "pass";
+		if (err.equals("n")) {
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+			return "fail";
+		} else {
+			test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+			return "pass";
+		}
 	}
+
+
+	public String selectCustomById(ExtentTest test, String title, String dir, String loc, String xpath, int row,
+			int col, String id, boolean neg_test) {
+		String entry="";
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
+			}
+		}
+		try {
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			entry = xc.getCellString(row, col);
+			if (!dir.equals(""))
+				mt.scrollToText(title, dir);
+			appdriver.findElementById(loc).click();
+			try {
+				appdriver.findElementByXPath(xpath).click();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				backButton.back();
+				throw new Exception("Cannot detect option");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Failed Selection");
+			if (err.equals("n")) {
+				test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+				return "pass";
+			} else {
+				test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+				return "fail";
+			}
+		}
+		System.out.println("Field Processed");
+		if (err.equals("n")) {
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+			return "fail";
+		} else {
+			test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+			return "pass";
+		}
+		
+	}
+
+	public String selectCustomByXPath(ExtentTest test, String title, String dir, String loc, String xpath, int row,
+			int col, String id, boolean neg_test) {
+		String entry="";
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
+			}
+		}
+		try {
+			System.out.println("Processing Details: " + title + "(id" + id + ")>>" + xc.getCellString(row, col));
+			entry = xc.getCellString(row, col);
+			if (!dir.equals(""))
+				mt.scrollToText(title, dir);
+			appdriver.findElementByXPath(loc).click();
+			try {
+				appdriver.findElementByXPath(xpath).click();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				backButton.back();
+				throw new Exception("Cannot detect option");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Failed Selection");
+			if (err.equals("n")) {
+				test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+				return "pass";
+			} else {
+				test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+				return "fail";
+			}
+		}
+		System.out.println("Field Processed");
+		if (err.equals("n")) {
+			test.log(Status.FAIL, title + "(id" + id + ")>>" + entry);
+			return "fail";
+		} else {
+			test.log(Status.PASS, title + "(id" + id + ")>>" + entry);
+			return "pass";
+		}
+		
+	}	
 	
-	public  String validCheckString(ExtentTest test,String loc, String locStrat, String entry, String errid) {
+	public void selectFirstOptionById(String title, String dir, String loc, String xpath) {
+		try {
+		mt.scrollToText(title, dir);
+		appdriver.findElementById(loc).click();
+		appdriver.findElementByXPath(xpath).click();
+		}
+		catch(Exception e) {
+			util.randomPressLogic.press(0.5, 0.05);
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public String validCheckString(ExtentTest test, String loc, String locStrat, int row, int col, String entry,
+			String errid, boolean neg_test) {
 		System.out.println("Validating field...");
-		int i = 0;
 		String s = "";
-		try {			
+		String status = "pass";
+		try {
 			if (locStrat.equalsIgnoreCase("xpath")) {
 				s = appdriver.findElementByXPath(loc).getText();
 				if (!s.equals(entry))
-					i = 1;
+					status = "fail";
 			} else if (locStrat.equalsIgnoreCase("id")) {
 				s = appdriver.findElementById(loc).getText();
 				if (!s.equals(entry))
-					i = 1;
+					status = "fail";
 			} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
 				s = appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText();
 				if (!s.equals(entry))
-					i = 1;
-			}			
+					status = "fail";
+			}
 		} catch (Exception e) {
 			System.out.println("CANNOT VALIDATE FIELD!!!!");
-			e.printStackTrace();
-			return "fail";
+			System.out.println(e.getMessage());
+			status = "fail";
 		}
-		if (i == 1) {
-			System.out.println(errid + ":||Validation Failed||Field has " + s + " instead of " + entry);
-			test.log(Status.INFO, errid);
-			return "fail";
-		}		
+
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
+			}
+		}
+		if (!err.equals("n")) {
+			if (status.equals("fail")) {
+				System.out.println("Validation should have passed but it failed");
+				status = "fail";
+			} else
+				status = "pass";
+		} else {
+			if (status.equals("pass")) {
+				System.out.println("Validation should have failed but it passed");
+				status = "fail";
+			} else
+				status = "pass";
+		}
+
+		if (status.equals("fail")) {
+			System.out.println(errid + ":||Validation Failed|| Field has " + s + " instead of " + entry);
+			test.log(Status.INFO, errid + ":||Validation Failed|| Field has " + s + " instead of " + entry);
+			try {
+				ExtentManager.addScreenShotsToLogInfo("Entry failed"+entry, test);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Screenshot Cannot be saved");
+				e.printStackTrace();
+			}
+		}
+
 		System.out.println("...validation done");
-		return "pass";
+		return status;
 	}
 
-	public String checktTxtMsg(String txt_msg, int row, int col) throws Exception {
+	public String validCheckNum(ExtentTest test, String loc, String locStrat, int row, int col, String entry,
+			String errid, boolean neg_test) {
+		System.out.println("Validating field...");
+		String s = "";
+		String status = "pass";
+		try {
+			if (locStrat.equalsIgnoreCase("xpath")) {
+				s = appdriver.findElementByXPath(loc).getText().replace(",", "");
+				if (!s.equals(entry))
+					status = "fail";
+			} else if (locStrat.equalsIgnoreCase("id")) {
+				s = appdriver.findElementById(loc).getText().replace(",", "");
+				if (!s.equals(entry))
+					status = "fail";
+			} else if (locStrat.equalsIgnoreCase("UiSelectorText")) {
+				s = appdriver.findElement(MobileBy.AndroidUIAutomator(loc)).getText().replace(",", "");
+				if (!s.equals(entry))
+					status = "fail";
+			}
+		} catch (Exception e) {
+			System.out.println("CANNOT VALIDATE FIELD!!!!");
+			System.out.println(e.getMessage());
+			status = "fail";
+		}
+
+		String err = "p";
+		if (neg_test) {
+			try {
+				err = xc.getCellString(row, col + 1);
+			} catch (Exception e) {
+				err = "p";
+			}
+		}
+		if (!err.equals("n")) {
+			if (status.equals("fail")) {
+				System.out.println("Validation should have passed but it failed");
+				status = "fail";
+			} else
+				status = "pass";
+		} else {
+			if (status.equals("pass")) {
+				System.out.println("Validation should have failed but it passed");
+				status = "fail";
+			} else
+				status = "pass";
+		}
+
+		if (status.equals("fail")) {
+			System.out.println(errid + ":||Validation Failed|| Field has " + s + " instead of " + entry);
+			test.log(Status.INFO, errid + ":||Validation Failed|| Field has " + s + " instead of " + entry);
+			try {
+				ExtentManager.addScreenShotsToLogInfo("Entry failed"+entry, test);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Screenshot Cannot be saved");
+				e.printStackTrace();
+			}
+		}
+
+		System.out.println("...validation done");
+		return status;
+	}
+
+	public String checkTxtMsg(String txt_msg, int row, int col,boolean neg_test) throws Exception {
 
 		System.out.println("Checking Popup text message...");
 		try {
-			String exp_err="";
-			try {
-					exp_err=xc.getCellString(row,col);
-				}catch(Exception e) {
-					exp_err="";
+			String exp_err = "";
+			String txt="";
+			if (neg_test) {
+				try {
+					exp_err = xc.getCellString(row, col);
+				} catch (Exception e) {
+					exp_err = "";
 				}
-			
-			String txt = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			}
+			try {
+			txt = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			}catch(Exception e) {
+				System.out.println("Cannot Detect Popup text");
+				throw new Exception("Cannot Detect Popup text");
+			}
 			if (txt.equals("Data Updated Successfully") || txt.equals("Data saved successfully") || txt.equals(txt_msg)) {
 				test.log(Status.INFO, "Pop-up(Successful Entry): "+txt);
 				if(exp_err.equals(""))
@@ -297,7 +595,7 @@ public class allFnxs {
 					test.log(Status.FAIL,  "Pop-up(Unsuccessful Entry) " + ex);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "fail";
 	}

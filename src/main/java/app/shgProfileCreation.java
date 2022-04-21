@@ -391,7 +391,9 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 12:
 					try {
+						Thread.sleep(2000);
 						mt.scrollToText("Yes-Internal", "top");
+						Thread.sleep(2000);
 						appdriver.findElement(MobileBy.AndroidUIAutomator(
 								"new UiSelector().text(\"" + xc.getCellString(row, profileCons.bkIdColNum) + "\")"))
 								.click();
@@ -606,7 +608,20 @@ public class shgProfileCreation extends lokosTest {
 					case 000:
 					case 19:
 						try {
-							appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
+							int k=0;
+							while(k<6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+									appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
+									k=6;
+								}catch(Exception e) {
+									System.out.println("Wasn't able to press the phone button");
+									k++;
+								}
+							}		
+							Thread.sleep(2000);
+							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
 
 							String[] phnos = xc.getCellString(row, profileCons.mobNosColNUm).split(";");
@@ -664,10 +679,22 @@ public class shgProfileCreation extends lokosTest {
 
 					case 20:
 						try {
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-							appdriver.findElementById("com.microware.cdfi:id/lay_location").click();
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+							
+							int i=0;
+							while(i<6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+									appdriver.findElementById("com.microware.cdfi:id/lay_location").click();
+									i=6;;
+								}catch(Exception e) {
+									System.out.println("Wasn't able to press the address button");
+									i++;
+								}
+							}							
+							Thread.sleep(2000);
 							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
+							Thread.sleep(2000);
 							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 							enterString_Id(
 									"Address Line 1",
@@ -730,13 +757,34 @@ public class shgProfileCreation extends lokosTest {
 						}
 						if (id != 000)
 							break;
-					case 21:
-						invalid_flag=false;
+					case 21:					
 						try {
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-							appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-							appdriver.findElementById("com.microware.cdfi:id/addBank").click();
+							invalid_flag=false;
+							int i=0;
+							while(i<6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+									appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
+									i=6;
+								}catch(Exception e) {
+									System.out.println("Wasn't able to press the bank button");
+									i++;
+								}
+							}
+							
+							int k=0;
+							while(k<6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+									appdriver.findElementById("com.microware.cdfi:id/addBank").click();
+									k=6;
+								}catch(Exception e) {
+									System.out.println("Wasn't able to press the address button");
+									k++;
+								}
+							}
 							enterString_Id("Name in Bank Passbook",
 									"top",
 									"com.microware.cdfi:id/et_nameinbankpassbook",
@@ -773,13 +821,15 @@ public class shgProfileCreation extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							enterLongNum_Id("Account number", 
-									"top",
-									"com.microware.cdfi:id/et_Accountno",
-									row, 
-									profileCons.accNoColNum,
-									"421:||Validation Error||",
-									"#");
+							
+							appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(xc.getCellString(row, profileCons.accNoColNum).substring(1));
+//							enterLongNum_Id("Account number", 
+//									"top",
+//									"com.microware.cdfi:id/et_Accountno",
+//									row, 
+//									profileCons.accNoColNum,
+//									"421:||Validation Error||",
+//									"#");
 							enterLongNum_Id("Re-Type Account No.", 
 									"top",
 									"com.microware.cdfi:id/et_retype_Accountno",
@@ -877,8 +927,10 @@ public class shgProfileCreation extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
 									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
 									.click();
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-									.sendKeys(xc.getCellString(row, profileCons.presDateColNum));
+//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//									.sendKeys(xc.getCellString(row, profileCons.presDateColNum));
+							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+							appdriver.findElementById("android:id/button1").click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 									+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
 							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
@@ -934,8 +986,10 @@ public class shgProfileCreation extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
 									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.secColNum) + "\")"))
 									.click();
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-									.sendKeys(xc.getCellString(row, profileCons.secDateColNum));
+//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//									.sendKeys(xc.getCellString(row, profileCons.secDateColNum));
+							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+							appdriver.findElementById("android:id/button1").click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 									+ xc.getCellString(row, profileCons.secSigColNum) + "\")")).click();
 							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
@@ -990,8 +1044,10 @@ public class shgProfileCreation extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
 									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.tresColNum) + "\")"))
 									.click();
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-									.sendKeys(xc.getCellString(row, profileCons.tresDateColNum));
+//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//									.sendKeys(xc.getCellString(row, profileCons.tresDateColNum));
+							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+							appdriver.findElementById("android:id/button1").click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
 									+ xc.getCellString(row, profileCons.tresSigColNum) + "\")")).click();
 							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
@@ -1040,10 +1096,18 @@ public class shgProfileCreation extends lokosTest {
 				}
 			}
 		}
-
+		
+		ExtentManager.addScreenShotsToTest("Save and Check", testSHG);
+		
 		if (t == 0)
 			navigateBackToScreen("SHG");
 
+//		appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//		appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//
+//		appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//		appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+		
 		if ((id != 9999) && (addMem))
 
 		{
@@ -1080,9 +1144,12 @@ public class shgProfileCreation extends lokosTest {
 			}
 
 			xc.changeSheet("SHGs");
+			System.out.println(row);
+			Thread.sleep(2000);
 			navigation.existingSHG(row);
+			Thread.sleep(2000);
 			navigation.openSHGProfile(row);
-			String[] s = { "012", "019", "020", "021", "022", "023" };
+			String[] s = { "012","017", "019", "020", "021", "022", "023","24"};
 			int[] val2 = shgProfileCreation.shg(row, s, false);
 			pass += val2[0];
 			fail += val2[1];
@@ -1262,6 +1329,7 @@ public class shgProfileCreation extends lokosTest {
 		String title = "";
 		while (i < 3) {
 			try {
+				Thread.sleep(2000);
 				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
 			} catch (Exception e) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
@@ -1279,7 +1347,9 @@ public class shgProfileCreation extends lokosTest {
 				i++;
 			}
 		} catch (Exception e) {
-			throw new Exception("Cannot navigate to " + screen_title + " screen");
+			System.out.println(e.getMessage());
+			System.out.println("Cannot navigate to " + screen_title + " screen");
+			throw new Exception("The app might have crashed");
 		}
 	}
 

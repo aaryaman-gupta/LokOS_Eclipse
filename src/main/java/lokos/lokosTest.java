@@ -29,7 +29,8 @@ import util.DeviceUtil;
 import util.MobileTouch;
 import util.summary;
 
-public class lokosTest {
+@SuppressWarnings("unused")
+public class lokosTest{
 
 	public static xlsClasses xc = null;
 	public static AndroidDriver<AndroidElement> appdriver = null;
@@ -41,7 +42,7 @@ public class lokosTest {
 	public static ExtentTest testMeet = null;
 	public static int memberRow = 0;
 	public static int cutoffRow = 0;
-	public static int regularRow = 2;
+	public static int regularRow = 3;
 	public static MobileTouch mt = null;
 	public static DeviceUtil du = null;
 	public static int shg_row_counter = 0;
@@ -51,15 +52,17 @@ public class lokosTest {
 	public static int[][] cutoff_check = new int[2][91];
 	public static int[][] reg_check = new int[2][91];
 	
-
-	@Test
-	public static void startApp() throws Exception {
+	public static void startApp(String xlsName) throws Exception {
 		
-		ExtentManager.getReports();
+		ExtentManager.getReports(xlsName);
 		test = reports.createTest("LokOS App Test");
 		System.out.println("=====================================================================================");
 		test.log(Status.INFO, "Start Test");
-		xc = new xlsClasses(System.getProperty("user.dir") + flowCons.xlsName, flowCons.sheetName);
+		System.out.println("Excel Sheet: "+System.getProperty("user.dir") + "\\XLS data\\"+xlsName+".xlsx");
+		
+		xc = new xlsClasses(System.getProperty("user.dir") + "\\XLS data\\"+xlsName+".xlsx", flowCons.sheetName);
+//		if(xlsName.contains("SHG"))
+//			throw new Exception("testing accounts");
 //		web.LoginTest.startWeb();
 		app.launchLokOS.launchLokos();
 		test.log(Status.PASS, "LokOS Successfully Launched");
@@ -73,7 +76,7 @@ public class lokosTest {
 		test.log(Status.PASS, "Login Complete");
 //		app.loginTest.sync();
 		System.out.println("Login and Sync Complete");
-		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function)","PFA report of previous Test");
+		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function): "+xlsName,"PFA report of previous Test",xlsName);
 		Thread.sleep(1000);
 		ExtentManager.addScreenShotsToTest("SHG Bookeeper Screen", test);
 		
@@ -223,7 +226,7 @@ public class lokosTest {
 				}
 				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")) {
 
-					boolean webProcess_flag = true;
+//					boolean webProcess_flag = true;
 					try {
 
 						test.log(Status.INFO, "Starting Updation Process...");
@@ -240,7 +243,7 @@ public class lokosTest {
 						if (s.contains("(0)")) {
 							testSHG.log(Status.FAIL, "Data not sufficient to upload");
 							System.out.println("Data not sufficient to upload");
-							webProcess_flag = true;
+//							webProcess_flag = true;
 							appdriver.quit();
 						} else {
 							appdriver.findElementById("com.microware.cdfi:id/tvUploadData").click();
@@ -256,7 +259,7 @@ public class lokosTest {
 								testSHG.log(Status.FAIL, "||||Error->Record was not added to the Queue||||");
 								System.out.println("||||Error->Record was not added to the Queue||||");
 								appdriver.quit();
-								webProcess_flag = false;
+//								webProcess_flag = false;
 							}
 
 						}
@@ -264,7 +267,7 @@ public class lokosTest {
 						test.log(Status.INFO, "...Updation Process Complete ");
 						System.out.println("...Updation Process Complete ");
 					} catch (Exception e) {
-						webProcess_flag=false;
+//						webProcess_flag=false;
 						ExtentManager.addScreenShotsToLogFail("Fail: Submission Process " + r, testSHG);
 						testSHG.log(Status.FAIL, "...error in Updation Process");
 						System.out.println("...error in Updation Process");
@@ -277,24 +280,24 @@ public class lokosTest {
 
 					xc.changeSheet("SHGs");
 					
-					if (webProcess_flag) {
-						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
-						System.out.println("Web Flow Commencing in 3 minutes");
-						Thread.sleep(180000);
-						web.LoginTest.startWeb();
-					}
-					
-					app.launchLokOS.launchLokos();
-					test.log(Status.PASS, "Lokos Successfully Launched");
-					System.out.println("Lokos Successfully Launched");
-					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
-					app.loginTest.sync();
-					test.log(Status.PASS, "Login and Sync Complete");
-					System.out.println("Login and Sync Complete");
-					Thread.sleep(2000);
-					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
-					navigation.shgButton();
+//					if (webProcess_flag) {
+//						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
+//						System.out.println("Web Flow Commencing in 3 minutes");
+//						Thread.sleep(180000);
+//						web.LoginTest.startWeb();
+//					}
+//					
+//					app.launchLokOS.launchLokos();
+//					test.log(Status.PASS, "Lokos Successfully Launched");
+//					System.out.println("Lokos Successfully Launched");
+//					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
+//					app.loginTest.sync();
+//					test.log(Status.PASS, "Login and Sync Complete");
+//					System.out.println("Login and Sync Complete");
+//					Thread.sleep(2000);
+//					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+//					navigation.shgButton();
 				}
 				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {					
 					testSHG=test.createNode("Status Check");
@@ -383,11 +386,10 @@ public class lokosTest {
 		xc.closeReaders();
 		reports.flush();
 
-		util.mail.ZipAndSendMail.send("Automation Test Reports","Please find the reports in attachment");
+		util.mail.ZipAndSendMail.send("Automation Test Reports: "+xlsName,"Please find the reports in attachment",xlsName);
 	}
 	
 	public static void navigateBackToScreen(String screen_title) throws Exception {
-		@SuppressWarnings("unused")
 		int i = 0;
 		String title = "";
 		try {

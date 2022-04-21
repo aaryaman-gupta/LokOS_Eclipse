@@ -426,6 +426,12 @@ public class memberProfile extends lokosTest {
 			}
 			if (neg_test_flag) {
 				appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+
+				/////////////// For SHG resolution copy
+				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+						.equals("Please upload resolution copy"))
+					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+				
 				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 						.equals("Data saved successfully")
 						|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
@@ -463,6 +469,11 @@ public class memberProfile extends lokosTest {
 		}
 		if (!neg_test_flag) {
 			appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+
+			///////////////For SHG resolution copy
+			if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+					.equals("Please upload resolution copy"))
+				appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 			if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data saved successfully")
 					|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 							.equals("Data Updated Successfully")) {
@@ -498,8 +509,18 @@ public class memberProfile extends lokosTest {
 					case 21:
 						invalid_flag = false;
 						try {
-							Thread.sleep(2000);
-							appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
+							int z = 0;
+							while (z < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
+									z = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the phone button");
+									z++;
+								}
+							}
+							
 							String[] phnos = xc.getCellString(row, memCons.phoneNosColNum).split(";");
 							for (int i = 0; i < phnos.length; i++) {
 								Thread.sleep(2000);
@@ -559,8 +580,17 @@ public class memberProfile extends lokosTest {
 					case 22:
 						invalid_flag = false;
 						try {
-							Thread.sleep(1000);
-							appdriver.findElementById("com.microware.cdfi:id/Ivloc").click();
+							int z = 0;
+							while (z < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/Ivloc").click();
+									z = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the address button");
+									z++;
+								}
+							}
 							Thread.sleep(1000);
 							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
 							appdriver.findElementById("com.microware.cdfi:id/spin_addresstype").click();
@@ -616,8 +646,17 @@ public class memberProfile extends lokosTest {
 					case 23:
 						invalid_flag = false;
 						try {
-							Thread.sleep(1000);
-							appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
+							int z = 0;
+							while (z < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
+									z = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the bank button");
+									z++;
+								}
+							}							
 							appdriver.findElementById("com.microware.cdfi:id/addBank").click();
 							enterString_Id("Name in Bank Passbook", "top",
 									"com.microware.cdfi:id/et_nameinbankpassbook", row, memCons.passNameColNum,
@@ -750,6 +789,7 @@ public class memberProfile extends lokosTest {
 							appdriver.findElementById("com.microware.cdfi:id/IvrearUpload").click();
 							cameraLogic.click();
 							appdriver.findElementById("com.microware.cdfi:id/btn_kyc").click();
+														
 							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 									.equals("Data Updated Successfully")
 									|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
@@ -939,7 +979,8 @@ public class memberProfile extends lokosTest {
 				}
 			}
 		}
-
+		
+		ExtentManager.addScreenShotsToTest("Save and Check", testMem);
 		navigateBackToScreen("SHG");
 
 		if (neg_test_flag)
@@ -1116,6 +1157,7 @@ public class memberProfile extends lokosTest {
 		String title = "";
 		while (i < 3) {
 			try {
+				Thread.sleep(2000);
 				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
 			} catch (Exception e) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
@@ -1138,8 +1180,9 @@ public class memberProfile extends lokosTest {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
 			}
 			else {
-				e.printStackTrace();	
-				throw new Exception("Cannot navigate to " + screen_title + " screen");
+				System.out.println(e.getMessage());
+				System.out.println("Cannot navigate to " + screen_title + " screen");
+				throw new Exception("The app might have crashed");
 			}
 		}
 	}

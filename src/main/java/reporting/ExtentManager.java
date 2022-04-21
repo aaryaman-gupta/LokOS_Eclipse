@@ -17,24 +17,26 @@ import com.aventstack.extentreports.reporter.configuration.Theme;
 import lokos.lokosTest;
 
 public class ExtentManager extends lokosTest {
+	
+	public static int i=0;
 
 	public static String screenshotFolderPath = "";
 
-	public static void getReports() {
+	public static void getReports(String xlsName) {
 		if (reports == null)
 			reports = new ExtentReports();
 
 		Date d = new Date();
 		System.out.println(d.toString().replaceAll(":", "-"));
-		String reportsFolder = d.toString().replaceAll(":", "-") + "\\screenshots";
+		String reportsFolder = xlsName+" "+d.toString().replaceAll(":", "-") + "\\screenshots";
 
 		screenshotFolderPath = System.getProperty("user.dir") + "\\reports\\" + reportsFolder;
-		String reportFolderPath = System.getProperty("user.dir") + "\\reports\\" + d.toString().replaceAll(":", "-");
+		String reportFolderPath = System.getProperty("user.dir") + "\\reports\\" + xlsName+" "+d.toString().replaceAll(":", "-");
 		System.out.println(screenshotFolderPath);
 		File f = new File(screenshotFolderPath);
 		f.mkdirs();
 		ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportFolderPath);
-		sparkReporter.config().setReportName("NRLM LokOS App Test");
+		sparkReporter.config().setReportName("NRLM LokOS App Test for "+xlsName);
 		sparkReporter.config().setDocumentTitle("Automation Reports");
 		sparkReporter.config().setTheme(Theme.STANDARD);
 		sparkReporter.config().setEncoding("utf-8");
@@ -45,29 +47,38 @@ public class ExtentManager extends lokosTest {
 
 	public static void addScreenShotsToTest(String filename, ExtentTest test) throws IOException {
 
-		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
+		String screenShot = screenshotFolderPath + "\\" + filename+" "+(++i) + ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
 
-		test.addScreenCaptureFromPath(screenShot, filename);
+		test.addScreenCaptureFromPath(screenShot, filename+(++i));
 	}
 
-	public static void addScreenShotsToLogFail(String filename, ExtentTest test) throws IOException {
+	public static void addScreenShotsToLogInfo(String filename, ExtentTest test) throws IOException {
 
-		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
+		String screenShot = screenshotFolderPath + "\\" + filename +" "+(++i)+ ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
 
-		test.fail(filename, MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
+		test.info(filename+(++i), MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
+	}
+	
+	public static void addScreenShotsToLogFail(String filename, ExtentTest test) throws IOException {
+
+		String screenShot = screenshotFolderPath + "\\" + filename +" "+(++i)+ ".png";
+		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(scrFile, new File(screenShot));
+
+		test.fail(filename+(++i), MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
 	}
 
 	public static void addScreenShotsToLogPass(String filename, ExtentTest test) throws IOException {
 
-		String screenShot = screenshotFolderPath + "\\" + filename + ".png";
+		String screenShot = screenshotFolderPath + "\\" + filename+" "+(++i) + ".png";
 		File scrFile = ((TakesScreenshot) appdriver).getScreenshotAs(OutputType.FILE);
 		FileUtils.copyFile(scrFile, new File(screenShot));
 
-		test.pass(filename, MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
+		test.pass(filename+(++i), MediaEntityBuilder.createScreenCaptureFromPath(screenShot).build());
 	}
 
 }

@@ -66,6 +66,9 @@ public class regularMeetings extends lokosTest {
 
 		}
 
+		allFnxs af=new allFnxs(xc, appdriver,testMeet,mt,du,reg_check);
+
+		
 		if (xc.getCellString(row, cutoffCons.typeColNum).equals("New")) {
 
 			try {
@@ -128,8 +131,10 @@ public class regularMeetings extends lokosTest {
 			case 0:
 			case 1:
 				try {
+					try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_attendence").click();
 					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+					Thread.sleep(2000);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
 
 					if (xc.getCellString(row, regCons.Attendance_1).equalsIgnoreCase("Present")) {
@@ -142,6 +147,7 @@ public class regularMeetings extends lokosTest {
 							while (true) {
 								int k = 0;
 								for (k = 1; k <= table.size(); k++) {
+									try {
 									appdriver.findElementByXPath("//android.widget.LinearLayout[" + k
 											+ "]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.TableRow[2]/android.widget.ImageView")
 											.click();
@@ -151,6 +157,9 @@ public class regularMeetings extends lokosTest {
 											.getText().equals(memNum + "")) {
 										flag = true;
 										break;
+									}
+									}catch(Exception e) {
+										System.out.println("Scrolling Inadequate");
 									}
 								}
 								if (flag)
@@ -180,6 +189,9 @@ public class regularMeetings extends lokosTest {
 					else
 						testMeet.log(Status.PASS, "001:Attendance");
 					System.out.println("001:Attendence");
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				} catch (Exception e) {
 					fail++;
 					reg_check[1][id] = -1;
@@ -203,34 +215,34 @@ public class regularMeetings extends lokosTest {
 			case 2:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
-					int memNum = Integer.valueOf(appdriver.findElementByXPath("//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView").getText());
-					
-					String[] cs=((int)xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "").split(";");
-					String comp_sav="";
-					for(String sav: cs) {
-						sav=sav.trim();
-						f=0;
-						appdriver.findElementByXPath(
-								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]").clear();
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]")
-							.sendKeys(sav);
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
-							"xpath", sav,
-							"002");
-					comp_sav=sav;
-					}
-					if (f == 1) {
-						throw new Exception("002:||Validation Failed||");
+					Thread.sleep(2000);
+					int memNum = Integer.valueOf(appdriver.findElementByXPath(
+							"//android.widget.LinearLayout[2]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView")
+							.getText());
+					String sav = "";
+					for (int j = row + 1; j <= (row
+							+ Integer.valueOf(xc.getCellString(row, regCons.Compulsory_Savings_2))); j++) {
+
+						sav = xc.getCellString(j, regCons.Compulsory_Savings_2);
+
+						String status = af.enterNumByXpath(testMeet, "Compulsory Savings", "",
+								"//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText[1]",
+								j, regCons.Compulsory_Savings_2, "002", "002", true);
+
+						if (!appdriver.findElementById("com.microware.cdfi:id/tv_title").getText()
+								.equals("Compulsory Saving")) {
+							if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG")) {
+								navigation.existingSHG_Error(row);
+								navigation.openSHGMeetings_Error(row);
+								appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
+							}
+							appdriver.findElementById("com.microware.cdfi:id/tbl_compulasory_saving").click();
+						}
 					}
 
-					fillColumnFields(comp_sav, 
-							memNum,
-							"//android.widget.TableRow/android.widget.EditText", 
-							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText", 
+					fillColumnFields(sav, memNum, "//android.widget.TableRow/android.widget.EditText",
+							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TableRow/android.widget.EditText",
 							"]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[1]");
-				
 
 					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
 					f = validOnSave("", row);
@@ -255,88 +267,90 @@ public class regularMeetings extends lokosTest {
 					e.printStackTrace();
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("End Screen-Compulsory Saving", testMeet);
 					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				}
 				if (id != 000)
 					break;
 			//Loan Repayments
-			case 3:
-				try {
-					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
-					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
-					appdriver.findElementByXPath(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
-							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
-					f = validCheckString(
-							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
-							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
-							"003:||Validation Failed||");
-					if (f == 1) {
-						throw new Exception("003:||Validation Failed||");
-					}
-
-					for (int j = 2; j <= memNum; j++) {
-						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
-								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
-
-						appdriver
-								.findElementByXPath("//android.widget.LinearLayout[" + j
-										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
-								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
-					}
-
-					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-					f = validOnSave("", row);
-					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					if (f == 1)
-						throw new Exception("");
-
-					pass++;
-					reg_check[1][id] = 1;
-					if (neg_test_flag)
-						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-					else
-						testMeet.log(Status.PASS, "003:Voluntary Saving");
-					System.out.println("003:Voluntary Saving");
-				} catch (Exception e) {
-					fail++;
-					reg_check[1][id] = -1;
-					if (!neg_test_flag)
-						testMeet.log(Status.FAIL, "003:Voluntary Saving");
-					else
-						testMeet.log(Status.PASS, "003:Voluntary Saving");
-					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
-					e.printStackTrace();
-				} finally {
-					count++;
-					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-				}
-				if (id != 000)
-					break;
+//			case 3:
+//				try {
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_member_saving").click();
+//					Thread.sleep(1500);
+//					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
+//					appdriver.findElementByXPath(
+//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]")
+//							.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "");
+//					f = validCheckString(
+//							"//android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.EditText[2]",
+//							"xpath", (int) xc.getCellDoubleValue(row, cutoffCons.volSavColNum) + "",
+//							"003:||Validation Failed||");
+//					if (f == 1) {
+//						throw new Exception("003:||Validation Failed||");
+//					}
+//
+//					for (int j = 2; j <= memNum; j++) {
+//						mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + j
+//								+ "]/android.widget.LinearLayout/android.widget.EditText[2]", "xpath", "top");
+//
+//						appdriver
+//								.findElementByXPath("//android.widget.LinearLayout[" + j
+//										+ "]/android.widget.LinearLayout/android.widget.EditText[2]")
+//								.sendKeys((int) xc.getCellDoubleValue(row, cutoffCons.compSavColNum) + "");
+//					}
+//
+//					appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+//					f = validOnSave("", row);
+//					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//					if (f == 1)
+//						throw new Exception("");
+//
+//					pass++;
+//					reg_check[1][id] = 1;
+//					if (neg_test_flag)
+//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+//					else
+//						testMeet.log(Status.PASS, "003:Voluntary Saving");
+//					System.out.println("003:Voluntary Saving");
+//				} catch (Exception e) {
+//					fail++;
+//					reg_check[1][id] = -1;
+//					if (!neg_test_flag)
+//						testMeet.log(Status.FAIL, "003:Voluntary Saving");
+//					else
+//						testMeet.log(Status.PASS, "003:Voluntary Saving");
+//					System.out.println("Error in Voluntary Saving:003----------------------Check Here////");
+//					e.printStackTrace();
+//				} finally {
+//					count++;
+//					appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//				}
+//				if (id != 000)
+//					break;
 			// Share Capital/Other/Receipts
 			case 4:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_share_capital").click();
-					
+					String status="";
 					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Receipt_Type_4)));j++) {
 						
 						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ImageView[1]").click();
 												
-						selectById("Receipt Type", "top", "com.microware.cdfi:id/spin_TypeofReceipt", j, regCons.Receipt_Type_4 );
+						af.selectById(testMeet,"Receipt Type", "top", "com.microware.cdfi:id/spin_TypeofReceipt", j, regCons.Receipt_Type_4,"004",true);
 						
-						enterString_Id("Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_104, "104");
+						af.enterNumById(testMeet,"Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_104, "104","104",true);
 						
-						selectById("Mode of Receipt","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_204);
+						af.selectById(testMeet,"Mode of Receipt","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_204,"204",true);
 						
 						if(!xc.getCellString(j, regCons.Mode_of_Recept_204).equalsIgnoreCase("Cash")) {							
-							selectById("Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_304);
-							enterString_Id("Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_404,"404");
+							af.selectById(testMeet,"Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_304,"304",true);
+							af.enterStringById(testMeet,"Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_404,"404","404",true);
 						}
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_4999);
+						status = af.checkTxtMsg("", j,regCons.Exp_Err_Msg_4999,true);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
+						if(status.equals("fail")) {
 							try {
 							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 							}catch(Exception e) {
@@ -345,17 +359,17 @@ public class regularMeetings extends lokosTest {
 							}
 						}
 						
-					}
-									
+					}								
 					
-					if (f == 1)
-						throw new Exception("");
+					if (status.equals("fail"))
+						throw new Exception("Save Failed");
 
-					pseq(4,"004:Share Capital/Other Receipts");					
+					af.pseq(4,"004:Share Capital/Other Receipts");					
 				} catch (Exception e) {
-					fseq(4,"004:Share Capital/Other Receipts",e);
+					af.fseq(4,"004:Share Capital/Other Receipts",e);
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("Abstract Screen-Other Receipts", testMeet);
 					try {
 					navigateBackToScreen("Meeting Menu");
 					}catch(Exception e) {
@@ -368,26 +382,27 @@ public class regularMeetings extends lokosTest {
 			case 5:
 				try {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_other_payments").click();
+					String status="";
 
 					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Payment_Type_5)));j++) {
 						
 						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ImageView[1]").click();
 												
-						selectById("Payment Type", "top", "com.microware.cdfi:id/spin_TypeofPayment", j, regCons.Payment_Type_5 );
+						af.selectById(testMeet,"Payment Type", "top", "com.microware.cdfi:id/spin_TypeofPayment", j, regCons.Payment_Type_5,"005",true);
 						
-						enterString_Id("Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_105, "105");
+						af.enterNumById(testMeet,"Amount", "top", "com.microware.cdfi:id/et_amount", j, regCons.Amount_105, "105","105",true);
 						
-						selectById("Mode of Receipt","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_205);
+						af.selectById(testMeet,"Mode of payment","top","com.microware.cdfi:id/spin_mode_of_payment",j,regCons.Mode_of_Recept_205,"205",true);
 						
 						if(!xc.getCellString(j, regCons.Mode_of_Recept_204).equalsIgnoreCase("Cash")) {							
-							selectById("Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_305);
-							enterString_Id("Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_405,"405");
+							af.selectById(testMeet,"Bank name","top","com.microware.cdfi:id/spin_BankName",j,regCons.Bank_305,"305",true);
+							af.enterStringById(testMeet,"Cheque number/Transaction number","top","com.microware.cdfi:id/et_cheque_no_transactio_no",j,regCons.Cheque_number_405,"405","405",true);
 						}
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_5999);
+						 status= af.checkTxtMsg("", j,regCons.Exp_Err_Msg_5999,true);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
+						if(status.equals("fail")) {
 							try {
 							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 							}catch(Exception e) {
@@ -398,7 +413,7 @@ public class regularMeetings extends lokosTest {
 						
 					}		
 					
-					if (f == 1)
+					if (status.equals("fail"))
 						throw new Exception("");
 
 					pseq(5,"005:Other Payments");
@@ -406,6 +421,7 @@ public class regularMeetings extends lokosTest {
 					fseq(5,"005:Other Payments",e);					
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("Abstract Screen-Other Payments", testMeet);
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
@@ -413,44 +429,63 @@ public class regularMeetings extends lokosTest {
 				// Loan Request(Demand)
 			case 6:
 				try {
+					String status="";
 					mt.scrollToText("Loan Request", "top");
 					appdriver.findElementById("com.microware.cdfi:id/tbl_loanRequest").click();
 					
 					String purpose="";
-					f=0;
+					status="fail";
 					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.MCP_link_6)));j++) {
 						
-						if((f==1)&&(j>(row+1)))
-							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
-						else if(j==(row+1))
-							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
-						else
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
-						
-						if(f==1)
-						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_member_name",
+//						if((status.equals("fail"))&&(j>(row+1)))
+//							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+//						else if(j==(row+1))
+//							appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+//						else
+//							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
+						appdriver.findElementById("com.microware.cdfi:id/img_Add").click();
+						if(status.equals("fail"))
+						af.selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_member_name",
 								"//android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
 						
 						//selectById("MCP link","top","com.microware.cdfi:id/spin_mcp_link",j,regCons.MCP_link_6);
 						
-						enterString_Id("Proposed Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Proposed_Amount_106,"106");
+						af.enterNumById(testMeet,"Proposed Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Proposed_Amount_106,"106","106",true);
 						
 						purpose=xc.getCellString(j, regCons.Purpose_206);
-						selectById("Purpose", "top", "com.microware.cdfi:id/spin_purpose", j, regCons.Purpose_206);
+						af.selectById(testMeet,"Purpose", "top", "com.microware.cdfi:id/spin_purpose", j, regCons.Purpose_206,"206",true);
 						
-						enterString_Id("Sanction Amount","top","com.microware.cdfi:id/et_sanction_amount",j,regCons.Sanction_Amount_306,"306");
+						af.enterNumById(testMeet,"Sanction Amount","top","com.microware.cdfi:id/et_sanction_amount",j,regCons.Sanction_Amount_306,"306","306",true);
+						status=af.checkTxtMsg("", row, regCons.Sanction_Amount_306,false);
+						int ch=0;
+						while(ch==1) {
+							Thread.sleep(300);
+							try {
+								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+							}catch(Exception e) {
+								ch=1;
+							}
+						}					
 						
-						selectById("Fund Source","top","com.microware.cdfi:id/spin_source",j,regCons.Fund_Source_406);
+						af.selectById(testMeet,"Fund Source","top","com.microware.cdfi:id/spin_source",j,regCons.Fund_Source_406,"406",true);
 						
-						enterString_Id("Priority","top","com.microware.cdfi:id/et_priority",j,regCons.Priority_506,"506");
+						af.enterNumById(testMeet,"Priority","top","com.microware.cdfi:id/et_priority",j,regCons.Priority_506,"506","506",true);
 						
 						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_up_to_606), "com.microware.cdfi:id/et_priority_valid_upto");
-						
-						
+												
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_6999);
+						status = af.checkTxtMsg("", j,regCons.Exp_Err_Msg_6999,true);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
+						ch=0;
+						while(ch==1) {
+							Thread.sleep(300);
+							try {
+								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+							}catch(Exception e) {
+								ch=1;
+							}
+						}
+						if(status.equals("fail")) {
 							try {
 							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 							}catch(Exception e) {
@@ -461,7 +496,7 @@ public class regularMeetings extends lokosTest {
 						
 					}		
 					
-					if (f == 1)
+					if (status.equals("fail"))
 						throw new Exception("");
 
 					pseq(6,"006: Loan Request(Add Demand)");
@@ -469,66 +504,67 @@ public class regularMeetings extends lokosTest {
 					fseq(6,"006: Loan Request(Add Demand)",e);
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("Abstract Screen-Loan Requests", testMeet);
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
 					break;
 				//Loan Request(MCP)
-			case 7:
-				try {
-					mt.scrollToText("Loan Request", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_loanRequest").click();
-					appdriver.findElementById("com.microware.cdfi:id/img_AddMcp").click();
-
-					String purpose="";
-					f=0;					
-					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
-						
-						if((f==1)&&(j>(row+1)))
-							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
-						else if(j==(row+1))
-							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
-						else
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
-						
-						if(f==1)
-						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_membername",
-								"/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
-						
-						enterString_Id("Demand (Amount)","top","com.microware.cdfi:id/et_demand_amount",j,regCons.Demand_Amount_7,"007");
-												
-						selectById("Demand (Purpose)", "top", "com.microware.cdfi:id/spin_demand_purpose", j, regCons.Demand_Purpose_107);
-																		
-						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_Upto_207), "com.microware.cdfi:id/et_priority_valid_upto");
-						
-						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
-						
-						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_7999);
-						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
-							try {
-							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-							}catch(Exception e) {
-								randomPressLogic.press(0.5, 0.05);
-								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
-							}
-						}
-						
-					}		
-					
-					if (f == 1)
-						throw new Exception("");
-
-					pseq(7,"007: Loan Request(MCP)");
-				} catch (Exception e) {
-					fseq(7,"007: Loan Request(MCP)",e);
-				} finally {
-					count++;
-					navigateBackToScreen("Meeting Menu");
-				}
-				if (id != 000)
-					break;
+//			case 7:
+//				try {
+//					mt.scrollToText("Loan Request", "top");
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_loanRequest").click();
+//					appdriver.findElementById("com.microware.cdfi:id/img_AddMcp").click();
+//
+//					String purpose="";
+//					f=0;					
+//					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
+//						
+//						if((f==1)&&(j>(row+1)))
+//							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
+//						else if(j==(row+1))
+//							appdriver.findElementById("com.microware.cdfi:id/ivAddMcp").click();
+//						else
+//							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + purpose + "\")"));
+//						
+//						if(f==1)
+//						selectFirstOptionById("Name of Member","top","com.microware.cdfi:id/spin_entry_membername",
+//								"/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]");
+//						
+//						enterString_Id("Demand (Amount)","top","com.microware.cdfi:id/et_demand_amount",j,regCons.Demand_Amount_7,"007");
+//												
+//						selectById("Demand (Purpose)", "top", "com.microware.cdfi:id/spin_demand_purpose", j, regCons.Demand_Purpose_107);
+//																		
+//						dateLogic.datePicker(xc.getCellString(j, regCons.Request_Valid_Upto_207), "com.microware.cdfi:id/et_priority_valid_upto");
+//						
+//						enterString_Id("Proposed EMI Amount","top","com.microware.cdfi:id/et_proposed_emi_amount",j,regCons.Proposed_EMI_Amount_307,"307");
+//						
+//						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
+//						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_7999);
+//						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//						if(f==1) {
+//							try {
+//							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//							}catch(Exception e) {
+//								randomPressLogic.press(0.5, 0.05);
+//								appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+//							}
+//						}
+//						
+//					}		
+//					
+//					if (f == 1)
+//						throw new Exception("");
+//
+//					pseq(7,"007: Loan Request(MCP)");
+//				} catch (Exception e) {
+//					fseq(7,"007: Loan Request(MCP)",e);
+//				} finally {
+//					count++;
+//					navigateBackToScreen("Meeting Menu");
+//				}
+//				if (id != 000)
+//					break;
 				//Loan Disbursement
 			case 8:
 				try {
@@ -539,6 +575,7 @@ public class regularMeetings extends lokosTest {
 					int editbtn=0;
 					String purpose="";
 					f=0;
+					String status="fail";
 					
 					appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 					int memNum = Integer.valueOf(appdriver.findElementById("com.microware.cdfi:id/tv_count").getText());
@@ -573,32 +610,32 @@ public class regularMeetings extends lokosTest {
 							e.printStackTrace();
 						}
 												
-						enterString_Id("Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Amount_108,"108");
+						af.enterNumById(testMeet,"Amount","top","com.microware.cdfi:id/et_amount",j,regCons.Amount_108,"108","108",true);
 												
-						selectById("Loan Purpose", "top", "com.microware.cdfi:id/spin_loan_source", j, regCons.Loan_Purpose_208);
+						af.selectById(testMeet,"Loan Purpose", "top", "com.microware.cdfi:id/spin_loan_source", j, regCons.Loan_Purpose_208,"208",true);
 						
-						selectById("Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
-								regCons.Mode_of_Receipt_308);
+						af.selectById(testMeet,"Mode of Receipt", "top", "com.microware.cdfi:id/spin_mode_of_payment", j,
+								regCons.Mode_of_Receipt_308,"308",true);
 
 						if (!xc.getCellString(j, regCons.Mode_of_Receipt_210).equals("Cash")) {
-							selectById("Source Bank", "top", "com.microware.cdfi:id/spin_source_bank", j, regCons.Source_Bank_408);
-							enterString_Id("Cheque No./Transaction No.", "top",
+							af.selectById(testMeet,"Source Bank", "top", "com.microware.cdfi:id/spin_source_bank", j, regCons.Source_Bank_408,"408",true);
+							af.enterStringById(testMeet,"Cheque No./Transaction No.", "top",
 									"com.microware.cdfi:id/et_cheque_no_transactio_no", j, regCons.Cheque_number_508,
-									"508");
+									"508","508",true);
 						}
 						
-						enterString_Id("Period (Months)","top","com.microware.cdfi:id/et_no_of_installment",j,regCons.Period_Months_608,"608");
+						af.enterNumById(testMeet,"Period (Months)","top","com.microware.cdfi:id/et_no_of_installment",j,regCons.Period_Months_608,"608","608",true);
 						
-						enterString_Id("Interest Rate (Annualy)","top","com.microware.cdfi:id/et_monthly_interest_rate",j,regCons.Interest_Rate_Annually_708,"708");
+						af.enterNumById(testMeet,"Interest Rate (Annualy)","top","com.microware.cdfi:id/et_monthly_interest_rate",j,regCons.Interest_Rate_Annually_708,"708","708",true);
+												
+						af.enterNumById(testMeet,"Moratorium Period","top","com.microware.cdfi:id/et_moratorium_period",j,regCons.Moratorium_Period_808,"808","808",true);
 						
-						enterString_Id("Moratorium Period","top","com.microware.cdfi:id/et_moratorium_period",j,regCons.Moratorium_Period_808,"808");
-						
-						//selectById("Loan Repayment Frequency", "top", "com.microware.cdfi:id/spin_frequency", j, regCons.Loan_Repayment_Frequency_908);
+						selectById("Loan Repayment Frequency", "top", "com.microware.cdfi:id/spin_frequency", j, regCons.Loan_Repayment_Frequency_908);
 												
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_8999);
+						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_8999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
+						if(status.equals("fail")) {
 							try {
 							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 							}catch(Exception e) {
@@ -609,14 +646,15 @@ public class regularMeetings extends lokosTest {
 						
 					}		
 					
-					if (f == 1)
-						throw new Exception("");
+					if (status.equals("fail"))
+						throw new Exception("Save failed");
 
 					pseq(8,"008: Loan Disbursement");
 				} catch (Exception e) {
 					fseq(8,"008: Loan Disbursement",e);
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("Abstract Screen-Loan Disbursement", testMeet);
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
@@ -628,16 +666,17 @@ public class regularMeetings extends lokosTest {
 					appdriver.findElementById("com.microware.cdfi:id/tbl_withdrawl").click();
 
 					String purpose="";
-					f=0;					
+					f=0;	
+					String status="fail";
 					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Amount_9)));j++) {
 						
 						appdriver.findElementByXPath("//android.widget.LinearLayout[1]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView[4]").click();
-						enterString_Id("Amount","top","com.microware.cdfi:id/et_amount_paid_to_member",j,regCons.Amount_9,"009");
+						af.enterNumById(testMeet,"Amount","top","com.microware.cdfi:id/et_amount_paid_to_member",j,regCons.Amount_9,"009","009",true);
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_9999);
+						status = af.checkTxtMsg("", j,regCons.Exp_Err_Msg_9999,true);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-						if(f==1) {
+						if(status.equals("fail")) {
 							try {
 							appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 							}catch(Exception e) {
@@ -648,14 +687,15 @@ public class regularMeetings extends lokosTest {
 						
 					}		
 					
-					if (f == 1)
-						throw new Exception("");
+					if (status.equals("fail"))
+						throw new Exception("Save Failed");
 
 					pseq(9,"009: Withdrawal");
 				} catch (Exception e) {
 					fseq(9,"009: Withdrawal",e);
 				} finally {
 					count++;
+					ExtentManager.addScreenShotsToTest("Abstract Screen-Withdrawal", testMeet);
 					navigateBackToScreen("Meeting Menu");
 				}
 				if (id != 000)
@@ -713,7 +753,7 @@ public class regularMeetings extends lokosTest {
 						}
 												
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_10999);
+						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_10999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -791,7 +831,7 @@ public class regularMeetings extends lokosTest {
 
 						
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_11999);
+						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_11999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if(f==1) {
 							try {
@@ -848,7 +888,7 @@ public class regularMeetings extends lokosTest {
 								"512");
 
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_12999);
+						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_12999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if (f == 1) {
 							try {
@@ -873,31 +913,31 @@ public class regularMeetings extends lokosTest {
 				if (id != 000)
 					break;
 				//Loan Repayments
-			case 13:
-				try {
-					mt.scrollToText("Loan Repayment", "top");
-					appdriver.findElementById("com.microware.cdfi:id/tbl_group_loan_repayment").click();
-
-					String purpose="";
-					f=0;					
-					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
-						
-						
-						
-					}		
-					
-					if (f == 1)
-						throw new Exception("");
-
-					pseq(13,"013: Loan repayment");
-				} catch (Exception e) {
-					fseq(13,"013: Loan Repayment",e);
-				} finally {
-					count++;
-					navigateBackToScreen("Meeting Menu");
-				}
-				if (id != 000)
-					break;
+//			case 13:
+//				try {
+//					mt.scrollToText("Loan Repayment", "top");
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_group_loan_repayment").click();
+//
+//					String purpose="";
+//					f=0;					
+//					for(int j=row+1;j<=(row+Integer.valueOf(xc.getCellString(row, regCons.Demand_Amount_7)));j++) {
+//						
+//						
+//						
+//					}		
+//					
+//					if (f == 1)
+//						throw new Exception("");
+//
+//					pseq(13,"013: Loan repayment");
+//				} catch (Exception e) {
+//					fseq(13,"013: Loan Repayment",e);
+//				} finally {
+//					count++;
+//					navigateBackToScreen("Meeting Menu");
+//				}
+//				if (id != 000)
+//					break;
 				//Expenditure and Payment
 			case 14:
 				try {
@@ -924,7 +964,7 @@ public class regularMeetings extends lokosTest {
 						enterString_Id("", "top", "", j, regCons.Amount_514, "514");
 
 						appdriver.findElementById("com.microware.cdfi:id/btn_save").click();
-						f = validOnSave2("", j,regCons.Exp_Err_Msg_14999);
+						f = checkTxtMsg("", j,regCons.Exp_Err_Msg_14999);
 						appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 						if (f == 1) {
 							try {
@@ -1136,39 +1176,50 @@ public class regularMeetings extends lokosTest {
 
 	}
 	
-	public static int validOnSave2(String txt_msg, int row,int col) throws Exception {
+	
+	public static int checkTxtMsg(String txt_msg, int row, int col) throws Exception {
 
-		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals("Data Updated Successfully")
-				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-						.equals("Data saved successfully")
-				|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText().equals(txt_msg))
-			return 0;
-		else {
-			String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-			testMeet.log(Status.FAIL, "ex");
-			ExtentManager.addScreenShotsToLogFail("SHG Meetings "+ex, testMeet);
-			System.out.println("Error: " + ex);
-			if (neg_test_flag) {
-				try {
-					String exp_errs = xc.getCellString(row, cutoffCons.expErrMessColNum);
-					if (ex.contains(exp_errs)) {
+		System.out.println("Checking Popup text message...");
+		try {
+			String exp_err="";
+			try {
+					exp_err=xc.getCellString(row,col);
+				}catch(Exception e) {
+					exp_err="";
+				}
+			
+			String txt = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+			if (txt.equals("Data Updated Successfully") || txt.equals("Data saved successfully") || txt.equals(txt_msg)) {
+				test.log(Status.INFO, "Pop-up(Successful Entry): "+txt);
+				if(exp_err.equals(""))
+					test.log(Status.PASS, txt);
+				else
+					test.log(Status.FAIL, txt);
+				return 0;
+			}
+			else {
+				String ex = txt;
+				System.out.println("Pop-up(Unsuccessful Entry) ");
+				ExtentManager.addScreenShotsToLogFail("Pop-up text " + ex, test);
+				System.out.println("Error: " + ex);
+				if (!exp_err.equals("")) {
+					if (exp_err.contains(ex)) {
 						System.out.println("|||||||||||||||||||||||||||||");
 						System.out.println("Expected Error is encountered");
 						System.out.println("   ((Negetive Test Passed))");
 						System.out.println("|||||||||||||||||||||||||||||");
-						++neg_test_count;
+						test.log(Status.PASS,"Negetive Test Passed: "+ ex);
 					} else {
 						System.out.println("   (((Negetive Test Failed)))\n");
-						testMeet.log(Status.INFO, "Negetive Test Failed");
+						test.log(Status.FAIL, "Negetive Test Failed: "+ex);
 					}
-				} catch (NullPointerException np) {
-					System.out.println("---->>Expected Errors is empty.");
-					testMeet.log(Status.INFO, "Expected Errors is empty.");
-				}
+				}else
+					test.log(Status.FAIL,  "Pop-up(Unsuccessful Entry) " + ex);
 			}
-			return 1;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
+		return 1;
 	}
 
 	public static void navigateBackToScreen(String screen_title) throws Exception {
@@ -1206,6 +1257,7 @@ public class regularMeetings extends lokosTest {
 		while(true) {
 			int k=0;
 			for(k=1;k<table.size();k++) {
+				try {
 				appdriver
 				.findElementByXPath("//android.widget.LinearLayout[" + k+ b).clear();
 				appdriver
@@ -1213,13 +1265,18 @@ public class regularMeetings extends lokosTest {
 				.sendKeys(entry);
 				if(appdriver.findElementByXPath("//android.widget.LinearLayout[" + k+ c).getText().equals(memNum+"")) {						
 					flag=true;
-					break;								
+					break;
+				}
+				}catch(Exception e) {
+					System.out.println("Scrolling fast");
 				}
 				
 			}	
 			if(flag) 
-				break;						
+				break;		
+			
 			mt.scrollToVisibleElementOnScreen("//android.widget.LinearLayout[" + (k-2)+ b, "xpath", "top");
+			
 			
 		}
 		}catch(Exception e) {

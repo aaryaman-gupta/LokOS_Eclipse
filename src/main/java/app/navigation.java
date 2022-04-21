@@ -32,7 +32,11 @@ public class navigation extends lokosTest {
 		String shgName=xc.getCellString(row, profileCons.shgNameColNum).toUpperCase();
 		System.out.println("Navigating to "+shgName);
 		mt.scrollToText(shgName, "top");
-
+	}
+	public static void existingSHG_Error(int row) throws Exception {
+		String shgName=xc.getCellString(row, regCons.SHG_Reference).toUpperCase();
+		System.out.println("Navigating to "+shgName);
+		mt.scrollToText(shgName, "top");
 	}
 
 	public static void newSHG() {
@@ -40,26 +44,27 @@ public class navigation extends lokosTest {
 	}
 
 	public static void openSHGProfile(int row) {
-		boolean flag = false;
-		int i = 1;
-		
-		
+//		boolean flag = false;
+//		int i = 1;	
 //		
-		while (!flag) {
-			String s = appdriver.findElement(MobileBy
-					.AndroidUIAutomator("new UiSelector().resourceId(\"com.microware.cdfi:id/tv_nam\").index("+(i-1)+")")).getText();
-			if (s.equalsIgnoreCase(xc.getCellString(row, profileCons.shgNameColNum))) {
-				flag = true;
-				appdriver.findElementByXPath(
-						"//android.widget.LinearLayout[" + i + "]/android.widget.LinearLayout/android.widget.ImageView"
-						)
-						.click();
-				appdriver.findElementById("com.microware.cdfi:id/tvShg").click();
-
-			}
-			i++;
-		}
-
+//		while (!flag) {
+//			appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//			String s = appdriver.findElement(MobileBy
+//					.AndroidUIAutomator("new UiSelector().resourceId(\"com.microware.cdfi:id/tv_nam\").index("+(i-1)+")")).getText();
+//			if (s.equalsIgnoreCase(xc.getCellString(row, profileCons.shgNameColNum))) {
+//				flag = true;
+//				appdriver.findElementByXPath(
+//						"//android.widget.LinearLayout[" + i + "]/android.widget.LinearLayout/android.widget.ImageView"
+//						)
+//						.click();
+//				appdriver.findElementById("com.microware.cdfi:id/tvShg").click();
+//
+//			}
+//			i++;
+//		}
+		String shg= xc.getCellString(row, profileCons.shgNameColNum);
+		appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+		appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().textContains(\"" +shg+ "\")")).click();		
 	}
 	
 	public static void openSHGMeetings(int row) {
@@ -76,10 +81,23 @@ public class navigation extends lokosTest {
 						.click();				
 			}
 			i++;
-		}
-
-		
-		
+		}		
+	}
+	public static void openSHGMeetings_Error(int row) {
+		boolean flag = false;
+		int i = 1;	
+//		
+		while (!flag) {
+			String s = appdriver.findElementByXPath("//android.widget.LinearLayout["+i+"]/android.widget.LinearLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.TextView[2]").getText();
+			if (s.equalsIgnoreCase(xc.getCellString(row, regCons.SHG_Reference))) {
+				flag = true;
+				appdriver.findElementByXPath(
+						"//android.widget.LinearLayout[" + i + "]/android.widget.LinearLayout/android.widget.ImageView"
+						)
+						.click();				
+			}
+			i++;
+		}		
 	}
 
 	public static void openSHGMembers(int row) {

@@ -30,7 +30,6 @@ public class shgMeetings extends lokosTest {
 
 			if (cn || rn) {
 				appdriver.findElementById("com.microware.cdfi:id/tbl_generatemeeting").click();
-
 				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("Generate Meeting")) {
 					testFlow.log(Status.INFO, "Generation of Meeting is possible");
 					System.out.println("Generation of Meeting is possible");
@@ -42,10 +41,8 @@ public class shgMeetings extends lokosTest {
 					navigateBackToScreen("SHG");
 					return val;
 				}
-
 			} else if (cu || ru) {
 				appdriver.findElementById("com.microware.cdfi:id/tbl_open_meeting").click();
-
 				if (cu) {
 					String title = "";
 					try {

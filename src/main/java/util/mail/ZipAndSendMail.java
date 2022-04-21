@@ -13,11 +13,11 @@ public class ZipAndSendMail {
 	Session mailSession;
 	MimeMessage emailMessage;
 //	static String[] toEmails = { "aaryamantesting@gmail.com","daaryamangupta@gmail.com"};
-	static String[] toEmails = { "aaryamantesting@gmail.com"};
+	static String[] toEmails = { "aaryamantesting@gmail.com","ramlala.singh@cdfi.in"};
 	static String fromUser = "aaryamantesting@gmail.com";// imap on, other devices on, no recovery phone
 	static String password = "aaryamantesting123";
 
-	public static void send(String sub, String body) throws Exception {
+	public static void send(String sub, String body,String xlsName) throws Exception {
 
 		// report folder - extent reports
 
@@ -42,7 +42,7 @@ public class ZipAndSendMail {
 		javaEmail.createEmailMessage(sub, // subject
 				body, // body
 				reportFolder + "\\" + lastModified.getName() + ".zip", // attachment path
-				"Reports.zip", // name of attachment
+				xlsName+"Reports.zip", // name of attachment
 				toEmails// receivers
 		);
 		javaEmail.sendEmail(fromUser, password);
