@@ -62,4 +62,10 @@ public class profileCons {
 	public static final int tresDateColNum=58;
 	public static final int tresSigColNum=59;
 	public static final int expErrMessColNum=60;
+	public static final int phone=61;
+	public static final int address=62;
+	public static final int bank=63;
+	public static final int president=64;
+	public static final int secretary=65;
+	public static final int treasurer=66;
 }

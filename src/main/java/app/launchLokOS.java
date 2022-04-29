@@ -34,6 +34,7 @@ public class launchLokOS extends lokosTest {
 			Thread.sleep(7000);
 //			appdriver.quit();
 		} catch (Exception e) {
+			e.printStackTrace();
 
 		}
 

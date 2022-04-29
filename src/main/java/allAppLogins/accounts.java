@@ -1,6 +1,8 @@
 package allAppLogins;
 
 
+import java.io.IOException;
+
 import org.testng.annotations.Test;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -44,7 +46,7 @@ public class accounts {
 					}
 					} catch (Exception e) {
 
-						System.out.println("Login failed for " + i + " row.");
+						System.out.println("Login failed for " + xc.getCellString(i, 1) + ".");
 						e.printStackTrace();
 					}
 				}else if(xc.getCellString(i, 10).equalsIgnoreCase("N")) {
@@ -61,7 +63,16 @@ public class accounts {
 			} else {
 
 			}
+			System.out.println("===================================================> "+i+"\n");
 		}
+//		appdriver.quit();
+		try {
+			xc.closeReaders();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("All States Automation Tests Complete");
 	}
 
 }

@@ -1,5 +1,6 @@
 package app;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.aventstack.extentreports.Status;
@@ -687,10 +688,27 @@ public class memberProfile extends lokosTest {
 							} catch (Exception e) {
 
 							}
-							mt.scrollToText("Account number", "top");							
-							appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(xc.getCellString(row,memCons.accNoColNum).substring(1));
-							enterLongNum_Id("Re-Type Account No.", "top", "com.microware.cdfi:id/et_retype_Accountno",
-									row, memCons.retypAccNoColNum, "523:||Validation Error","#");
+							String acc="";
+							Random objGenerator = new Random();
+							acc=String.valueOf(objGenerator.nextInt(10000,99999))+String.valueOf(objGenerator.nextInt(100000,999999));
+							System.out.println("Account: "+acc);
+							try {			
+								mt.scrollToText("Account number", "top");
+								appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(acc);									
+							}catch(Exception e) {
+								System.out.println("Unable to enter Account Data. Possible Migrated Data.");
+							}
+							
+							try {								
+								appdriver.findElementById("com.microware.cdfi:id/et_retype_Accountno").sendKeys(acc);									
+							}catch(Exception e) {
+								System.out.println("Unable to enter Retype Account Data. Possible Migrated Data.");
+							}
+//							
+//							mt.scrollToText("Account number", "top");							
+//							appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(xc.getCellString(row,memCons.accNoColNum).substring(1));
+//							enterLongNum_Id("Re-Type Account No.", "top", "com.microware.cdfi:id/et_retype_Accountno",
+//									row, memCons.retypAccNoColNum, "523:||Validation Error","#");
 							String date = xc.getCellString(row, memCons.accOpDateColNum);
 							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
 							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
@@ -980,6 +998,7 @@ public class memberProfile extends lokosTest {
 			}
 		}
 		
+		Thread.sleep(2000);
 		ExtentManager.addScreenShotsToTest("Save and Check", testMem);
 		navigateBackToScreen("SHG");
 

@@ -1,14 +1,21 @@
 package app;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
+import readingXLS.xlsClasses;
 import reporting.ExtentManager;
+import util.DeviceUtil;
+import util.MobileTouchAdv;
 import util.cameraLogic;
 import util.dateLogic;
 import util.randomPressLogic;
@@ -21,6 +28,10 @@ public class shgProfileCreation extends lokosTest {
 	public static boolean invalid_flag = false;
 	public static int pass = 0;
 	public static int fail = 0;
+	public static boolean migr = false;
+	public static MobileTouchAdv mt = null;
+	public static final double x = 0.35;
+	public static final double y = 0.70;
 
 	public static int[] idSelect_SHG(int row) throws Exception {
 
@@ -38,7 +49,8 @@ public class shgProfileCreation extends lokosTest {
 		}
 		int k = 0;
 		if (Integer.valueOf(idList[0]) != 0) {
-			for (@SuppressWarnings("unused") String s : idList) {
+			for (@SuppressWarnings("unused")
+			String s : idList) {
 				shg_check[0][Integer.valueOf(idList[k])] = Integer.valueOf(idList[k]);
 				++k;
 			}
@@ -49,7 +61,7 @@ public class shgProfileCreation extends lokosTest {
 		}
 
 		int[] val = null;
-		if ((int) xc.getCellDoubleValue(row, profileCons.numMemAddColNum) == 0)
+		if (xc.getCellString(row, profileCons.numMemAddColNum).equals("0"))
 			val = shg(row, idList, false);
 		else
 			val = shg(row, idList, true);
@@ -73,15 +85,25 @@ public class shgProfileCreation extends lokosTest {
 		boolean neg_test_flag = false;
 		neg_test_count = 0;
 		invalid_flag = false;
-		pass=0;
-		fail=0;		
-		
+		pass = 0;
+		fail = 0;
+
+		mt = new MobileTouchAdv(appdriver);
+		allFnxsP af = new allFnxsP(xc, appdriver, testSHG, mt, du, shg_check);
+
+		if (xc.getCellString(row, profileCons.flowTypeColNum).contains("Migration"))
+			migr = true;
+
 		try {
 			if (xc.getCellString(row, profileCons.flowTypeColNum).contains("Check")) {
 				neg_test_flag = true;
 				testSHG.log(Status.INFO, "NEGETIVE TESTING");
+			} else if (xc.getCellString(row, profileCons.flowTypeColNum).contains("Migration")) {
+				migr = true;
+				testSHG.log(Status.INFO, "MIGRATION DATA TO BE CHECKED");
 			}
 		} catch (NullPointerException np) {
+			System.out.println("Flow type cell not populated");
 		}
 
 		for (int iterations = 0; iterations < idList.length; iterations++) {
@@ -93,85 +115,48 @@ public class shgProfileCreation extends lokosTest {
 				case 000:
 
 				case 1:
-					try {
-//						 enterString_Id( 
-//								 "",//title 
-//								 "top",//scroll direction 
-//								 "", //location 
-//								 row, //row
-//								 profileCons.shgNameColNum,//column number 
-//								 ":||Validation Error||");//Error Message
-						enterString_Id("SHG Name", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/et_groupname", // location
-								row, // row
-								profileCons.shgNameColNum, // column number
-								"001:||Validation Error||");// Error Message
-						pseq(id, "001:SHG Name");
-					} catch (Exception e) {
-						fseq(id, "001:SHG Name", e);
-					} finally {
-						count++;
-					}
+					af.pf(1, af.enterStringById(testSHG, "SHG Name", "", "com.microware.cdfi:id/et_groupname", row,
+							profileCons.shgNameColNum, "001", "001", false, "Type here...", migr));
+
 					if (id != 000)
 						break;
 				case 2:
-					try {
-						selectById("Grampanchayat", // title
-								"top", // scroll direction
-								"com.microware.cdfi:id/spin_panchayat", // location
-								row, // row
-								profileCons.gpColNum);// column number
-						pseq(id, "002:GP");
-					} catch (Exception e) {
-						fseq(id, "002:GP", e);
-					} finally {
-						count++;
-					}
+					af.pf(2, af.selectById(testSHG, "Grampanchayat", "top", // scroll direction
+							"com.microware.cdfi:id/spin_panchayat", // location
+							row, // row
+							profileCons.gpColNum, "002", false, false, "", "", "", ""));
 					if (id != 000)
 						break;
 
 				case 3:
-					try {
-						selectById("Village", "top", "com.microware.cdfi:id/spin_village", row, profileCons.villageColNum);
-						pseq(id, "003:Village");
-					} catch (Exception e) {
-						fseq(id, "003:Village", e);
-					} finally {
-						count++;
-					}
+					af.pf(3, af.selectById(testSHG, "Village", "top", "com.microware.cdfi:id/spin_village", row,
+							profileCons.villageColNum, "003", false, false, "", "", "", ""));
 					if (id != 000)
 						break;
 
 				case 4:
-					try {
-						mt.scrollToText("Formation Date", "top");
-						String date = xc.getCellString(row, profileCons.dateColNum);
-						dateLogic.datePicker(date, "com.microware.cdfi:id/et_formationDate");
-						pseq(id, "004:Formation Date");
-					} catch (Exception e) {
-						fseq(id, "004:Formation Date", e);
-					} finally {
-						count++;
-					}
+					af.pf(4, af.dateLogic(testSHG, "Formation Date", "top", row, profileCons.dateColNum,
+							"com.microware.cdfi:id/et_formationDate", "004", "004", false, "dd-mm-yyyy", migr));
 					if (id != 000)
 						break;
 				case 5:
 					try {
-						mt.scrollToText("Promoted by", "top");
-
 						String promotedBy = xc.getCellString(row, profileCons.promotedByColNum);
-						selectById("Promoted by", "top", "com.microware.cdfi:id/spin_promotedby", row,
-								profileCons.promotedByColNum);
+						af.pf(5, af.selectById(testSHG, "Promoted by", "top", "com.microware.cdfi:id/spin_promotedby",
+								row, profileCons.promotedByColNum, "005", false, migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 
 						if (promotedBy.equals("NRLM")) {
 							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
 									.click();
 							if (ncr.equals("Revived")) {
-								mt.scrollToText("Revival Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.revDateColNum),
-										"com.microware.cdfi:id/et_revivalDate");
+								af.pf(305,
+										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+												"dd-mm-yyyy", migr));
 							}
 
 						} else if (promotedBy.equals("State Project")) {
@@ -179,30 +164,37 @@ public class shgProfileCreation extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
 									.click();
 							if (ncr.equals("Revived")) {
-								mt.scrollToText("Revival Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.revDateColNum),
-										"com.microware.cdfi:id/et_revivalDate");
+								af.pf(305,
+										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+												"dd-mm-yyyy", migr));
 							} else if (ncr.equals("Co-opted")) {
-								mt.scrollToText("Co-option Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.cooptDateColNum),
-										"com.microware.cdfi:id/et_coopt_Date");
+								af.pf(405,
+										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+												"dd-mm-yyyy", migr));
 							}
 
 						} else if (promotedBy.equals("NGO")) {
-							appdriver.findElementById("com.microware.cdfi:id/spin_FundingAgency").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, profileCons.promoterColNum) + "\")")).click();
+							af.pf(205, af.selectById(testSHG, "Promoters name", "top",
+									"com.microware.cdfi:id/spin_FundingAgency", row, profileCons.promoterColNum, "205",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
 									.click();
 							if (ncr.equals("Revived")) {
-								mt.scrollToText("Revival Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.revDateColNum),
-										"com.microware.cdfi:id/et_revivalDate");
+								af.pf(305,
+										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+												"dd-mm-yyyy", migr));
 							} else if (ncr.equals("Co-opted")) {
-								mt.scrollToText("Co-option Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.cooptDateColNum),
-										"com.microware.cdfi:id/et_coopt_Date");
+								af.pf(405,
+										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+												"dd-mm-yyyy", migr));
 							}
 
 						} else if (promotedBy.equals("SGSY")) {
@@ -210,36 +202,42 @@ public class shgProfileCreation extends lokosTest {
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
 									.click();
 							if (ncr.equals("Revived")) {
-								mt.scrollToText("Revival Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.revDateColNum),
-										"com.microware.cdfi:id/et_revivalDate");
+								af.pf(305,
+										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+												"dd-mm-yyyy", migr));
 							} else if (ncr.equals("Co-opted")) {
-								mt.scrollToText("Co-option Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.cooptDateColNum),
-										"com.microware.cdfi:id/et_coopt_Date");
+								af.pf(405,
+										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+												"dd-mm-yyyy", migr));
 							}
 
 						} else if (promotedBy.equals("Other")) {
-							appdriver.findElementById("com.microware.cdfi:id/et_promoter_name")
-									.sendKeys(xc.getCellString(row, profileCons.promoterColNum));
-
+							af.pf(205,
+									af.enterStringById(testSHG, "Promoters name", "top",
+											"com.microware.cdfi:id/et_promoter_name", row, profileCons.promoterColNum,
+											"205", "205", false, "Type here...", migr));
 							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
 							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
 									.click();
 							if (ncr.equals("Revived")) {
-								mt.scrollToText("Revival Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.revDateColNum),
-										"com.microware.cdfi:id/et_revivalDate");
+								af.pf(305,
+										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+												"dd-mm-yyyy", migr));
 							} else if (ncr.equals("Co-opted")) {
-								mt.scrollToText("Co-option Date", "top");
-								dateLogic.datePicker(xc.getCellString(row, profileCons.cooptDateColNum),
-										"com.microware.cdfi:id/et_coopt_Date");
+								af.pf(405,
+										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+												"dd-mm-yyyy", migr));
 							}
 						}
-
-						pseq(id, "005:Promoted By and Sub Parts");
+						af.errBool(af.invalidFlag());
+						af.pseq(id, "005:Promoted By and Sub Parts");
 					} catch (Exception e) {
-						fseq(id, "005:Promoted By and Sub Parts", e);
+						af.setInvalidFlag();
+						af.fseq(id, "005:Promoted By and Sub Parts", e);
 					} finally {
 						count++;
 					}
@@ -247,124 +245,140 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 6:
 					try {
-						mt.scrollToText("SHG Type", "top");
 						String s = xc.getCellString(row, profileCons.Women_Special);
 						if (s.equals("Women(Regular)"))
-							appdriver
-									.findElement(
-											MobileBy.AndroidUIAutomator("new UiSelector().text(\"Women(Regular)\")"))
-									.click();
+							af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 1, row, profileCons.Women_Special, "006",
+									false, migr, 1,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
 						else {
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Special\")"))
-									.click();
-							appdriver.findElementById("com.microware.cdfi:id/spin_tags").click();
-							appdriver
-									.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-											+ xc.getCellString(row, profileCons.tagsColNum).toUpperCase() + "\")"))
-									.click();
+							af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 2, row, profileCons.Women_Special, "006",
+									false, migr, 1,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+							af.pf(106, af.selectById(testSHG, "Tags", "top", "com.microware.cdfi:id/spin_tags", row,
+									profileCons.tagsColNum, "106", false, migr, "SELECT",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							if (xc.getCellString(row, profileCons.tagsColNum).equals("OTHER")) {
-								enterString_Id("Other(specify)", "top", "com.microware.cdfi:id/et_OtherTags", row,
-										profileCons.tagsOtherColNum, "206:||Validation Error||");
+								af.pf(206,
+										af.enterStringById(testSHG, "Other(specify)", "top",
+												"com.microware.cdfi:id/et_OtherTags", row, profileCons.tagsOtherColNum,
+												"206", "206", false, "Type here...", migr));
 							}
 						}
-
-						pseq(id, "006:SHG Type");
 					} catch (Exception e) {
-						fseq(id, "006:SHG Type", e);
-					} finally {
-						count++;
+						af.setInvalidFlag();
+						af.fseq(id, "006:SHG Type", e);
 					}
 					if (id != 000)
 						break;
 				case 7:
 					try {
-						mt.scrollToText("Meeting Frequency", "top");
 						String mtg = xc.getCellString(row, profileCons.meetingFreqColNum);
-						appdriver.findElementById("com.microware.cdfi:id/spin_frequency").click();
-						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + mtg + "\")"))
-								.click();
+						af.pf(7, af.selectById(testSHG, "Meeting Frequency", "top",
+								"com.microware.cdfi:id/spin_frequency", row, profileCons.meetingFreqColNum, "007",
+								false, migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
 						if (mtg.equals("Weekly")) {
-							mt.scrollToText("Day", "top");
-							appdriver.findElementById("com.microware.cdfi:id/spin_weekday").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.dayWColNum) + "\")"))
-									.click();
+							af.pf(107, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday", row,
+									profileCons.dayWColNum, "107", false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 
 						} else if (mtg.equals("Fortnightly")) {
-							mt.scrollToText("Fortnight Week", "top");
-							appdriver.findElementById("com.microware.cdfi:id/spin_fortnight").click();
+							af.pf(207, af.selectById(testSHG, "Fortnight Week", "top",
+									"com.microware.cdfi:id/spin_fortnight", row, profileCons.frtn8WeekFColNum, "207",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							String s = xc.getCellString(row, profileCons.frtn8WeekFColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + s + "\")"))
-									.click();
 							if (s.equals("Date")) {
-								mt.scrollToText("Date", "top");
-								appdriver.findElementById("com.microware.cdfi:id/spin_fortnightdate").click();
-								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-										+ (int) xc.getCellDoubleValue(row, profileCons.dateOtherFColNum) + "\")"))
-										.click();
+								af.pf(407, af.selectById(testSHG, "Date", "top",
+										"com.microware.cdfi:id/spin_fortnightdate", row, profileCons.dateOtherFColNum,
+										"407", false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							} else {
-								mt.scrollToText("Day", "top");
-								appdriver.findElementById("com.microware.cdfi:id/spin_weekday").click();
-								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-										+ xc.getCellString(row, profileCons.day1_2FColNum) + "\")")).click();
+								af.pf(307, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
+										row, profileCons.day1_2FColNum, "307", false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							}
 
 						} else if (mtg.equals("Monthly")) {
-							mt.scrollToText("Monthly Day", "top");
 							String s = xc.getCellString(row, profileCons.monthlydayMColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + s + "\")"))
-									.click();
+							af.pf(507, af.selectById(testSHG, "Monthly Day", "top",
+									"com.microware.cdfi:id/spin_monthly", row, profileCons.monthlydayMColNum, "507",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							if (s.equals("Date")) {
-								mt.scrollToText("Date", "top");
-								appdriver.findElementById("com.microware.cdfi:id/spin_monthlydate").click();
-								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-										+ xc.getCellString(row, profileCons.dateMColNum) + "\")")).click();
+								af.pf(707, af.selectById(testSHG, "Date", "top",
+										"com.microware.cdfi:id/spin_monthlydate", row, profileCons.dateMColNum, "707",
+										false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							} else {
-								mt.scrollToText("Day", "top");
-								appdriver.findElementById("com.microware.cdfi:id/spin_monthlydate").click();
-								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-										+ xc.getCellString(row, profileCons.dayMColNum) + "\")")).click();
+								af.pf(607, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
+										row, profileCons.dayMColNum, "607", false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							}
 
 						}
-						pseq(id, "007:Meeting Frequency and Sub Parts");
+						af.errBool(af.invalidFlag());
+						af.pseq(id, "007:Meeting Frequency and Sub Parts");
 					} catch (Exception e) {
-						fseq(id, "007:Meeting Frequency and Sub Parts", e);
-					} finally {
-						count++;
+						af.setInvalidFlag();
+						af.fseq(id, "007:Meeting Frequency and Sub Parts", e);
 					}
 					if (id != 000)
 						break;
 				case 8:
 					try {
-						selectById("Compulsory Saving Frequency", "top", "com.microware.cdfi:id/spin_savingfrequency", row,
-								profileCons.compSavFreqColNum);
-						pseq(id, "008:Compulsory Saving Frequency");
+						af.pf(8, af.selectById(testSHG, "Compulsory Saving Frequency", "top",
+								"com.microware.cdfi:id/spin_savingfrequency", row, profileCons.compSavFreqColNum, "008",
+								false, migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
 					} catch (Exception e) {
-						fseq(id, "008:Compulsory Saving Frequency", e);
-					} finally {
-						count++;
+						af.fseq(8, "Error 008", e);
 					}
 				case 9:
 					try {
-						enterValue_Id("Compulsory Saving Amount", "top", "com.microware.cdfi:id/et_saving", row,
-								profileCons.compSavAmtColNum, "009:||Validation Error||");
-						pseq(id, "009:Compulsory Saving Amount");
+						af.pf(9, af.enterNumById(testSHG, "Compulsory Saving Amount", "top",
+								"com.microware.cdfi:id/et_saving", row, profileCons.compSavAmtColNum, "009", "009",
+								false, "Type here...", migr));
+
 					} catch (Exception e) {
-						fseq(id, "009:Compulsory Saving Amount", e);
-					} finally {
-						count++;
+						af.fseq(id, "009:Compulsory Saving Amount", e);
 					}
 					if (id != 000)
 						break;
 				case 10:
 					try {
-						enterDouble_Id("Compulsory Saving Interest Rate (Annual) %", "top",
-								"com.microware.cdfi:id/et_ComsavingRoi", row, profileCons.compSavIRColNum,
-								"010:||Validation Erro||");
-						pseq(id, "010:Compulsory Saving Interest Rate");
+						af.pf(10,
+								af.enterNumById(testSHG, "Compulsory Saving Interest Rate (Annual) %", "top",
+										"com.microware.cdfi:id/et_ComsavingRoi", row, profileCons.compSavIRColNum,
+										"010", "010", false, "0", migr));
 					} catch (Exception e) {
-						fseq(id, "010:Compulsory Saving Interest Rate", e);
+						af.fseq(id, "010:Compulsory Saving Interest Rate", e);
 					} finally {
 						count++;
 					}
@@ -373,17 +387,25 @@ public class shgProfileCreation extends lokosTest {
 
 				case 11:
 					try {
-						mt.scrollToText("Voluntary Saving", "top");
-						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-								+ xc.getCellString(row, profileCons.voluntarySavColNum) + "\")")).click();
+						int op = 0;
+						if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes"))
+							op = 1;
+						else if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("No"))
+							op = 2;
+
+						af.pf(11, af.rdbtn(testSHG, "Voluntary Saving", "top", op, row, profileCons.voluntarySavColNum,
+								"11", false, migr, 2,
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
 						if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes")) {
-							enterDouble_Id("Voluntary Saving interest rate (Annual) %", "top",
+							af.pf(111, af.enterNumById(testSHG, "Voluntary Saving interest rate (Annual) %", "top",
 									"com.microware.cdfi:id/et_voluntarysavingROI", row,
-									profileCons.voluntarySavIRColNum,"010:||Validation Error");
+									profileCons.voluntarySavIRColNum, "111", "111", false, "Type here...", migr));
 						}
-						pseq(id, "011:Voluntary Savings and Sub-parts");
 					} catch (Exception e) {
-						fseq(id, "011:Voluntary Savings and Sub-parts", e);
+						af.setInvalidFlag();
+						af.fseq(id, "011:Voluntary Savings and Sub-parts", e);
 					} finally {
 						count++;
 					}
@@ -391,14 +413,21 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 12:
 					try {
-						Thread.sleep(2000);
-						mt.scrollToText("Yes-Internal", "top");
-						Thread.sleep(2000);
-						appdriver.findElement(MobileBy.AndroidUIAutomator(
-								"new UiSelector().text(\"" + xc.getCellString(row, profileCons.bkIdColNum) + "\")"))
-								.click();
+						int op = 0;
+						if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-Internal"))
+							op = 1;
+						else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External"))
+							op = 2;
+						else if (xc.getCellString(row, profileCons.bkIdColNum).equals("No"))
+							op = 3;
 
-						if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-Internal")) {
+						af.pf(12, af.rdbtn(testSHG, "Bookkeeper Identified?", "top", op, row, profileCons.bkIdColNum,
+								"012", false, migr, 1,
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.RadioGroup/android.widget.RadioButton"));
+
+						if (op == 1) {
 							if ((xc.getCellString(row, profileCons.flowTypeColNum).equals("New")) && (!addMem)) {
 								appdriver.findElement(MobileBy.AndroidUIAutomator(
 										"new UiSelector().text(\"No Member available with the phone no in this SHG\")"))
@@ -407,87 +436,94 @@ public class shgProfileCreation extends lokosTest {
 										"//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]")
 										.click();
 							} else
-								selectById("Bookkeeper Name", "top", "com.microware.cdfi:id/lay_spinmember", row,
-										profileCons.bkNameColNum);
-							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
-									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
-									"212:||Validation Error||","#");
-						} else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External")) {
-							enterString_Id("Bookkeeper Name", "top", "com.microware.cdfi:id/et_bookkeeper_name", row,
-									profileCons.bkNameColNum, "112:||Validation Error");
-							enterLongNum_Id("Bookkeeper's Mobile No.", "top",
-									"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row, profileCons.bkMobColNum,
-									"212:||Validation Error","#");
+								af.pf(112, af.selectById(testSHG, "Bookkeeper Name", "top",
+										"com.microware.cdfi:id/lay_spinmember", row, profileCons.bkNameColNum, "112",
+										false, migr, "No Member available with the phone no in this SHG",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
+							af.pf(212,
+									af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
+											"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
+											profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
+						} else if (op == 2) {
+							af.pf(112,
+									af.enterStringById(testSHG, "Bookkeeper Name", "top",
+											"com.microware.cdfi:id/et_bookkeeper_name", row, profileCons.bkNameColNum,
+											"112", "112", false, "Type here...", migr));
+							af.pf(212,
+									af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
+											"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
+											profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
 						}
-						
-						pseq(id, "012:Bookkeeper");
+
 					} catch (Exception e) {
-						fseq(id, "012:Bookkeeper", e);
-					} finally {
-						count++;
+						af.setInvalidFlag();
+						af.fseq(id, "012:Bookkeeper", e);
 					}
 					if (id != 000)
 						break;
 				case 13:
 					try {
-						selectById("Primary Livelihood Activity", "top", "com.microware.cdfi:id/spin_primaryActivity", row,
-								profileCons.primaryla);
-						pseq(id, "013:Primary Livelihood");
+						af.pf(13, af.selectById(testSHG, "Primary Livelihood Activity", "top",
+								"com.microware.cdfi:id/spin_primaryActivity", row, profileCons.primaryla, "013", false,
+								migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 					} catch (Exception e) {
-						fseq(id, "013:Primary Livelihood", e);
-					} finally {
-						count++;
+						af.fseq(id, "013:Primary Livelihood", e);
 					}
 					if (id != 000)
 						break;
 				case 14:
 					try {
-						selectById("Secondary Livelihood Activity", "top", "com.microware.cdfi:id/spin_secondaryActivity",
-								row, profileCons.secondaryla);
-						pseq(id, "014:Secondary Livelihood");
+						af.pf(14, af.selectById(testSHG, "Secondary Livelihood Activity", "top",
+								"com.microware.cdfi:id/spin_secondaryActivity", row, profileCons.secondaryla, "014",
+								false, migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 					} catch (Exception e) {
-						fseq(id, "014:Secondary Livelihood", e);
-					} finally {
-						count++;
+						af.fseq(id, "014:Secondary Livelihood", e);
 					}
 					if (id != 000)
 						break;
 				case 15:
 					try {
-						selectById("Tertiary Livelihood Activity", "top", "com.microware.cdfi:id/spin_tertiaryActivity",
-								row, profileCons.tertiaryla);
-						pseq(id, "015:Tertiary Livelihood");
+						af.pf(15, af.selectById(testSHG, "Tertiary Livelihood Activity", "top",
+								"com.microware.cdfi:id/spin_tertiaryActivity", row, profileCons.tertiaryla, "015",
+								false, migr, "Select",
+								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 					} catch (Exception e) {
-						fseq(id, "015:Tertiary Livelihood", e);
-					} finally {
-						count++;
+						af.fseq(id, "015:Tertiary Livelihood", e);
 					}
 					if (id != 000)
 						break;
 
 				case 16:
 					try {
-						enterValue_Id("Tenure of elected Office Bearers", "top",
-								"com.microware.cdfi:id/et_electiontenure", row, profileCons.tenureColNum,
-								"016:||Validation Error");
-						pseq(id, "016:Tenure of elected Office Bearers");
+						af.pf(16,
+								af.enterNumById(testSHG, "Tenure of elected Office Bearers", "top",
+										"com.microware.cdfi:id/et_electiontenure", row, profileCons.tenureColNum, "016",
+										"016", false, "Type here...", migr));
 					} catch (Exception e) {
-						fseq(id, "016:Tenure of elected Office Bearers", e);
-					} finally {
-						count++;
+						af.fseq(id, "016:Tenure of elected Office Bearers", e);
 					}
 					if (id != 000)
 						break;
-
 				case 17:
 					try {
-						mt.scrollToText("SHG resolution copy", "top");
+						mt.scrollToText("SHG resolution copy", "top", x, y);
 						appdriver.findElementById("com.microware.cdfi:id/Imgmember").click();
 						appdriver.findElementById("com.microware.cdfi:id/layout_camera").click();
 						util.cameraLogic.click();
-						pseq(id, "017: SHG Resolution Copy Upload");
+						af.pseq(id, "017: SHG Resolution Copy Upload");
 					} catch (Exception e) {
-						fseq(id, "017: SHG Resolution Copy Upload", e);
+						af.fseq(id, "017: SHG Resolution Copy Upload", e);
 					} finally {
 						count++;
 					}
@@ -498,17 +534,18 @@ public class shgProfileCreation extends lokosTest {
 					try {
 						if (!xc.getCellString(row, profileCons.typeColNum).equals("New SHG")) {
 							if (!xc.getCellString(row, memCons.typeColNum).equals("New")) {
-								mt.scrollToText("Status", "top");
-								appdriver.findElementById("com.microware.cdfi:id/spin_status").click();
-								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-										+ xc.getCellString(row, memCons.statusColNum) + "\")")).click();
+								af.pf(18, af.selectById(testSHG, "Status", "top", "com.microware.cdfi:id/spin_status",
+										row, profileCons.statusColNum, "018", false, migr, "Active",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 							}
-							pseq(id, "018:Status");
+							af.pseq(id, "018:Status");
 						} else
 							--count;
 
 					} catch (Exception e) {
-						fseq(id, "018:Status", e);
+						af.fseq(id, "018:Status", e);
 					} finally {
 						count++;
 					}
@@ -520,12 +557,12 @@ public class shgProfileCreation extends lokosTest {
 
 				}
 			}
-			
-			if (invalid_flag) {
+
+			if (af.invalidFlag()) {
 				System.out.println("Error---->Atleast one field is incorrect");
 				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
-				testSHG.log(Status.INFO,"Error---->Atleast one field is incorrect");
-				testSHG.log(Status.INFO,"Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				testSHG.log(Status.INFO, "Error---->Atleast one field is incorrect");
+				testSHG.log(Status.INFO, "Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 				navigateBackToScreen("SHG");
@@ -539,7 +576,8 @@ public class shgProfileCreation extends lokosTest {
 				if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 						.equals("Data saved successfully")
 						|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-								.equals("Data Updated Successfully")||!invalid_flag) {
+								.equals("Data Updated Successfully")
+						|| !invalid_flag) {
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 					testSHG.log(Status.INFO, "Necessary fields for saving SHG filled.");
 					System.out.println("Necessary fields for saving SHG filled.");
@@ -566,7 +604,7 @@ public class shgProfileCreation extends lokosTest {
 					}
 					util.randomPressLogic.press(0.5, 0.05);
 					navigateBackToScreen("SHG Basic Details");
-					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/tv_shgName", "id", "bottom");
+					mt.scrollToVisibleElementOnScreen("com.microware.cdfi:id/tv_shgName", "id", "bottom", x, y);
 					t = 1;
 					id = 9999;
 				}
@@ -600,6 +638,8 @@ public class shgProfileCreation extends lokosTest {
 			}
 		}
 
+		af.resetInvalidFlag();
+
 		if ((id != 9999) && (!addMem)) {
 			for (int iterations = 0; iterations < idList.length; iterations++) {
 				id = Integer.valueOf(idList[iterations]);
@@ -608,259 +648,127 @@ public class shgProfileCreation extends lokosTest {
 					case 000:
 					case 19:
 						try {
-							int k=0;
-							while(k<6) {
+							af.resetInvalidFlag();
+							int k = 0;
+							while (k < 6) {
 								try {
 									Thread.sleep(2000);
 									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 									appdriver.findElementById("com.microware.cdfi:id/lay_phone").click();
-									k=6;
-								}catch(Exception e) {
+									k = 6;
+								} catch (Exception e) {
 									System.out.println("Wasn't able to press the phone button");
 									k++;
 								}
-							}		
-							Thread.sleep(2000);
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
+							}
 
-							String[] phnos = xc.getCellString(row, profileCons.mobNosColNUm).split(";");
-							for (int i = 0; i < phnos.length; i++) {
+							if (af.checkMigrFields(testSHG, row, profileCons.phone,
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat",
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat[",
+									"]/android.widget.TableRow[3]/android.widget.ImageView[2]",
+									"]/android.widget.TableRow[3]/android.widget.ImageView[1]",
+									"com.microware.cdfi:id/addAddress",
+									"")) {
 
-								String[] s = phnos[i].split(":");
-								appdriver.findElementById("com.microware.cdfi:id/spin_belongMember").click();
+								String[] phnos = xc.getCellString(row, profileCons.mobNosColNUm).split(";");
+								for (int i = 0; i < phnos.length; i++) {
 
-								appdriver.findElement(MobileBy
-										.AndroidUIAutomator("new UiSelector().textContains(\"" + s[0].trim() + "\")"))
-										.click();
-								appdriver.findElementById("com.microware.cdfi:id/spin_Memberphone").click();
-								appdriver
-										.findElement(MobileBy
-												.AndroidUIAutomator("new UiSelector().text(\"" + s[1].trim() + "\")"))
-										.click();
+									String[] s = phnos[i].split(":");
+									appdriver.findElementById("com.microware.cdfi:id/spin_belongMember").click();
 
-								appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
-								if (!appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-										.equals("Data Updated Successfully")
-										|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-												.equals("Data saved successfully"))
-									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-								else {
-									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-									if (neg_test_flag) {
-										try {
-											String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
-											if (ex.contains(exp_errs)) {
-												System.out.println("|||||||||||||||||||||||||||||");
-												System.out.println("Expected Error is encountered");
-												System.out.println("   ((Negetive Test Passed))");
-												System.out.println("|||||||||||||||||||||||||||||");
-												++neg_test_count;
-											} else {
-												System.out.println("   (((Negetive Test Failed)))\n");
+									appdriver.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().textContains(\"" + s[0].trim() + "\")")).click();
+//									appdriver.findElementById("com.microware.cdfi:id/spin_Memberphone").click();
+									Thread.sleep(2000);
+//									appdriver.findElement(MobileBy
+//											.AndroidUIAutomator("new UiSelector().text(\"" + s[1].trim() + "\")"))
+//											.click();
+									af.selectFirstOptionById("Mobile number", 
+											"top",
+											"com.microware.cdfi:id/spin_Memberphone", 
+											"//android.widget.FrameLayout/android.widget.ListView/android.widget.TextView[2]",
+											migr,
+											"Select",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView", 
+											"]/android.widget.TableRow[1]/android.widget.TextView", 
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView");
+									appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
+									if (!appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+											.equals("Data Updated Successfully")
+											|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+													.equals("Data saved successfully"))
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+									else {
+										String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg")
+												.getText();
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+										if (neg_test_flag) {
+											try {
+												String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+												if (ex.contains(exp_errs)) {
+													System.out.println("|||||||||||||||||||||||||||||");
+													System.out.println("Expected Error is encountered");
+													System.out.println("   ((Negetive Test Passed))");
+													System.out.println("|||||||||||||||||||||||||||||");
+													++neg_test_count;
+												} else {
+													System.out.println("   (((Negetive Test Failed)))\n");
+												}
+											} catch (NullPointerException np) {
+												System.out.println("---->>Expected Errors is empty.");
 											}
-										} catch (NullPointerException np) {
-											System.out.println("---->>Expected Errors is empty.");
 										}
+										throw new Exception(ex);
 									}
-									throw new Exception(ex);
+									pseq(id, "019:Phone Number");
 								}
-								pseq(id, "019:Phone Number");
 							}
 						} catch (Exception e) {
 							fseq(id, "019:Phone Number", e);
 							randomPressLogic.press(0.5, 0.05);
-						} finally {
-							count++;
 						}
 						if (id != 000)
 							break;
 
 					case 20:
 						try {
-							
-							int i=0;
-							while(i<6) {
+							af.resetInvalidFlag();
+							int i = 0;
+							while (i < 6) {
 								try {
 									Thread.sleep(2000);
 									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 									appdriver.findElementById("com.microware.cdfi:id/lay_location").click();
-									i=6;;
-								}catch(Exception e) {
+									i = 6;
+									;
+								} catch (Exception e) {
 									System.out.println("Wasn't able to press the address button");
-									i++;
-								}
-							}							
-							Thread.sleep(2000);
-							appdriver.findElementById("com.microware.cdfi:id/addAddress").click();
-							Thread.sleep(2000);
-							appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-							enterString_Id(
-									"Address Line 1",
-									"top",
-									"com.microware.cdfi:id/et_address1",
-									row, 
-									profileCons.add1ColNum,
-									"020:||Validation Error||");
-							enterString_Id(
-									"Address Line 2",
-									"top",
-									"com.microware.cdfi:id/et_address2",
-									row, 
-									profileCons.add2ColNum,
-									"120:||Validation Error||");
-							enterValue_Id(
-									"Pincode",
-									"top",
-									"com.microware.cdfi:id/et_pincode",
-									row, 
-									profileCons.pinColNum,
-									"220:||Validation Error||");
-							appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
-							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-									.equals("Data Updated Successfully")
-									|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-											.equals("Data saved successfully"))
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-							else {
-								String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-								testSHG.log(Status.FAIL, ex);
-								System.out.println("Error->" + ex);
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-								if (neg_test_flag) {
-									try {
-										String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
-										if (ex.contains(exp_errs)) {
-											System.out.println("|||||||||||||||||||||||||||||");
-											System.out.println("Expected Error is encountered");
-											System.out.println("   ((Negetive Test Passed))");
-											System.out.println("|||||||||||||||||||||||||||||");
-											++neg_test_count;
-										} else {
-											System.out.println("   (((Negetive Test Failed)))\n");
-										}
-									} catch (NullPointerException np) {
-										System.out.println("---->>Expected Errors is empty.");
-									}
-								}
-								throw new Exception(ex);
-							}
-							pseq(id, "020:Address");
-
-						} catch (Exception e) {
-							fseq(id, "020:Address", e);
-							randomPressLogic.press(0.5, 0.05);
-							appdriver.findElementById("com.microware.cdfi:id/ivBack").click();
-						} finally {
-							count++;
-						}
-						if (id != 000)
-							break;
-					case 21:					
-						try {
-							invalid_flag=false;
-							int i=0;
-							while(i<6) {
-								try {
-									Thread.sleep(2000);
-									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-									appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
-									i=6;
-								}catch(Exception e) {
-									System.out.println("Wasn't able to press the bank button");
 									i++;
 								}
 							}
 							
-							int k=0;
-							while(k<6) {
-								try {
-									Thread.sleep(2000);
-									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-									appdriver.findElementById("com.microware.cdfi:id/addBank").click();
-									k=6;
-								}catch(Exception e) {
-									System.out.println("Wasn't able to press the address button");
-									k++;
-								}
-							}
-							enterString_Id("Name in Bank Passbook",
-									"top",
-									"com.microware.cdfi:id/et_nameinbankpassbook",
-									row, 
-									profileCons.passNameColNum,
-									"021:||Validation Error||");
-							enterString_Id("IFSC Code",
-									"top",
-									"com.microware.cdfi:id/et_ifsc",
-									row, 
-									profileCons.IFSCColNum,
-									"121:||Validation Error||");
-							Thread.sleep(1000);
-							appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
-							Thread.sleep(1000);
-							try {
-								Thread.sleep(2000);
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-								Thread.sleep(2000);
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-							} catch (Exception e) {
-
-							}
-							try {
-								appdriver.findElementById("com.microware.cdfi:id/lay_bankName").click();
-								appdriver.findElementById("android:id/search_src_text")
-										.sendKeys(xc.getCellString(row, profileCons.bankNameColNum));
-								appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
-//								mt.scrollToText("Bank Branch", "top");
-//								appdriver.findElementById("com.microware.cdfi:id/lay_branch").click();
-//								appdriver.findElementById("android:id/search_src_text")
-//									.sendKeys(xc.getCellString(row, memCons.bankBranchColNum));
-//								appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]").click();
-							} catch (Exception e) {
-
-							}
-							
-							appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(xc.getCellString(row, profileCons.accNoColNum).substring(1));
-//							enterLongNum_Id("Account number", 
-//									"top",
-//									"com.microware.cdfi:id/et_Accountno",
-//									row, 
-//									profileCons.accNoColNum,
-//									"421:||Validation Error||",
-//									"#");
-							enterLongNum_Id("Re-Type Account No.", 
-									"top",
-									"com.microware.cdfi:id/et_retype_Accountno",
-									row, 
-									profileCons.retypAccNoColNum,
-									"521:||Validation Error||",
-									"#");
-							String date = xc.getCellString(row, profileCons.accOpDateColNum);
-							dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
-							appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
-							cameraLogic.click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, profileCons.isDefaultColNum) + "\")")).click();
-							if(invalid_flag)
-								throw new Exception("");
-							appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
-							if (du.isElementPresent("new UiSelector().text(\"Please enter valid Account No.\")",
-									"androidUIAutomatior")) {
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-								throw new Exception("Invalid Account Number");
-							}
-
-							try {
+							Thread.sleep(2000);
+							if (af.checkMigrFields(testSHG, row, profileCons.address,
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat",
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat[",
+									"]/android.widget.TableRow[3]/android.widget.ImageView[2]",
+									"]/android.widget.TableRow[3]/android.widget.ImageView[1]",
+									"com.microware.cdfi:id/addAddress",
+									"")) {
+								appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+								af.pf(20,
+										af.enterStringById(testSHG, "Address Line 1", "top",
+												"com.microware.cdfi:id/et_address1", row, profileCons.add1ColNum, "020",
+												"020", false, "Type here...", migr));
+								af.pf(20, af.enterNumById(testSHG, "Pincode", "top", "com.microware.cdfi:id/et_pincode",
+										row, profileCons.pinColNum, "220", "220", false, "Type here...", migr));
+								appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
 								if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 										.equals("Data Updated Successfully")
 										|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-												.equals("Data saved successfully")) {
-									Thread.sleep(1000);
+												.equals("Data saved successfully"))
 									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-
-								} else {
+								else {
 									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 									testSHG.log(Status.FAIL, ex);
 									System.out.println("Error->" + ex);
@@ -883,30 +791,190 @@ public class shgProfileCreation extends lokosTest {
 									}
 									throw new Exception(ex);
 								}
-							} catch (Exception e) {
-								System.out.println("::Additional Dialogue Box displayed");
+
+								if (af.invalidFlag())
+									throw new Exception("");
+								af.pseq(id, "020:Address");
 							}
 
-							try {
+						} catch (Exception e) {
+							af.resetInvalidFlag();
+							af.fseq(id, "020:Address", e);
+						}
+						if (id != 000)
+							break;
+					case 21:
+						try {
+							invalid_flag = false;
+							int i = 0;
+							while (i < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+									appdriver.findElementById("com.microware.cdfi:id/IvBank").click();
+									i = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the bank button");
+									i++;
+								}
+							}
+
+//							int k = 0;
+//							while (k < 6) {
+//								try {
+//									Thread.sleep(2000);
+//									appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//									appdriver.findElementById("com.microware.cdfi:id/addBank").click();
+//									k = 6;
+//								} catch (Exception e) {
+//									System.out.println("Wasn't able to press the address button");
+//									k++;
+//								}
+//							}
+							if (af.checkMigrFields(testSHG, row, profileCons.bank,
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat",
+									"//androidx.appcompat.widget.LinearLayoutCompat/androidx.recyclerview.widget.RecyclerView/androidx.appcompat.widget.LinearLayoutCompat[",
+									"]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[7]/android.widget.ImageView[3]",
+									"]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[7]/android.widget.ImageView[2]",
+									"com.microware.cdfi:id/addBank",
+									"]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[7]/android.widget.ImageView[1]")) {
+								af.pf(21, af.enterStringById(testSHG,"IFSC Code", "top", "com.microware.cdfi:id/et_ifsc", row,
+										profileCons.IFSCColNum, "121","121",false,"Type here...",migr));
 								Thread.sleep(1000);
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+								appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
+								Thread.sleep(1000);
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+								} catch (Exception e) {
 
-							} catch (Exception e) {
+								}
+								try {
+									appdriver.findElementById("com.microware.cdfi:id/lay_bankName").click();
+									appdriver.findElementById("android:id/search_src_text")
+											.sendKeys(xc.getCellString(row, profileCons.bankNameColNum));
+									appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+//								mt.scrollToText("Bank Branch", "top");
+//								appdriver.findElementById("com.microware.cdfi:id/lay_branch").click();
+//								appdriver.findElementById("android:id/search_src_text")
+//									.sendKeys(xc.getCellString(row, memCons.bankBranchColNum));
+//								appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]").click();
+								} catch (Exception e) {
 
-							}
-							try {
+								}
+								String acc="";
+								Random objGenerator = new Random();
+								acc=String.valueOf(objGenerator.nextInt(10000,99999))+String.valueOf(objGenerator.nextInt(100000,999999));
+								System.out.println("Account: "+acc);
+								try {								
+									appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(acc);									
+								}catch(Exception e) {
+									System.out.println("Unable to enter Account Data. Possible Migrated Data.");
+								}
+								
+								try {
+									appdriver.findElementById("com.microware.cdfi:id/et_retype_Accountno").sendKeys(acc);									
+								}catch(Exception e) {
+									System.out.println("Unable to enter Retype Account Data. Possible Migrated Data.");
+								}
+//								af.pf(21, af.enterNumById(testSHG, 
+//										"Re-Type Account No.", "", 
+//										"com.microware.cdfi:id/et_retype_Accountno", 
+//										row, profileCons.retypAccNoColNum, 
+//										"521", "521", false, "Type here...", migr));
+								
+//								enterLongNum_Id("Re-Type Account No.", "top",
+//										"com.microware.cdfi:id/et_retype_Accountno", row, profileCons.retypAccNoColNum,
+//										"521:||Validation Error||", "#");
+								af.pf(21, af.dateLogic(testSHG, 
+										"Account opening date","top" ,
+										row, profileCons.accOpDateColNum, 
+										"com.microware.cdfi:id/et_opdate",
+										"621", "621", false, "dd-mm-yyyy", migr));
+//								String date = xc.getCellString(row, profileCons.accOpDateColNum);
+//								dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
+								appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
+								cameraLogic.click();
+								int op=0;
+								if(xc.getCellString(row, profileCons.isDefaultColNum).equals("Yes"))
+									op=1;
+								else if(xc.getCellString(row, profileCons.isDefaultColNum).equals("No"))
+									op=2;
+								af.pf(21, af.rdbtn(testSHG,
+										"Is Default", "top",op, row, profileCons.isDefaultColNum, "721", false, migr, 1, 
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView", 
+										"]/android.widget.TableRow[1]/android.widget.TextView", 
+										"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+//								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+//										+ xc.getCellString(row, profileCons.isDefaultColNum) + "\")")).click();
+								if (invalid_flag)
+									throw new Exception("");
 								appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
-							} catch (Exception e) {
+								if (du.isElementPresent("new UiSelector().text(\"Please enter valid Account No.\")",
+										"androidUIAutomatior")) {
+									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+									throw new Exception("Invalid Account Number");
+								}
+
+								try {
+									if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+											.equals("Data Updated Successfully")
+											|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+													.equals("Data saved successfully")) {
+										Thread.sleep(1000);
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+
+									} else {
+										String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg")
+												.getText();
+										testSHG.log(Status.FAIL, ex);
+										System.out.println("Error->" + ex);
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+										if (neg_test_flag) {
+											try {
+												String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+												if (ex.contains(exp_errs)) {
+													System.out.println("|||||||||||||||||||||||||||||");
+													System.out.println("Expected Error is encountered");
+													System.out.println("   ((Negetive Test Passed))");
+													System.out.println("|||||||||||||||||||||||||||||");
+													++neg_test_count;
+												} else {
+													System.out.println("   (((Negetive Test Failed)))\n");
+												}
+											} catch (NullPointerException np) {
+												System.out.println("---->>Expected Errors is empty.");
+											}
+										}
+										throw new Exception(ex);
+									}
+								} catch (Exception e) {
+									System.out.println("::Additional Dialogue Box displayed");
+								}
+
+								try {
+									Thread.sleep(1000);
+									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+
+								} catch (Exception e) {
+
+								}
+								try {
+									appdriver.findElementById("com.microware.cdfi:id/btn_add").click();
+								} catch (Exception e) {
+								}
+								try {
+									Thread.sleep(1000);
+									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+
+								} catch (Exception e) {
+
+								}
+
+								pseq(id, "021:Bank Account");
 							}
-							try {
-								Thread.sleep(1000);
-								appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-
-							} catch (Exception e) {
-
-							}
-
-							pseq(id, "021:Bank Account");
 						} catch (Exception e) {
 							fseq(id, "021:Bank Account", e);
 							randomPressLogic.press(0.5, 0.05);
@@ -920,50 +988,213 @@ public class shgProfileCreation extends lokosTest {
 						try {
 							appdriver.findElementById("com.microware.cdfi:id/IvKyc").click();
 							// President
-							appdriver.findElementByXPath(
-									"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
-									.click();
-							appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
-									.click();
-//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-//									.sendKeys(xc.getCellString(row, profileCons.presDateColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
-							appdriver.findElementById("android:id/button1").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
-							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
-							sig++;
-							try {
-								if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
-									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-									testSHG.log(Status.FAIL, ex);
-									System.out.println("Error-->" + ex);
-									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-									if (neg_test_flag) {
-										try {
-											String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
-											if (ex.contains(exp_errs)) {
-												System.out.println("|||||||||||||||||||||||||||||");
-												System.out.println("Expected Error is encountered");
-												System.out.println("   ((Negetive Test Passed))");
-												System.out.println("|||||||||||||||||||||||||||||");
-												++neg_test_count;
-											} else {
-												System.out.println("   (((Negetive Test Failed)))\n");
+							
+							if(xc.getCellString(row, profileCons.president).contains("Delete")) {
+								
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								
+							}else if(xc.getCellString(row, profileCons.president).contains("DeleteAdd")) {
+								
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									Thread.sleep(2000);
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+									appdriver.findElementById("android:id/button1").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+											+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									sig++;
+									try {
+										if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+											String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+											testSHG.log(Status.FAIL, ex);
+											System.out.println("Error-->" + ex);
+											appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+											if (neg_test_flag) {
+												try {
+													String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+													if (ex.contains(exp_errs)) {
+														System.out.println("|||||||||||||||||||||||||||||");
+														System.out.println("Expected Error is encountered");
+														System.out.println("   ((Negetive Test Passed))");
+														System.out.println("|||||||||||||||||||||||||||||");
+														++neg_test_count;
+													} else {
+														System.out.println("   (((Negetive Test Failed)))\n");
+													}
+												} catch (NullPointerException np) {
+													System.out.println("---->>Expected Errors is empty.");
+												}
 											}
-										} catch (NullPointerException np) {
-											System.out.println("---->>Expected Errors is empty.");
+											randomPressLogic.press(0.5, 0.05);
+											sig--;
+											throw new Exception("President Signatory not assigned");
 										}
+									} catch (Exception e) {
+										System.out.println(e.getMessage());
 									}
-									randomPressLogic.press(0.5, 0.05);
-									sig--;
-									throw new Exception("President Signatory not assigned");
+							}else if(xc.getCellString(row, profileCons.president).contains("Edit")) {
+							
+									Thread.sleep(2000);
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+									appdriver.findElementById("android:id/button1").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+											+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									sig++;
+									try {
+										if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+											String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+											testSHG.log(Status.FAIL, ex);
+											System.out.println("Error-->" + ex);
+											appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+											if (neg_test_flag) {
+												try {
+													String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+													if (ex.contains(exp_errs)) {
+														System.out.println("|||||||||||||||||||||||||||||");
+														System.out.println("Expected Error is encountered");
+														System.out.println("   ((Negetive Test Passed))");
+														System.out.println("|||||||||||||||||||||||||||||");
+														++neg_test_count;
+													} else {
+														System.out.println("   (((Negetive Test Failed)))\n");
+													}
+												} catch (NullPointerException np) {
+													System.out.println("---->>Expected Errors is empty.");
+												}
+											}
+											randomPressLogic.press(0.5, 0.05);
+											sig--;
+											throw new Exception("President Signatory not assigned");
+										}
+									} catch (Exception e) {
+										System.out.println(e.getMessage());
+									}
+							}else if(xc.getCellString(row, profileCons.president).contains("Check")) {
+								try {
+								}catch(Exception e) {
 								}
-							} catch (Exception e) {
-								System.out.println(e.getMessage());
+							}else if(xc.getCellString(row, profileCons.president).contains("CheckAdd")) {
+								try {
+									}catch(Exception e) {
+									}
+							}else if(xc.getCellString(row, profileCons.president).contains("Do Not Add")){
+							}else {
+								appdriver.findElementByXPath(
+										"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+										.click();
+								appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator(
+										"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
+										.click();
+//								appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//										.sendKeys(xc.getCellString(row, profileCons.presDateColNum));
+								appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+								appdriver.findElementById("android:id/button1").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+										+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
+								appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								sig++;
+								try {
+									if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+										String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+										testSHG.log(Status.FAIL, ex);
+										System.out.println("Error-->" + ex);
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+										if (neg_test_flag) {
+											try {
+												String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+												if (ex.contains(exp_errs)) {
+													System.out.println("|||||||||||||||||||||||||||||");
+													System.out.println("Expected Error is encountered");
+													System.out.println("   ((Negetive Test Passed))");
+													System.out.println("|||||||||||||||||||||||||||||");
+													++neg_test_count;
+												} else {
+													System.out.println("   (((Negetive Test Failed)))\n");
+												}
+											} catch (NullPointerException np) {
+												System.out.println("---->>Expected Errors is empty.");
+											}
+										}
+										randomPressLogic.press(0.5, 0.05);
+										sig--;
+										throw new Exception("President Signatory not assigned");
+									}
+								} catch (Exception e) {
+									System.out.println(e.getMessage());
+								}
 							}
+							
+							
+//							appdriver.findElementByXPath(
+//									"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+//									.click();
+//							appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+//							appdriver.findElement(MobileBy.AndroidUIAutomator(
+//									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.presColNum) + "\")"))
+//									.click();
+////							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+////									.sendKeys(xc.getCellString(row, profileCons.presDateColNum));
+//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+//							appdriver.findElementById("android:id/button1").click();
+//							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+//									+ xc.getCellString(row, profileCons.presSigColNum) + "\")")).click();
+//							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+//							sig++;
+//							try {
+//								if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+//									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+//									testSHG.log(Status.FAIL, ex);
+//									System.out.println("Error-->" + ex);
+//									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+//									if (neg_test_flag) {
+//										try {
+//											String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+//											if (ex.contains(exp_errs)) {
+//												System.out.println("|||||||||||||||||||||||||||||");
+//												System.out.println("Expected Error is encountered");
+//												System.out.println("   ((Negetive Test Passed))");
+//												System.out.println("|||||||||||||||||||||||||||||");
+//												++neg_test_count;
+//											} else {
+//												System.out.println("   (((Negetive Test Failed)))\n");
+//											}
+//										} catch (NullPointerException np) {
+//											System.out.println("---->>Expected Errors is empty.");
+//										}
+//									}
+//									randomPressLogic.press(0.5, 0.05);
+//									sig--;
+//									throw new Exception("President Signatory not assigned");
+//								}
+//							} catch (Exception e) {
+//								System.out.println(e.getMessage());
+//							}
 
 							pseq(id, "022:President Signatory");
 						} catch (Exception e) {
@@ -979,50 +1210,92 @@ public class shgProfileCreation extends lokosTest {
 
 							appdriver.findElementById("com.microware.cdfi:id/IvKyc").click();
 							// Secretary
-							appdriver.findElementByXPath(
-									"//android.widget.FrameLayout[2]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
-									.click();
-							appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.secColNum) + "\")"))
-									.click();
-//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-//									.sendKeys(xc.getCellString(row, profileCons.secDateColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
-							appdriver.findElementById("android:id/button1").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, profileCons.secSigColNum) + "\")")).click();
-							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
-							sig++;
-							try {
-								if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
-									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-									testSHG.log(Status.FAIL, ex);
-									System.out.println("Error-->" + ex);
-									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-									randomPressLogic.press(0.5, 0.05);
-									if (neg_test_flag) {
-										try {
-											String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
-											if (ex.contains(exp_errs)) {
-												System.out.println("|||||||||||||||||||||||||||||");
-												System.out.println("Expected Error is encountered");
-												System.out.println("   ((Negetive Test Passed))");
-												System.out.println("|||||||||||||||||||||||||||||");
-												++neg_test_count;
-											} else {
-												System.out.println("   (((Negetive Test Failed)))\n");
-											}
-										} catch (NullPointerException np) {
-											System.out.println("---->>Expected Errors is empty.");
-										}
-									}
-									sig--;
-									throw new Exception("Secretary Signatory not assigned");
+							
+							if(xc.getCellString(row, profileCons.secretary).contains("Delete")) {
+								try {
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[2]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								}catch(Exception e) {
+									System.out.println("secretary Deleted");
 								}
-							} catch (Exception e) {
-								System.out.println(e.getMessage());
-							}
+							}else if(xc.getCellString(row, profileCons.secretary).contains("DeleteAdd")) {
+								try {
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									Thread.sleep(2000);
+									}catch(Exception e) {
+										System.out.println("secretary Deleted and Added");
+									}
+							
+							}else if(xc.getCellString(row, profileCons.secretary).contains("Edit")) {
+								try {
+								}catch(Exception e) {
+									System.out.println("secretary Edited");
+								}
+							}else if(xc.getCellString(row, profileCons.secretary).contains("Check")) {
+								try {
+								}catch(Exception e) {
+								}
+							}else if(xc.getCellString(row, profileCons.secretary).contains("CheckAdd")) {
+								try {
+									}catch(Exception e) {
+									}
+							}else if(xc.getCellString(row, profileCons.secretary).contains("Do Not Add")){
+							}else {
+								appdriver.findElementByXPath(
+										"//android.widget.FrameLayout[2]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+										.click();
+								appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator(
+										"new UiSelector().text(\"" + xc.getCellString(row, profileCons.secColNum) + "\")"))
+										.click();
+//								appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//										.sendKeys(xc.getCellString(row, profileCons.secDateColNum));
+								appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+								appdriver.findElementById("android:id/button1").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+										+ xc.getCellString(row, profileCons.secSigColNum) + "\")")).click();
+								appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								sig++;
+								try {
+									if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+										String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+										testSHG.log(Status.FAIL, ex);
+										System.out.println("Error-->" + ex);
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+										randomPressLogic.press(0.5, 0.05);
+										if (neg_test_flag) {
+											try {
+												String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+												if (ex.contains(exp_errs)) {
+													System.out.println("|||||||||||||||||||||||||||||");
+													System.out.println("Expected Error is encountered");
+													System.out.println("   ((Negetive Test Passed))");
+													System.out.println("|||||||||||||||||||||||||||||");
+													++neg_test_count;
+												} else {
+													System.out.println("   (((Negetive Test Failed)))\n");
+												}
+											} catch (NullPointerException np) {
+												System.out.println("---->>Expected Errors is empty.");
+											}
+										}
+										sig--;
+										throw new Exception("Secretary Signatory not assigned");
+									}
+								} catch (Exception e) {
+									System.out.println(e.getMessage());
+								}
+							}				
+							
 
 							pseq(id, "023:Secretary Signatory");
 						} catch (Exception e) {
@@ -1037,55 +1310,143 @@ public class shgProfileCreation extends lokosTest {
 						try {
 							appdriver.findElementById("com.microware.cdfi:id/IvKyc").click();
 							// Treasurer
-							appdriver.findElementByXPath(
-									"//android.widget.FrameLayout[3]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
-									.click();
-							appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator(
-									"new UiSelector().text(\"" + xc.getCellString(row, profileCons.tresColNum) + "\")"))
-									.click();
-//							appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
-//									.sendKeys(xc.getCellString(row, profileCons.tresDateColNum));
-							appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
-							appdriver.findElementById("android:id/button1").click();
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
-									+ xc.getCellString(row, profileCons.tresSigColNum) + "\")")).click();
-							appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
-							sig++;
-							try {
-								if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
-									String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
-									testSHG.log(Status.FAIL, ex);
-									System.out.println("Error-->" + ex);
-									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-									randomPressLogic.press(0.5, 0.05);
-									if (neg_test_flag) {
-										try {
-											String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
-											if (ex.contains(exp_errs)) {
-												System.out.println("|||||||||||||||||||||||||||||");
-												System.out.println("Expected Error is encountered");
-												System.out.println("   ((Negetive Test Passed))");
-												System.out.println("|||||||||||||||||||||||||||||");
-												++neg_test_count;
-											} else {
-												System.out.println("   (((Negetive Test Failed)))\n");
-											}
-										} catch (NullPointerException np) {
-											System.out.println("---->>Expected Errors is empty.");
-										}
-									}
-									sig--;
-									throw new Exception("Treasurer Signatory not assigned");
+							
+							if(xc.getCellString(row, profileCons.treasurer).contains("Delete")) {
+								try {
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[3]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								}catch(Exception e) {
+									System.out.println("treasurer Deleted");
 								}
-							} catch (Exception e) {
-								System.out.println(e.getMessage());
+							}else if(xc.getCellString(row, profileCons.treasurer).contains("DeleteAdd")) {
+								try {
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[3]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/lay_status").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Inactive\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									Thread.sleep(2000);
+									
+									appdriver.findElementByXPath(
+											"//android.widget.FrameLayout[3]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+											.click();
+									appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().text(\"" + xc.getCellString(row, profileCons.tresColNum) + "\")"))
+											.click();
+//									appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//											.sendKeys(xc.getCellString(row, profileCons.tresDateColNum));
+									appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+									appdriver.findElementById("android:id/button1").click();
+									appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+											+ xc.getCellString(row, profileCons.tresSigColNum) + "\")")).click();
+									appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+									sig++;
+									try {
+										if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+											String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+											testSHG.log(Status.FAIL, ex);
+											System.out.println("Error-->" + ex);
+											appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+											randomPressLogic.press(0.5, 0.05);
+											if (neg_test_flag) {
+												try {
+													String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+													if (ex.contains(exp_errs)) {
+														System.out.println("|||||||||||||||||||||||||||||");
+														System.out.println("Expected Error is encountered");
+														System.out.println("   ((Negetive Test Passed))");
+														System.out.println("|||||||||||||||||||||||||||||");
+														++neg_test_count;
+													} else {
+														System.out.println("   (((Negetive Test Failed)))\n");
+													}
+												} catch (NullPointerException np) {
+													System.out.println("---->>Expected Errors is empty.");
+												}
+											}
+											sig--;
+											throw new Exception("Treasurer Signatory not assigned");
+										}
+									} catch (Exception e) {
+										System.out.println(e.getMessage());
+									}
+									}catch(Exception e) {
+										System.out.println("Tresure Deleted and Added");
+									}
+							
+							}else if(xc.getCellString(row, profileCons.treasurer).contains("Edit")) {
+								try {
+								}catch(Exception e) {
+									
+								}
+							}else if(xc.getCellString(row, profileCons.treasurer).contains("Check")) {
+								try {
+								}catch(Exception e) {
+								}
+							}else if(xc.getCellString(row, profileCons.treasurer).contains("CheckAdd")) {
+								try {
+									}catch(Exception e) {
+									}
+							}else if(xc.getCellString(row, profileCons.treasurer).contains("Do Not Add")){
+							}else {
+								appdriver.findElementByXPath(
+										"//android.widget.FrameLayout[3]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[4]/android.widget.ImageView")
+										.click();
+								appdriver.findElementById("com.microware.cdfi:id/spin_Member").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator(
+										"new UiSelector().text(\"" + xc.getCellString(row, profileCons.tresColNum) + "\")"))
+										.click();
+//								appdriver.findElementById("com.microware.cdfi:id/et_fromDate")
+//										.sendKeys(xc.getCellString(row, profileCons.tresDateColNum));
+								appdriver.findElementById("com.microware.cdfi:id/et_fromDate").click();
+								appdriver.findElementById("android:id/button1").click();
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
+										+ xc.getCellString(row, profileCons.tresSigColNum) + "\")")).click();
+								appdriver.findElementById("com.microware.cdfi:id/btn_addDes").click();
+								sig++;
+								try {
+									if (du.isElementPresent("com.microware.cdfi:id/txt_msg", "id")) {
+										String ex = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+										testSHG.log(Status.FAIL, ex);
+										System.out.println("Error-->" + ex);
+										appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
+										randomPressLogic.press(0.5, 0.05);
+										if (neg_test_flag) {
+											try {
+												String exp_errs = xc.getCellString(row, profileCons.expErrMessColNum);
+												if (ex.contains(exp_errs)) {
+													System.out.println("|||||||||||||||||||||||||||||");
+													System.out.println("Expected Error is encountered");
+													System.out.println("   ((Negetive Test Passed))");
+													System.out.println("|||||||||||||||||||||||||||||");
+													++neg_test_count;
+												} else {
+													System.out.println("   (((Negetive Test Failed)))\n");
+												}
+											} catch (NullPointerException np) {
+												System.out.println("---->>Expected Errors is empty.");
+											}
+										}
+										sig--;
+										throw new Exception("Treasurer Signatory not assigned");
+									}
+								} catch (Exception e) {
+									System.out.println(e.getMessage());
+								}
 							}
+							
+							
 
 							pseq(id, "024:Treasurer Signatory");
 						} catch (Exception e) {
 							randomPressLogic.press(0.5, 0.05);
-							fseq(id, "024:Treasurer Signatory", e);							
+							fseq(id, "024:Treasurer Signatory", e);
 						} finally {
 							count++;
 						}
@@ -1096,9 +1457,9 @@ public class shgProfileCreation extends lokosTest {
 				}
 			}
 		}
-		
+
 		ExtentManager.addScreenShotsToTest("Save and Check", testSHG);
-		
+
 		if (t == 0)
 			navigateBackToScreen("SHG");
 
@@ -1108,11 +1469,12 @@ public class shgProfileCreation extends lokosTest {
 //		appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 //		appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 		
+		memberRow=0;
 		if ((id != 9999) && (addMem))
 
 		{
 
-			int numMem = (int) xc.getCellDoubleValue(row, profileCons.numMemAddColNum);
+			int numMem = Integer.parseInt(xc.getCellString(row, profileCons.numMemAddColNum));
 
 			for (int i = 1; i <= numMem; i++) {
 				testSHG.log(Status.INFO, "\n#" + i);
@@ -1149,24 +1511,31 @@ public class shgProfileCreation extends lokosTest {
 			navigation.existingSHG(row);
 			Thread.sleep(2000);
 			navigation.openSHGProfile(row);
-			String[] s = { "012","017", "019", "020", "021", "022", "023","24"};
+			String[] s = { "012", "017", "019", "020", "021", "022", "023", "24" };
 			int[] val2 = shgProfileCreation.shg(row, s, false);
 			pass += val2[0];
 			fail += val2[1];
 			count += val2[2];
 
 		}
+		memberRow=0;
 
 		if (neg_test_flag)
 			pass = neg_test_count;
+		
+		
 
 		int[] val = { pass, fail, count };
+		val=af.pass_fail();
+		val[0]+=pass;
+		val[1]+=fail;
+		val[2]+=count;
 		return val;
 
 	}
 
 	public static void enterValue_Id(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
 		int f = validCheckString(loc, "id", (int) xc.getCellDoubleValue(row, cons) + "", err);
 		if (f == 1)
@@ -1174,7 +1543,7 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void enterValue_Xpath(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementByXPath(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
 		int f = validCheckString(loc, "xpath", (int) xc.getCellDoubleValue(row, cons) + "", err);
 		if (f == 1)
@@ -1182,7 +1551,7 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void enterDouble_Id(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
 		int f = validCheckString(loc, "id", xc.getCellDoubleValue(row, cons) + "", err);
 		if (f == 1)
@@ -1190,7 +1559,7 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void enterDouble_Xpath(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementByXPath(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
 		int f = validCheckString(loc, "xpath", xc.getCellDoubleValue(row, cons) + "", err);
 		if (f == 1)
@@ -1198,7 +1567,7 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void enterString_Id(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
 		int f = validCheckString(loc, "id", xc.getCellString(row, cons), err);
 		if (f == 1)
@@ -1206,7 +1575,7 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void enterString_Xpath(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementByXPath(loc).sendKeys(xc.getCellString(row, cons));
 		int f = validCheckString(loc, "xpath", xc.getCellString(row, cons), err);
 		if (f == 1)
@@ -1214,25 +1583,28 @@ public class shgProfileCreation extends lokosTest {
 	}
 
 	public static void selectById(String title, String dir, String loc, int row, int cons) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementById(loc).click();
 		appdriver
 				.findElement(
 						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
 				.click();
 	}
+
 	public static void selectByXpath(String title, String dir, String loc, int row, int cons) {
-		mt.scrollToText(title, dir);
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementByXPath(loc).click();
 		appdriver
 				.findElement(
 						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
 				.click();
 	}
-	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err,String prefix) {
-		mt.scrollToText(title, dir);
+
+	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err,
+			String prefix) {
+		mt.scrollToText(title, dir, x, y);
 		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons).substring(1));
-		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err,prefix);
+		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err, prefix);
 		if (f == 1)
 			invalid_flag = true;
 	}
@@ -1263,7 +1635,7 @@ public class shgProfileCreation extends lokosTest {
 		return 0;
 	}
 
-	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text,String prefix) {
+	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text, String prefix) {
 		if (locStrat.equalsIgnoreCase("xpath")) {
 			if (!(prefix + appdriver.findElementByXPath(loc).getText()).equals(field_txt)) {
 				System.out.println(text);
@@ -1330,6 +1702,7 @@ public class shgProfileCreation extends lokosTest {
 		while (i < 3) {
 			try {
 				Thread.sleep(2000);
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
 			} catch (Exception e) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
@@ -1342,6 +1715,7 @@ public class shgProfileCreation extends lokosTest {
 		try {
 			while (!title.equals(screen_title)) {
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
 					break;
 				i++;

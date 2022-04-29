@@ -12,7 +12,7 @@ public class summary {
 				if (check[1][i] == -1)
 					test.log(Status.INFO, "     ID(" + check[0][i] + "):  FAIL");
 				else if (check[1][i] == 1)
-					test.log(Status.INFO, "     ID(\" + check[0][i] + \"):  PASS");
+					test.log(Status.INFO, "     ID(" + check[0][i] + "):  PASS");
 			}
 		}
 		test.log(Status.INFO, "---|Summary of Node|---");

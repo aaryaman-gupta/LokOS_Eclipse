@@ -32,7 +32,7 @@ public class installLokos extends accounts{
 			Thread.sleep(7000);
 //			appdriver.quit();
 		} catch (Exception e) {
-
+			System.out.println("Launch Error");
 		}
 
 	}

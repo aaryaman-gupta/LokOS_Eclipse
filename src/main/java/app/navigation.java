@@ -121,6 +121,7 @@ public class navigation extends lokosTest {
 	}
 
 	public static void newMember() {
+		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/tbl_add").click();
 	}
 

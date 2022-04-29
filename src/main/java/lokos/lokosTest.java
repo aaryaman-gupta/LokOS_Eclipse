@@ -105,7 +105,7 @@ public class lokosTest{
 					navigation.navToVillage(r);
 					navigation.existingSHG(r);
 					navigation.openSHGMembers(r);
-					int numMem = (int) xc.getCellDoubleValue(r, profileCons.numMemAddColNum);
+					int numMem = Integer.valueOf(xc.getCellString(r, profileCons.numMemAddColNum));
 					testFlow.log(Status.INFO, "Number of members to add--> " + numMem);
 					System.out.println("Number of members to add--> " + numMem);
 					xc.changeSheet("Members");
@@ -118,7 +118,12 @@ public class lokosTest{
 						System.out.println("Member no: " + i + " -->" + memName);
 						testMem = testFlow.createNode(
 								"Member: " + memName + "(" + xc.getCellString(memberRow, memCons.typeColNum) + ")");
+						xc.changeSheet("SHGs");
+						navigation.navToVillage(r);
+						navigation.existingSHG(r);
+						navigation.openSHGMembers(r);
 						navigation.newMember();
+						xc.changeSheet("Members  ");
 						/////////////////////////////////////////////////
 						int[] val = memberProfile.idSelect_Mem(memberRow);
 						/////////////////////////////////////////////////

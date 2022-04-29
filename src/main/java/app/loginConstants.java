@@ -21,7 +21,8 @@ public class loginConstants{
 	public static final String enterOTP="com.microware.cdfi:id/enter_otp";
 	public static final String confirmOTP="com.microware.cdfi:id/confirm_otp";
 	public static final String profileVerButton="com.microware.cdfi:id/tbl_sync";
-	public static final String completeData="com.microware.cdfi:id/tv_completestatus";
+//	public static final String completeData="com.microware.cdfi:id/tv_completestatus";//SHG
+	public static final String completeData="com.microware.cdfi:id/tbl_downloadData";//VO//CLF
 	public static final String alert2="com.microware.cdfi:id/txt_msg";
 	public static final String locStrat2="id";
 	public static final String alertOK2="com.microware.cdfi:id/btn_ok";

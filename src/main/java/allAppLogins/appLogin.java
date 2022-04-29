@@ -16,6 +16,8 @@ public class appLogin extends accounts{
 
 	public static void login(int row) throws InterruptedException {
 
+		Thread.sleep(5000);
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.stateDDown).click();
 //		AndroidElement e= (AndroidElement) appdriver.findElement(MobileBy.AndroidUIAutomator());
 
@@ -30,18 +32,21 @@ public class appLogin extends accounts{
 		TouchAction act = new TouchAction(appdriver);
 		act.tap(PointOption.point(x + 10, y + 10)).perform();
 
-		Thread.sleep(1000);
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver
 				.findElementById(
 						"com.microware.cdfi:id/tv" + xc.getCellString(row, loginConstants.languageColNum).toLowerCase())
 				.click();
 		appdriver.findElementById(loginConstants.submitButton).click();
-		
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.okButton).click();
 
 		Thread.sleep(2000);
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.userRoleDDown).click();
-		appdriver.findElement(MobileBy.AndroidUIAutomator(loginConstants.userRole)).click();
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""+xc.getCellString(row, 3)+"\")")).click();
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.username).sendKeys(xc.getCellString(row, loginConstants.usernameColNum));
 		appdriver.findElementById(loginConstants.password).sendKeys(xc.getCellString(row, loginConstants.passwordColNum));
 		appdriver.findElementById(loginConstants.loginButton).click();
@@ -57,6 +62,7 @@ public class appLogin extends accounts{
 		}
 		Thread.sleep(2000);
 
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.enterOTP).sendKeys("1111");
 		appdriver.findElementById(loginConstants.confirmOTP).sendKeys("1111");
 //		appdriver.findElementById("").click();
@@ -67,21 +73,24 @@ public class appLogin extends accounts{
 
 	public static void sync() throws InterruptedException {
 
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.profileVerButton).click();
 
 		Thread.sleep(2000);
+		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		appdriver.findElementById(loginConstants.completeData).click();
 
-		appdriver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
+		appdriver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
 		if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
-				.equals("Data Downloaded successfully")) {			
+				.equals("Data Downloaded successfully")) {	
 			System.out.println("\n  --Complete Data Downloaded--\n");
 		}else {
 			System.out.println("\n  --Error in syncing data--.\n");
+			System.out.println("Error: "+appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText());
 		}
 
 		appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-		appdriver.findElementById(loginConstants.syncHome).click();
+//		appdriver.findElementById(loginConstants.syncHome).click();
 		
 		Thread.sleep(5000);
 	}
