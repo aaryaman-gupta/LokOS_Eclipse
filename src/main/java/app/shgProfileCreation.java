@@ -3,21 +3,15 @@ package app;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 
 import io.appium.java_client.MobileBy;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import lokos.lokosTest;
-import readingXLS.xlsClasses;
 import reporting.ExtentManager;
-import util.DeviceUtil;
 import util.MobileTouchAdv;
 import util.cameraLogic;
-import util.dateLogic;
 import util.randomPressLogic;
 import util.summary;
 
@@ -1705,6 +1699,7 @@ public class shgProfileCreation extends lokosTest {
 				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
 			} catch (Exception e) {
+				Thread.sleep(3000);
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
 				i++;
 			}
@@ -1714,14 +1709,16 @@ public class shgProfileCreation extends lokosTest {
 		i = 0;
 		try {
 			while (!title.equals(screen_title)) {
+				Thread.sleep(3000);
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				Thread.sleep(3000);
 				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
 					break;
 				i++;
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			System.out.println("Cannot navigate to " + screen_title + " screen");
 			throw new Exception("The app might have crashed");
 		}

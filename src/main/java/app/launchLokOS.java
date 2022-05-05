@@ -13,7 +13,7 @@ import lokos.lokosTest;
 @SuppressWarnings("unused")
 public class launchLokOS extends lokosTest {
 
-	public static void launchLokos() {
+	public static void launchLokos(String apk) {
 		// TODO Auto-generated method stub
 		xc.changeSheet("Login");
 		DesiredCapabilities cap = new DesiredCapabilities();
@@ -23,13 +23,15 @@ public class launchLokOS extends lokosTest {
 		cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, launchAppConstants.platform_version);
 
 		cap.setCapability(MobileCapabilityType.APP, new File(
-				System.getProperty("user.dir") + "\\apk\\" + xc.getCellString(1, launchAppConstants.apkNameColNum))
+				System.getProperty("user.dir") + "\\apk\\" + apk)
 						.getAbsolutePath());
 		cap.setCapability(MobileCapabilityType.NO_RESET, "true");// clear the cache
 		cap.setCapability(MobileCapabilityType.FULL_RESET, "false");// dont uninstall
 //		
 //		cap.setCapability("autoGrantPermissions", "true");
 		try {
+			System.out.println("Launching appium and opening app");
+			Thread.sleep(3000);
 			appdriver = new AndroidDriver<AndroidElement>(new URL("http://0.0.0.0:4723/wd/hub"), cap);
 			Thread.sleep(7000);
 //			appdriver.quit();

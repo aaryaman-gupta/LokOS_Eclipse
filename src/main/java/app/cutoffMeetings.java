@@ -1653,6 +1653,7 @@ public class cutoffMeetings extends lokosTest {
 	public static void fillColumnFields(int row,int col,int memNum,String a, String b, String c) {
 		try {
 			boolean flag=false;
+			
 		java.util.List<AndroidElement> table= appdriver.findElementsByXPath(a);					
 		while(true) {
 			int k=0;

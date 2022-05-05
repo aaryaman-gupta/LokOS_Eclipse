@@ -52,7 +52,7 @@ public class lokosTest{
 	public static int[][] cutoff_check = new int[2][91];
 	public static int[][] reg_check = new int[2][91];
 	
-	public static void startApp(String xlsName) throws Exception {
+	public static void startApp(String xlsName,String apk) throws Exception {
 		
 		ExtentManager.getReports(xlsName);
 		test = reports.createTest("LokOS App Test");
@@ -64,7 +64,7 @@ public class lokosTest{
 //		if(xlsName.contains("SHG"))
 //			throw new Exception("testing accounts");
 //		web.LoginTest.startWeb();
-		app.launchLokOS.launchLokos();
+		app.launchLokOS.launchLokos(apk);
 		test.log(Status.PASS, "LokOS Successfully Launched");
 		System.out.println("Lokos Successfully Launched");
 		mt = new MobileTouch(appdriver);
@@ -367,7 +367,7 @@ public class lokosTest{
 				System.out.println("Flow " + r + " failed in between");
 				test.log(Status.INFO, "Restarting App");
 				appdriver.quit();
-				app.launchLokOS.launchLokos();
+				app.launchLokOS.launchLokos(apk);
 				test.log(Status.PASS, "Lokos Successfully Launched");
 				System.out.println("Lokos Successfully Launched");
 				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);

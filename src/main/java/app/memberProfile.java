@@ -528,9 +528,13 @@ public class memberProfile extends lokosTest {
 								appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 								appdriver.findElementById("com.microware.cdfi:id/addphone").click();
 								String[] s = phnos[i].split(":");
-								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys(s[1].trim());
-								validCheckLongNum("com.microware.cdfi:id/et_phoneno", "id", s[1].trim(),
-										"021:||Validation Error||","");
+								
+								Random objGenerator = new Random();
+								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys("9455"+String.valueOf(objGenerator.nextInt(100000,999999)));
+								
+//								appdriver.findElementById("com.microware.cdfi:id/et_phoneno").sendKeys(s[1].trim());
+//								validCheckLongNum("com.microware.cdfi:id/et_phoneno", "id", s[1].trim(),
+//										"021:||Validation Error||","");
 								appdriver.findElementById("com.microware.cdfi:id/spin_ownership").click();
 								appdriver
 										.findElement(MobileBy
@@ -794,7 +798,17 @@ public class memberProfile extends lokosTest {
 						invalid_flag = false;
 						try {
 							Thread.sleep(1000);
-							appdriver.findElementById("com.microware.cdfi:id/lay_kyc").click();
+							int z = 0;
+							while (z < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/lay_kyc").click();
+									z = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the kyc button");
+									z++;
+								}
+							}	
 							appdriver.findElementById("com.microware.cdfi:id/addKyc").click();
 							appdriver.findElementById("com.microware.cdfi:id/spin_kyctype").click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
@@ -878,7 +892,17 @@ public class memberProfile extends lokosTest {
 					case 26:
 						invalid_flag = false;
 						try {
-							appdriver.findElementById("com.microware.cdfi:id/lay_Cader").click();
+							int z = 0;
+							while (z < 6) {
+								try {
+									Thread.sleep(2000);
+									appdriver.findElementById("com.microware.cdfi:id/lay_Cader").click();
+									z = 6;
+								} catch (Exception e) {
+									System.out.println("Wasn't able to press the cadre button");
+									z++;
+								}
+							}
 							appdriver.findElementById("com.microware.cdfi:id/addCader").click();
 							appdriver.findElementById("com.microware.cdfi:id/spin_category").click();
 							appdriver.findElement(MobileBy.AndroidUIAutomator(
@@ -940,7 +964,17 @@ public class memberProfile extends lokosTest {
 						if (xc.getCellString(row, memCons.insuranceColNum).equals("Yes")) {
 							try {
 								Thread.sleep(1000);
-								appdriver.findElementById("com.microware.cdfi:id/lay_Insurance").click();
+								int z = 0;
+								while (z < 6) {
+									try {
+										Thread.sleep(2000);
+										appdriver.findElementById("com.microware.cdfi:id/lay_Insurance").click();
+										z = 6;
+									} catch (Exception e) {
+										System.out.println("Wasn't able to press the cadre button");
+										z++;
+									}
+								}
 								appdriver.findElementById("com.microware.cdfi:id/addInsurance").click();
 								appdriver.findElementById("com.microware.cdfi:id/spin_insurance").click();
 								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\""
@@ -1188,7 +1222,9 @@ public class memberProfile extends lokosTest {
 		i = 0;
 		try {
 			while (!title.equals(screen_title)) {
+				Thread.sleep(3000);
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				Thread.sleep(3000);
 				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals("SHG"))
 					break;
 				i++;
@@ -1196,6 +1232,7 @@ public class memberProfile extends lokosTest {
 		} catch (Exception e) {
 			if(!title.equals("Member")) {
 				System.out.println("Cannot navigate to " + screen_title + " screen");
+				Thread.sleep(3000);
 				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
 			}
 			else {

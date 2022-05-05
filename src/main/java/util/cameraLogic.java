@@ -1,5 +1,7 @@
 package util;
 
+import java.util.concurrent.TimeUnit;
+
 import io.appium.java_client.MobileBy;
 import lokos.lokosTest;
 
@@ -19,11 +21,16 @@ public class cameraLogic extends lokosTest {
 			Thread.sleep(1000);
 			appdriver.findElementById("com.microware.cdfi:id/crop_image_menu_crop").click();
 			Thread.sleep(1000);
-		} else if (app.launchAppConstants.UDID.equals("")) {
+		} else if (app.launchAppConstants.UDID.equals("P7R45XFIIZU44LAU")) {
 			Thread.sleep(3000);
-			appdriver.findElementById("com.sec.android.app.camera:id/normal_center_button").click();
+			appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			appdriver.findElementById("com.android.camera:id/shutter_button_horizontal").click();
 			Thread.sleep(3000);
-			appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"OK\")")).click();
+			appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			appdriver.findElementById("com.android.camera:id/done_button").click();
+			Thread.sleep(3000);
+			appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+			appdriver.findElementById("com.microware.cdfi:id/crop_image_menu_crop").click();
 			Thread.sleep(1000);
 		} else if (app.launchAppConstants.UDID.equals("")) {
 			Thread.sleep(3000);
