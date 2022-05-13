@@ -1463,7 +1463,6 @@ public class shgProfileCreation extends lokosTest {
 //		appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 //		appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 		
-		memberRow=0;
 		if ((id != 9999) && (addMem))
 
 		{
@@ -1512,7 +1511,6 @@ public class shgProfileCreation extends lokosTest {
 			count += val2[2];
 
 		}
-		memberRow=0;
 
 		if (neg_test_flag)
 			pass = neg_test_count;

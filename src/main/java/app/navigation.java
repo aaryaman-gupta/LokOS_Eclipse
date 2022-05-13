@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import io.appium.java_client.MobileBy;
 import lokos.lokosTest;
 import util.MobileTouch;
+import util.MobileTouchAdv;
 
 public class navigation extends lokosTest {
 
@@ -31,7 +32,8 @@ public class navigation extends lokosTest {
 	public static void existingSHG(int row) throws Exception {
 		String shgName=xc.getCellString(row, profileCons.shgNameColNum).toUpperCase();
 		System.out.println("Navigating to "+shgName);
-		mt.scrollToText(shgName, "top");
+		MobileTouchAdv mta=new MobileTouchAdv(appdriver);
+		mta.scrollToText(shgName, "top",0.60,0.80);
 	}
 	public static void existingSHG_Error(int row) throws Exception {
 		String shgName=xc.getCellString(row, regCons.SHG_Reference).toUpperCase();
@@ -100,23 +102,32 @@ public class navigation extends lokosTest {
 		}		
 	}
 
-	public static void openSHGMembers(int row) {
+	public static void openSHGMembers(int row) throws InterruptedException {
 		boolean flag = false;
 		int i = 1;
 		while (!flag) {
-			String s = appdriver.findElementByXPath("//android.widget.LinearLayout[" + i
-					+ "]/android.widget.LinearLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.TextView")
-					.getText();
-			if (s.equalsIgnoreCase(xc.getCellString(row, profileCons.shgNameColNum))) {
-				flag = true;
-				appdriver
-						.findElementByXPath("//android.widget.LinearLayout[" + i
-								+ "]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView")
-						.click();
+			try {
+//				shgProfileCreation.navigateBackToScreen("SHG");
+//				Thread.sleep(2000);
+//				mt.scrollToText(xc.getCellString(row, profileCons.shgNameColNum), "bottom");
+				Thread.sleep(3000);
+				appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+				String s = appdriver.findElementByXPath("//android.widget.LinearLayout[" + i
+						+ "]/android.widget.LinearLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.TextView")
+						.getText();
+				if (s.equalsIgnoreCase(xc.getCellString(row, profileCons.shgNameColNum))) {
+					flag = true;
+					Thread.sleep(1500);
+					appdriver.findElementByXPath("//android.widget.LinearLayout[" + i
+							+ "]/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.TextView")
+							.click();
 
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Next SHG name");
 			}
 			i++;
-
 		}
 	}
 

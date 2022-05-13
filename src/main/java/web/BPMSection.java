@@ -124,6 +124,7 @@ public class BPMSection extends LoginTest {
 
 			Thread.sleep(2500);
 
+			try {
 			//// Approves or Rejects members one by one according to rejection criteria
 			while (flag) {
 				//
@@ -146,6 +147,8 @@ public class BPMSection extends LoginTest {
 					flag = false;
 				}
 
+			}}catch(Exception e) {
+				System.out.println("No approve buttons present: "+e.getMessage());
 			}
 			if (!reject) {
 				driver.findElement(By.xpath("//div[contains(@class,'total-use-wrp ml-2')]//button[1]")).click();
@@ -180,6 +183,7 @@ public class BPMSection extends LoginTest {
 		if (LoginTest.isElementPresent(By.xpath(
 				BPMConstants.shgProfileApprovalButtonPath_1 + i + BPMConstants.shgProfileApprovalButtonPath_2))) {
 
+			try {
 			while (shgProfileApproveButton_flag) {
 				if (!rejectSHG)
 					driver.findElement(By.xpath(BPMConstants.shgProfileApprovalButtonPath_1 + i
@@ -200,6 +204,8 @@ public class BPMSection extends LoginTest {
 				shgProfileApproveButton_flag = LoginTest.isElementPresent(By.xpath(
 						BPMConstants.shgProfileApprovalButtonPath_1 + i + BPMConstants.shgProfileApprovalButtonPath_2));
 
+			}}catch(Exception e) {
+				System.out.println("No approve/reject buttons present: "+e.getMessage());
 			}
 
 		} else

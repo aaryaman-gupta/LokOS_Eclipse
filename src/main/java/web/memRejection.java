@@ -53,6 +53,7 @@ public class memRejection extends LoginTest {
 		int i = 1;
 		Thread.sleep(2500);
 
+		try {
 		//// Press reject buttons one by one in a member
 		while (flag) {
 			driver.findElement(
@@ -71,6 +72,9 @@ public class memRejection extends LoginTest {
 			i++;
 			flag = LoginTest.isElementPresent(
 					By.xpath(BPMConstants.memApprovalButtonPath_1 + i + BPMConstants.memApprovalButtonPath_2));
+		}
+		}catch(Exception e) {
+			System.out.println("No reject buttons present: "+e.getMessage());
 		}
 
 	}

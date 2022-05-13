@@ -96,7 +96,7 @@ public class MobileTouchAdv {
 			else if (locatorStrat.equals("androidUIAutomatior"))
 				e = driver.findElement(MobileBy.AndroidUIAutomator(locator));
 
-			verticalScroll(e.getLocation().y, topY);
+			verticalScroll(e.getLocation().y, topY+100);
 		} else if (direction.equals(DIRECTION_BOTTOM)) {
 			int bottomY = getEndPointOfScreen(DIRECTION_BOTTOM);
 

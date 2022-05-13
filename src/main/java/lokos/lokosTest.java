@@ -231,7 +231,7 @@ public class lokosTest{
 				}
 				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")) {
 
-//					boolean webProcess_flag = true;
+					boolean webProcess_flag = true;
 					try {
 
 						test.log(Status.INFO, "Starting Updation Process...");
@@ -248,7 +248,7 @@ public class lokosTest{
 						if (s.contains("(0)")) {
 							testSHG.log(Status.FAIL, "Data not sufficient to upload");
 							System.out.println("Data not sufficient to upload");
-//							webProcess_flag = true;
+							webProcess_flag = true;
 							appdriver.quit();
 						} else {
 							appdriver.findElementById("com.microware.cdfi:id/tvUploadData").click();
@@ -264,7 +264,7 @@ public class lokosTest{
 								testSHG.log(Status.FAIL, "||||Error->Record was not added to the Queue||||");
 								System.out.println("||||Error->Record was not added to the Queue||||");
 								appdriver.quit();
-//								webProcess_flag = false;
+								webProcess_flag = false;
 							}
 
 						}
@@ -272,7 +272,7 @@ public class lokosTest{
 						test.log(Status.INFO, "...Updation Process Complete ");
 						System.out.println("...Updation Process Complete ");
 					} catch (Exception e) {
-//						webProcess_flag=false;
+						webProcess_flag=false;
 						ExtentManager.addScreenShotsToLogFail("Fail: Submission Process " + r, testSHG);
 						testSHG.log(Status.FAIL, "...error in Updation Process");
 						System.out.println("...error in Updation Process");
@@ -285,24 +285,25 @@ public class lokosTest{
 
 					xc.changeSheet("SHGs");
 					
+					if (true) {
 //					if (webProcess_flag) {
-//						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
-//						System.out.println("Web Flow Commencing in 3 minutes");
-//						Thread.sleep(180000);
-//						web.LoginTest.startWeb();
-//					}
-//					
-//					app.launchLokOS.launchLokos();
-//					test.log(Status.PASS, "Lokos Successfully Launched");
-//					System.out.println("Lokos Successfully Launched");
-//					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
-//					app.loginTest.sync();
-//					test.log(Status.PASS, "Login and Sync Complete");
-//					System.out.println("Login and Sync Complete");
-//					Thread.sleep(2000);
-//					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
-//					navigation.shgButton();
+						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
+						System.out.println("Web Flow Commencing in 3 minutes");
+						Thread.sleep(2000);
+						web.LoginTest.startWeb();
+					}
+					
+					app.launchLokOS.launchLokos(apk);
+					test.log(Status.PASS, "Lokos Successfully Launched");
+					System.out.println("Lokos Successfully Launched");
+					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
+					app.loginTest.sync();
+					test.log(Status.PASS, "Login and Sync Complete");
+					System.out.println("Login and Sync Complete");
+					Thread.sleep(2000);
+					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+					navigation.shgButton();
 				}
 				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {					
 					testSHG=test.createNode("Status Check");
