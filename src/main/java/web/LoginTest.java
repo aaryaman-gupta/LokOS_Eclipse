@@ -112,9 +112,11 @@ public class LoginTest extends lokosTest {
 				}catch(NullPointerException e) {
 				}
 				// test.log(Status.INFO, "Opening URL");
+				
+				 
 				System.out.println("Opening URL " + url);
 				driver.get(url);
-
+				
 //				Thread.sleep(5000);// For testing purpose
 
 				String text_name = xc.getCellString(r, 3);
@@ -135,6 +137,7 @@ public class LoginTest extends lokosTest {
 					} catch (Exception e) {
 						// test.log(Status.FAIL, "Invalid User or Password:Login failed");
 						System.out.println("Invalid User or Password:Login failed");
+						web.LoginTest.startWeb();
 						throw new Exception("Invalid User or Password:Login failed");
 					}
 				} else if (text_name.equals("State")) {
@@ -161,6 +164,7 @@ public class LoginTest extends lokosTest {
 						// test.log(Status.FAIL,"Invalid User or Password:Login failed");
 						++loginfailed;
 						System.out.println("Invalid User or Password:Login failed");
+						web.LoginTest.startWeb();
 						throw new Exception("Invalid User or Password:Login failed");
 					}
 
@@ -180,6 +184,7 @@ public class LoginTest extends lokosTest {
 				driver.quit();
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				Thread.sleep(3000);
 				driver.quit();
 				++fail;

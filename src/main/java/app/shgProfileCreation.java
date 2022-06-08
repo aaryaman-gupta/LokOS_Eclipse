@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.aventstack.extentreports.Status;
 
+import functions.allFnxsP;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
@@ -129,8 +130,22 @@ public class shgProfileCreation extends lokosTest {
 						break;
 
 				case 4:
-					af.pf(4, af.dateLogic(testSHG, "Formation Date", "top", row, profileCons.dateColNum,
-							"com.microware.cdfi:id/et_formationDate", "004", "004", false, "dd-mm-yyyy", migr));
+					if(xc.getCellString(row, profileCons.dateColNum).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, profileCons.dateColNum).equals("Delete")) {
+						appdriver.findElementById("com.microware.cdfi:id/et_formationDate").clear();
+					}else {
+						af.pf(4, af.dateLogic(testSHG, "Formation Date", "top", row, profileCons.dateColNum,
+								"com.microware.cdfi:id/et_formationDate", "004", "004", false, "dd-mm-yyyy", migr));
+						try {
+							af.checkTxtMsg("", row, profileCons.dateColNum,false);
+						}catch(Exception e) {
+							navigateBackToScreen("SHG Basic Details");
+							
+							//No Action
+						}
+					}
+					
 					if (id != 000)
 						break;
 				case 5:
@@ -557,7 +572,13 @@ public class shgProfileCreation extends lokosTest {
 				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
 				testSHG.log(Status.INFO, "Error---->Atleast one field is incorrect");
 				testSHG.log(Status.INFO, "Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				Thread.sleep(2000);
+				randomPressLogic.press(0.5, 0.05);
+				navigateBackToScreen("SHG Basic Details");
+				Thread.sleep(2000);
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
 				navigateBackToScreen("SHG");
 				t = 1;
@@ -623,9 +644,14 @@ public class shgProfileCreation extends lokosTest {
 				System.out.println("Error---->Atleast one field is incorrect");
 				testSHG.log(Status.INFO, "Data not saved: Cannot Proceed(Correct the Errors first)");
 				System.out.println("Error---->Data not saved: Cannot Proceed(Correct the Errors first)");
+				Thread.sleep(2000);
+				randomPressLogic.press(0.5, 0.05);
 				navigateBackToScreen("SHG Basic Details");
+				
+				Thread.sleep(2000);
 				appdriver.findElementById("com.microware.cdfi:id/btn_cancel").click();
 				appdriver.findElementById("com.microware.cdfi:id/btn_yes").click();
+				navigateBackToScreen("SHG");
 				fail++;
 				t = 1;
 				id = 9999;

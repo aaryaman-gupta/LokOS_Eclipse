@@ -1,0 +1,356 @@
+package lokos;
+
+import java.util.concurrent.TimeUnit;
+
+import org.testng.annotations.Test;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+
+import appLaunchLogin.loginConstants;
+
+//import com.aventstack.extentreports.ExtentReports;
+//import com.aventstack.extentreports.ExtentTest;
+
+import app.memCons;
+import app.memberProfile;
+import app.navigation;
+import appVO.navigationVO;
+import app.profileCons;
+import app.shgMeetings;
+import app.shgProfileCreation;
+import appVO.voCons;
+import appVO.voProfile;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
+import readingXLS.xlsClasses;
+import reporting.ExtentManager;
+import util.DeviceUtil;
+import util.MobileTouch;
+import util.summary;
+
+@SuppressWarnings("unused")
+public class lokosVO{
+
+	public static xlsClasses xc = null;
+	public static AndroidDriver<AndroidElement> appdriver = null;
+	public static ExtentReports reports = null;
+	public static ExtentTest test = null;
+	public static ExtentTest testFlow = null;
+	public static ExtentTest testVO = null;
+	public static ExtentTest testMeet = null;
+	public static MobileTouch mt = null;
+	public static DeviceUtil du = null;
+	public static int shg_row_counter = 0;
+	public static boolean web_process_success_flag = false;
+	public static int[][] vo_check = new int[2][58];
+	
+	public static void startApp(String xlsName,String apk) throws Exception {
+		
+		ExtentManager.getReports(xlsName);
+		test = reports.createTest("LokOS App Test");
+		System.out.println("=====================================================================================");
+		test.log(Status.INFO, "Start Test");
+		System.out.println("Excel Sheet: "+System.getProperty("user.dir") + "\\XLS data\\"+xlsName+".xlsx");
+		
+		xc = new xlsClasses(System.getProperty("user.dir") + "\\XLS data\\"+xlsName+".xlsx", flowCons.sheetName);
+//		if(xlsName.contains("SHG"))
+//			throw new Exception("testing accounts");
+//		web.LoginTest.startWeb();
+		appLaunchLogin.launchLokOS.launchLokos(apk);
+		test.log(Status.PASS, "LokOS Successfully Launched");
+		System.out.println("Lokos Successfully Launched");
+		mt = new MobileTouch(appdriver);
+		du = new DeviceUtil(appdriver);
+//		app.loginTest.login();
+		appdriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+		
+		test.log(Status.PASS, "Login Complete");
+//		app.loginTest.sync();
+		System.out.println("Login and Sync Complete");
+		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function): "+xlsName,"PFA report of previous Test",xlsName);
+		Thread.sleep(1000);
+		ExtentManager.addScreenShotsToTest("VO Bookeeper Screen", test);
+		
+		navigationVO.voButton();
+		
+
+		xc.changeSheet("VOs");
+
+		int[] dimensions = xc.getRowCols("VOs");
+		int row = dimensions[0];
+
+		for (int r = 3; r < row; r++) {
+			xc.changeSheet("VOs");
+			try {
+				if (!(xc.getCellString(r, voCons.Type_0).equalsIgnoreCase("Submit")
+						|| xc.getCellString(r, voCons.Type_0).equalsIgnoreCase("Status")))
+					testFlow = reports.createTest("[" + r + "] " + xc.getCellString(r, voCons.VO_Name_1)
+							+ " (Flow: " + xc.getCellString(r, voCons.Type_0) +"->"+xc.getCellString(r, voCons.VO_Name_1)+ ")");
+				test.log(Status.INFO, "Flow number " + r + " begins");
+				System.out.println("\nFlow number " + r + " begins");
+				
+				
+				if (xc.getCellString(r, voCons.Type_0).equalsIgnoreCase("New VO")) {
+
+					navigationVO.navToPanchayat(row);
+					navigationVO.newVO();
+
+					String vo = xc.getCellString(r, voCons.VO_Name_1);
+					System.out.println("\nFlow started for New VO " + vo);
+					testVO = testFlow.createNode(
+							"New SHG: " + vo + "(" + xc.getCellString(r, voCons.Flow_Type_0) + ")");
+					System.out.println("________________________");
+					//////////////////////////////////////////////
+					int[] val = voProfile.idSelect_VO(r);
+					//////////////////////////////////////////////
+					int[][] zeroIni=new int[vo_check[0].length][vo_check[1].length];
+					summary.display(vo_check, testVO);
+					vo_check=zeroIni;
+					String resultF = "New SHG " + xc.getCellString(r, voCons.VO_Name_1) + " Fails: " + val[1]
+							+ "/" + val[2];
+					testVO.log(Status.INFO, resultF);
+					testFlow.log(Status.INFO, resultF);
+					System.out.println("^^^^^^^^^^^^^^");
+					System.out.println(resultF);
+					System.out.println("________________________");
+
+				}
+//				else if (xc.getCellString(r, voCons.Type_0).equalsIgnoreCase("Update SHG")) {
+//
+//					navigation.navToVillage(r);
+//					navigation.existingSHG(r);
+//					navigation.openSHGProfile(r);
+//
+//					String shg = xc.getCellString(r, voCons.shgNameColNum);
+//					testVO = testFlow.createNode(
+//							"Update SHG: " + shg + "(" + xc.getCellString(r, voCons.flowTypeColNum) + ")");
+//					System.out.println("\nFlow started for New SHG " + xc.getCellString(r, voCons.shgNameColNum));
+//					System.out.println("________________________");
+//					//////////////////////////////////////////////
+//					int[] val = shgProfileCreation.idSelect_SHG(r);
+//					//////////////////////////////////////////////
+//					int[][] zeroIni=new int[vo_check[0].length][vo_check[1].length];
+//					summary.display(vo_check, testVO);
+//					vo_check=zeroIni;
+//					String resultF = "Update of " + shg + " Failed: " + val[1] + "/" + val[2];
+//					String resultP = "Update of " + shg + " Passed: " + val[0] + "/" + val[2];
+//					testVO.log(Status.INFO, resultF);
+//					testVO.log(Status.INFO, resultP);
+//					testFlow.log(Status.INFO, resultF);
+//					testFlow.log(Status.INFO, resultP);
+//					System.out.println("^^^^^^^^^^^^^^");
+//					System.out.println(resultF);
+//					System.out.println(resultP);
+//					System.out.println("________________________");
+//
+//				}
+//				else if (xc.getCellString(r, voCons.typeColNum).equalsIgnoreCase("Submit")) {
+//
+//					boolean webProcess_flag = true;
+//					try {
+//
+//						test.log(Status.INFO, "Starting Updation Process...");
+//						testVO = test.createNode("Upload Data + Web Flow");
+//						System.out.println("Starting Updation Process...");
+//						appdriver.findElementById("com.microware.cdfi:id/icBack").click();
+//						Thread.sleep(1000);
+//						appdriver.findElementById("com.microware.cdfi:id/tbl_sync").click();
+//						Thread.sleep(1000);
+//						appdriver.findElementById("com.microware.cdfi:id/tbl_upload").click();
+//						Thread.sleep(1000);
+//						String s = appdriver.findElementById("com.microware.cdfi:id/tvUploadData").getText();
+//						System.out.println(s);
+//						if (s.contains("(0)")) {
+//							testVO.log(Status.FAIL, "Data not sufficient to upload");
+//							System.out.println("Data not sufficient to upload");
+//							webProcess_flag = true;
+//							appdriver.quit();
+//						} else {
+//							appdriver.findElementById("com.microware.cdfi:id/tvUploadData").click();
+//							Thread.sleep(30000);
+//							appdriver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
+//							if (appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
+//									.equals("Record Added To Queue")) {
+//								testVO.log(Status.PASS, "Record Added To Queue");
+//								System.out.println("Record Added To Queue");
+//								appdriver.quit();
+//							} else {
+//								ExtentManager.addScreenShotsToLogFail("Fail Submission Process" + r, testVO);
+//								testVO.log(Status.FAIL, "||||Error->Record was not added to the Queue||||");
+//								System.out.println("||||Error->Record was not added to the Queue||||");
+//								appdriver.quit();
+//								webProcess_flag = false;
+//							}
+//
+//						}
+////						appdriver.findElementById(loginConstants.syncHome).click();
+//						test.log(Status.INFO, "...Updation Process Complete ");
+//						System.out.println("...Updation Process Complete ");
+//					} catch (Exception e) {
+//						webProcess_flag=false;
+//						ExtentManager.addScreenShotsToLogFail("Fail: Submission Process " + r, testVO);
+//						testVO.log(Status.FAIL, "...error in Updation Process");
+//						System.out.println("...error in Updation Process");
+//						test.log(Status.INFO, "   ||||Terminating Web Flow||||");
+//						System.out.println("\n   ||||Terminating Web Flow||||");
+//						Thread.sleep(2000);
+//						e.printStackTrace();
+//						appdriver.quit();
+//					}
+//
+//					xc.changeSheet("SHGs");
+//					
+//					if (true) {
+////					if (webProcess_flag) {
+//						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
+//						System.out.println("Web Flow Commencing in 3 minutes");
+//						Thread.sleep(2000);
+//						web.LoginTest.startWeb();
+//					}
+//					
+//					app.launchLokOS.launchLokos(apk);
+//					test.log(Status.PASS, "Lokos Successfully Launched");
+//					System.out.println("Lokos Successfully Launched");
+//					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
+//					app.loginTest.sync();
+//					test.log(Status.PASS, "Login and Sync Complete");
+//					System.out.println("Login and Sync Complete");
+//					Thread.sleep(2000);
+//					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+//					navigation.shgButton();
+//				}
+//				else if (xc.getCellString(r, voCons.typeColNum).equalsIgnoreCase("Status")) {					
+//					testVO=test.createNode("Status Check");
+//					++shg_row_counter;
+//					testVO.log(Status.INFO, "Starting status process...");
+//					System.out.println("\nStarting status process...");
+//					appdriver.findElementById("com.microware.cdfi:id/icBack").click();
+//					Thread.sleep(1000);
+//					appdriver.findElementById("com.microware.cdfi:id/tbl_sync").click();
+//					Thread.sleep(1000);
+//					appdriver.findElementById("com.microware.cdfi:id/tv_approvalstatus").click();
+//
+//					System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+//					appdriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+//					String s = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
+//					testVO.log(Status.PASS, "Status: " + s);
+//					System.out.println("Status: " + s);
+//					ExtentManager.addScreenShotsToTest("Status "+r, test);
+//					appdriver.findElementById(loginConstants.alertOK2).click();
+//					appdriver.findElementById(loginConstants.syncHome).click();
+//					System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+//					testVO.log(Status.INFO, "...status record processed.");
+//					System.out.println("...status record processed.\n");
+//					navigation.shgButton();
+//				}
+//				else if (xc.getCellString(r, voCons.typeColNum).equalsIgnoreCase("SHG Meetings")) {
+//
+//					appdriver.findElementById("com.microware.cdfi:id/icBack").click();
+//					Thread.sleep(1000);
+//					System.out.println("\n-----SHG Meetings-----");
+//					String shg = xc.getCellString(r, voCons.shgNameColNum);
+//					System.out.println("\nFlow started for SHG Meetings " + xc.getCellString(r, voCons.shgNameColNum));
+//					/////////////////////////
+//					int[] val = shgMeetings.meetingNum(r);
+//					/////////////////////////					
+//					String resultF = "SHG Meetings: " + shg + " Failed: " + val[1] + "/" + val[2];
+//					String resultP = "SHG Meetings: " + shg + " Passed: " + val[0] + "/" + val[2];
+//					testMeet.log(Status.INFO, resultF);
+//					testMeet.log(Status.INFO, resultP);
+//					testFlow.log(Status.INFO, resultF);
+//					testFlow.log(Status.INFO, resultP);
+//					System.out.println("^^^^^^^^^^^^^^");
+//					System.out.println(resultF);
+//					System.out.println(resultP);
+//					System.out.println("________________________");
+//					
+//					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+//					navigation.shgButton();
+//
+//				}else if (xc.getCellString(r, voCons.typeColNum).equalsIgnoreCase("Web")) {
+//					web.LoginTest.startWeb();
+//				}
+
+				test.log(Status.PASS, "Flow number " + r + " complete");
+				System.out.println("Flow number " + r + " complete");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				ExtentManager.addScreenShotsToTest("Failed Flow" +r, testFlow);
+				testFlow.log(Status.FAIL, "Flow " + r + " failed in between");
+				test.log(Status.INFO,"Flow " + r + " failed in between" );
+				System.out.println("Flow " + r + " failed in between");
+				test.log(Status.INFO, "Restarting App");
+				appdriver.quit();
+				appLaunchLogin.launchLokOS.launchLokos(apk);
+				test.log(Status.PASS, "Lokos Successfully Launched");
+				System.out.println("Lokos Successfully Launched");
+				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+				appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
+				test.log(Status.PASS, "Login and Sync Complete");
+				System.out.println("Login and Sync Complete");
+				Thread.sleep(2000);
+				ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+				navigationVO.voButton();
+				test.log(Status.INFO, "Continuing next Flow");
+				
+			}
+			Thread.sleep(2000);
+		}
+		Thread.sleep(10000);
+		appdriver.quit();
+
+		test.log(Status.INFO, "Testing Ends");
+		System.out.println("\nTesting Ends");
+		System.out.println("=====================================================================================");
+		xc.closeReaders();
+		reports.flush();
+
+		util.mail.ZipAndSendMail.send("Automation Test Reports: "+xlsName,"Please find the reports in attachment",xlsName);
+	}
+	
+	public static void navigateBackToScreen(String screen_title) throws Exception {
+		int i = 0;
+		String title = "";
+		try {
+			title = appdriver.findElementById("com.microware.cdfi:id/tv_title").getText();
+		} catch (Exception e) {
+			appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+		}
+		try {
+			while (!title.equals(screen_title)) {
+				appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+				if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
+					break;
+				i++;
+			}
+		} catch (Exception e) {
+				try {
+					while (!title.equals(screen_title)) {
+						appdriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+						if (appdriver.findElementById("com.microware.cdfi:id/tv_title").getText().equals(screen_title))
+							break;
+						i++;
+					}
+				}catch(Exception ex) {
+					System.out.println("Error:Cannot navigate back to screen");
+				}
+			
+		}
+	}
+
+}
+//test.log(Status.INFO, "Starting test case Login");
+//test.log(Status.FAIL, "404 error");
+//// selenium takes screenshot and puts in screesnhot folder
+//test.addScreenCaptureFromPath("D:\\Ashish\\Temp.png", "404 Error");
+//Assert.fail("404 error");
+//test.log(Status.INFO, "Opening Browser");
+//test.log(Status.INFO, "Logging In");
+//test.log(Status.PASS, "Test Passed");

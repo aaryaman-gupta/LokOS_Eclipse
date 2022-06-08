@@ -1,7 +1,11 @@
 package web;
 
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 
 import app.profileCons;
 
@@ -19,9 +23,17 @@ public class BPMSection extends LoginTest {
 		Thread.sleep(10000);
 		driver.findElement(By.linkText("Refresh Duplicate")).click();
 		Thread.sleep(6000);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		int shgCount = Integer.valueOf(driver.findElement(By.xpath(BPMConstants.shgCountPath)).getText());
 		System.out.println("No. of SHGs in queue:" + shgCount);
 
+//		Actions actions = new Actions(driver);
+//		for(int i=0;i<6;i++)
+//			actions.keyDown(Keys.CONTROL).keyDown(Keys.SHIFT).sendKeys(Keys.chord(Keys.ADD)).keyUp(Keys.CONTROL).keyUp(Keys.SHIFT).perform();
+				
+		Thread.sleep(3000);
+		
+		 
 		//// SHG Count check
 		if (shgCount == 0) {
 			System.out.println("No SHG in queue for verification");
@@ -30,16 +42,27 @@ public class BPMSection extends LoginTest {
 			driver.findElement(By.xpath(BPMConstants.shgVerificationBoxPath)).click();
 			boolean shgPresent_flag = false;
 
-			int shgListPageCount = (shgCount / 25) + 1;// default list length is 25
+			int shgListPageCount = (shgCount / 10) + 1;// default list length is 25
 			String shg = xc.getCellString(row, profileCons.shgNameColNum);
+			
+			Actions a = new Actions(driver);
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			
+			Thread.sleep(3000);
+			
+			driver.findElement(By.xpath("//div[@class='mat-select-arrow-wrapper ng-tns-c65-1']")).click();
+			driver.findElement(By.xpath("(//span[@class='mat-option-text'])[1]")).click();
 
 			//// Iteration done for each page until SHG linkText is found
 			for (int i = 0; i < shgListPageCount; i++) {
 				Thread.sleep(1500);
 				System.out.println("Name SHG: " + xc.getCellString(row, profileCons.shgNameColNum));
 				shgPresent_flag = LoginTest.isElementPresent(By.partialLinkText(shg));
-				if ((!shgPresent_flag) && (i < shgListPageCount - 1))
-					driver.findElement(By.xpath(BPMConstants.selectSHG_NextPageButtonPath)).click();
+				if ((!shgPresent_flag) && (i < shgListPageCount - 1)) {
+					driver.findElement(By.xpath("(//button[contains(@class,'mat-focus-indicator mat-tooltip-trigger')])[2]")).click();
+					}
 				else if (shgPresent_flag) {
 					Thread.sleep(1500);
 					driver.findElement(By.partialLinkText(shg)).click();
@@ -220,7 +243,7 @@ public class BPMSection extends LoginTest {
 			driver.findElement(By.id("reject_btn")).click();
 			Thread.sleep(2000);
 		} else if (!reject) {
-			driver.findElement(By.xpath("//button[@class='approval_btn mr-1']")).click();
+			driver.findElement(By.xpath("//button[text()=' Approve Profile']")).click();
 			Thread.sleep(2000);
 		}
 		System.out.println("All SHG Profile approvals given");

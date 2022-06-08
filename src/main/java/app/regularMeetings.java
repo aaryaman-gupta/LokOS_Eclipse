@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.aventstack.extentreports.Status;
 
+import functions.allFnxs;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.android.AndroidElement;
 import lokos.lokosTest;
@@ -70,7 +71,6 @@ public class regularMeetings extends lokosTest {
 
 		
 		if (xc.getCellString(row, cutoffCons.typeColNum).equals("New")) {
-
 			try {
 				oldMtngNum = Integer
 						.valueOf(appdriver.findElementById("com.microware.cdfi:id/et_old_meeting_no").getText());
@@ -78,7 +78,7 @@ public class regularMeetings extends lokosTest {
 				oldMtngNum = 0;
 			}
 			newMtngNum = Integer.valueOf(xc.getCellString(row, cutoffCons.newMeetingNumColNum));
-
+			
 			if (newMtngNum == (oldMtngNum + 1)) {
 				appdriver.findElementById("com.microware.cdfi:id/et_new_meeting_no").sendKeys("" + newMtngNum);
 				// validation

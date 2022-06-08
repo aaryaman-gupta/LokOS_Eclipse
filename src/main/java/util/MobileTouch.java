@@ -25,7 +25,7 @@ public class MobileTouch {
 	public static final String DIRECTION_RIGHT = "right";
 	public static final String DIRECTION_LEFT = "left";
 	public static final int SCROLL_DURATION = 1;
-	public static final int MAX_SCROLL_COUNTER = 10;
+	public static final int MAX_SCROLL_COUNTER = 25;
 
 	AndroidDriver<AndroidElement> driver;
 	Dimension dim;

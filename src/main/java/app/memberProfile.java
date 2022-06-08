@@ -438,7 +438,7 @@ public class memberProfile extends lokosTest {
 						|| appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText()
 								.equals("Data Updated Successfully")) {
 					appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
-					System.out.println("Necessary fields for saving SHG filled.");
+					System.out.println("Necessary fields for saving Member filled.");
 				} else {
 					String err = appdriver.findElementById("com.microware.cdfi:id/txt_msg").getText();
 					System.out.println("Error---->" + err);

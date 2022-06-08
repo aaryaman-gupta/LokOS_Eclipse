@@ -8,7 +8,7 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 
-import app.loginConstants;
+import appLaunchLogin.loginConstants;
 
 //import com.aventstack.extentreports.ExtentReports;
 //import com.aventstack.extentreports.ExtentTest;
@@ -63,20 +63,20 @@ public class lokosTest{
 		xc = new xlsClasses(System.getProperty("user.dir") + "\\XLS data\\"+xlsName+".xlsx", flowCons.sheetName);
 //		if(xlsName.contains("SHG"))
 //			throw new Exception("testing accounts");
-//		web.LoginTest.startWeb();
-		app.launchLokOS.launchLokos(apk);
+		
+		appLaunchLogin.launchLokOS.launchLokos(apk);
 		test.log(Status.PASS, "LokOS Successfully Launched");
 		System.out.println("Lokos Successfully Launched");
 		mt = new MobileTouch(appdriver);
 		du = new DeviceUtil(appdriver);
 //		app.loginTest.login();
-		appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		appdriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");
 		
 		test.log(Status.PASS, "Login Complete");
 //		app.loginTest.sync();
 		System.out.println("Login and Sync Complete");
-		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function): "+xlsName,"PFA report of previous Test",xlsName);
+//		util.mail.ZipAndSendMail.send("Starting Test(Checking Email Function): "+xlsName,"PFA report of previous Test",xlsName);
 		Thread.sleep(1000);
 		ExtentManager.addScreenShotsToTest("SHG Bookeeper Screen", test);
 		
@@ -92,7 +92,9 @@ public class lokosTest{
 			xc.changeSheet("SHGs");
 			try {
 				if (!(xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Submit")
-						|| xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")))
+						|| xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")
+						||xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Web")
+						||xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Check Upload")))
 					testFlow = reports.createTest("[" + r + "] " + xc.getCellString(r, profileCons.shgNameColNum)
 							+ " (Flow: " + xc.getCellString(r, profileCons.typeColNum) +"->"+xc.getCellString(r, profileCons.flowTypeColNum)+ ")");
 				test.log(Status.INFO, "Flow number " + r + " begins");
@@ -289,20 +291,57 @@ public class lokosTest{
 //					if (webProcess_flag) {
 						test.log(Status.INFO, "Web Flow Commencing in 3 minutes");
 						System.out.println("Web Flow Commencing in 3 minutes");
-						Thread.sleep(2000);
+						Thread.sleep(180000);
 						web.LoginTest.startWeb();
 					}
 					
-					app.launchLokOS.launchLokos(apk);
+					appLaunchLogin.launchLokOS.launchLokos(apk);
 					test.log(Status.PASS, "Lokos Successfully Launched");
 					System.out.println("Lokos Successfully Launched");
 					appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 					appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");					
-					app.loginTest.sync();
+					appLaunchLogin.loginTest.sync();
 					test.log(Status.PASS, "Login and Sync Complete");
 					System.out.println("Login and Sync Complete");
 					Thread.sleep(2000);
 					ExtentManager.addScreenShotsToLogPass("SHG Entry Screen", test);
+					navigation.shgButton();
+				}
+				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Check Upload")) {
+
+					boolean webProcess_flag = true;
+					try {
+
+						test.log(Status.INFO, "Checking Upload Possibility");
+						testSHG = test.createNode("Upload Data Possibility");
+						System.out.println("Starting Check Process...");
+						appdriver.findElementById("com.microware.cdfi:id/icBack").click();
+						Thread.sleep(1000);
+						appdriver.findElementById("com.microware.cdfi:id/tbl_sync").click();
+						Thread.sleep(1000);
+						appdriver.findElementById("com.microware.cdfi:id/tbl_upload").click();
+						Thread.sleep(1000);
+						String s = appdriver.findElementById("com.microware.cdfi:id/tvUploadData").getText();
+						System.out.println(s);
+						if (s.contains("(0)")) {
+							testSHG.log(Status.FAIL, "Data not sufficient to upload");
+							System.out.println("Data not sufficient to upload");
+						} else {
+							testSHG.log(Status.PASS, "Upload is Possible");
+							System.out.println("Upload is Possible");
+						}
+//						appdriver.findElementById(loginConstants.syncHome).click();
+						test.log(Status.INFO, "...Updation Process Complete ");
+						System.out.println("...Updation Process Complete ");
+					} catch (Exception e) {
+						ExtentManager.addScreenShotsToLogFail("Fail: Submission Process " + r, testSHG);
+						testSHG.log(Status.FAIL, "...error in Check Process");
+						System.out.println("...error in Check Process");
+					}
+
+					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+					appdriver.findElementById("com.microware.cdfi:id/IvHome").click();
+					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					navigation.shgButton();
 				}
 				else if (xc.getCellString(r, profileCons.typeColNum).equalsIgnoreCase("Status")) {					
@@ -368,7 +407,7 @@ public class lokosTest{
 				System.out.println("Flow " + r + " failed in between");
 				test.log(Status.INFO, "Restarting App");
 				appdriver.quit();
-				app.launchLokOS.launchLokos(apk);
+				appLaunchLogin.launchLokOS.launchLokos(apk);
 				test.log(Status.PASS, "Lokos Successfully Launched");
 				System.out.println("Lokos Successfully Launched");
 				appdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);

@@ -19,13 +19,38 @@ public class navigation extends lokosTest {
 		xc.changeSheet("SHGs");
 		appdriver.findElementById("com.microware.cdfi:id/spin_panchayat").click();
 		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-		appdriver.findElement(MobileBy
-				.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, profileCons.gpColNum) + "\")"))
-				.click();
+		int i = 0;
+		while (i < 6) {
+			try {
+				Thread.sleep(2000);
+				appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+				appdriver.findElement(MobileBy
+						.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, profileCons.gpColNum) + "\")"))
+						.click();
+				i = 6;
+			} catch (Exception e) {
+				System.out.println("Wasn't able to press the gp button");
+				i++;
+			}
+		}		
+		
+		
 		appdriver.findElementById("com.microware.cdfi:id/spin_village").click();
 		appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-		appdriver.findElement(MobileBy.AndroidUIAutomator(
-				"new UiSelector().text(\"" + xc.getCellString(row, profileCons.villageColNum) + "\")")).click();
+		i = 0;
+		while (i < 6) {
+			try {
+				Thread.sleep(2000);
+				appdriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+				appdriver.findElement(MobileBy.AndroidUIAutomator(
+						"new UiSelector().text(\"" + xc.getCellString(row, profileCons.villageColNum) + "\")")).click();
+				i = 6;
+			} catch (Exception e) {
+				System.out.println("Wasn't able to press the gp button");
+				i++;
+			}
+		}
+		
 		
 	}
 

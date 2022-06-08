@@ -26,7 +26,7 @@ public class MobileTouchAdv {
 	public static final String DIRECTION_RIGHT = "right";
 	public static final String DIRECTION_LEFT = "left";
 	public static final int SCROLL_DURATION = 1;
-	public static final int MAX_SCROLL_COUNTER = 10;
+	public static final int MAX_SCROLL_COUNTER = 25;
 
 	AndroidDriver<AndroidElement> driver;
 	Dimension dim;
@@ -53,6 +53,7 @@ public class MobileTouchAdv {
 	// viable to make
 	public void scrollToVisibleElementOnScreen(String locator, String locatorStrat, String direction,double mrgn1, double mrgn2) {
 		int counter = 0;
+		boolean exceeded_counter_flag=false;
 		
 		TOP_MARGIN=mrgn1;
 		BOTTOM_MARGIN=mrgn2;
@@ -73,11 +74,13 @@ public class MobileTouchAdv {
 
 			}
 			if (counter == MAX_SCROLL_COUNTER) {
+				System.out.println("Max Scrolling Exceeded");
+				exceeded_counter_flag=true;
 				break;
 			}
 		}
-		scrollTowards(locator, locatorStrat, direction);
-
+		if(!exceeded_counter_flag)
+			scrollTowards(locator, locatorStrat, direction);
 		// do the adjustment
 
 	}
