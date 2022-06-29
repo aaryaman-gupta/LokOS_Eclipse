@@ -62,8 +62,8 @@ public class lokosCLF{
 		appLaunchLogin.launchLokOS.launchLokos(apk);
 		test.log(Status.PASS, "LokOS Successfully Launched");
 		System.out.println("Lokos Successfully Launched");
-		mt = new MobileTouch(appdriver);
-		du = new DeviceUtil(appdriver);
+		mt = new MobileTouch();
+		du = new DeviceUtil();
 //		app.loginTest.login();
 		appdriver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		appdriver.findElementById("com.microware.cdfi:id/otp_view").sendKeys("1111");

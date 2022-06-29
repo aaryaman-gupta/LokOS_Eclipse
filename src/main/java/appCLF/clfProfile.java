@@ -81,7 +81,7 @@ public class clfProfile extends lokosCLF {
 		pass = 0;
 		fail = 0;
 
-		mt = new MobileTouchAdv(appdriver);
+		mt = new MobileTouchAdv();
 		fnFed af = new fnFed(xc, appdriver, testCLF, mt, du, clf_check);
 
 		if (xc.getCellString(row, clfCons.Flow_Type_0).contains("Migration"))

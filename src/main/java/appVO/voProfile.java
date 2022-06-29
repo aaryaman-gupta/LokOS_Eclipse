@@ -81,7 +81,7 @@ public class voProfile extends lokosVO {
 		pass = 0;
 		fail = 0;
 
-		mt = new MobileTouchAdv(appdriver);
+		mt = new MobileTouchAdv();
 		fnFed af = new fnFed(xc, appdriver, testVO, mt, du, vo_check);
 
 		if (xc.getCellString(row, voCons.Flow_Type_0).contains("Migration"))

@@ -21,7 +21,7 @@ public class loginTest extends lokosTest {
 		appdriver.findElementById(loginConstants.stateDDown).click();
 //		AndroidElement e= (AndroidElement) appdriver.findElement(MobileBy.AndroidUIAutomator());
 
-		MobileTouch mt = new MobileTouch(appdriver);
+		MobileTouch mt = new MobileTouch();
 		mt.scrollToVisibleElementOnScreen("new UiSelector().textContains(\""
 				+ xc.getCellString(1, loginConstants.stateColNum).toUpperCase() + "\")", "androidUIAutomatior", "top");
 		AndroidElement e = appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().textContains(\""
@@ -46,7 +46,7 @@ public class loginTest extends lokosTest {
 		appdriver.findElementById(loginConstants.password).sendKeys(xc.getCellString(1, loginConstants.passwordColNum));
 		appdriver.findElementById(loginConstants.loginButton).click();
 
-		DeviceUtil du = new DeviceUtil(appdriver);
+		DeviceUtil du = new DeviceUtil();
 		// check for downloading master data
 		boolean message_flag = true;
 		Thread.sleep(5000);

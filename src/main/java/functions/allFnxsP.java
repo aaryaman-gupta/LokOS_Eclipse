@@ -50,6 +50,18 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
+					appdriver.findElementById(loc).clear();
+				}else {
+					if(migrCheckById(test,migr,loc,def)) {					
+						appdriver.findElementById(loc).clear();
+						appdriver.findElementById(loc).sendKeys(entry);
+					}
+				}
+				///////////////////////////////////////////////////////////////	
 				if(migrCheckById(test,migr,loc,def)) {					
 					appdriver.findElementById(loc).clear();
 					appdriver.findElementById(loc).sendKeys(entry);
@@ -102,10 +114,19 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);			
 			try {
-				if(migrCheckByXPath(test,migr,loc,def)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementByXPath(loc).clear();
-					appdriver.findElementByXPath(loc).sendKeys(entry);
+				}else {
+					if(migrCheckByXPath(test,migr,loc,def)) {
+						appdriver.findElementByXPath(loc).clear();
+						appdriver.findElementByXPath(loc).sendKeys(entry);
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				String err = "p";
 				if (neg_test) {
@@ -155,10 +176,19 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckById(test,migr,loc,def)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementById(loc).clear();
-					appdriver.findElementById(loc).sendKeys(entry);
+				}else {
+					if(migrCheckById(test,migr,loc,def)) {
+						appdriver.findElementById(loc).clear();
+						appdriver.findElementById(loc).sendKeys(entry);
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				String err = "p";
 				if (neg_test) {
@@ -208,10 +238,19 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByXPath(test,migr,loc,def)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementByXPath(loc).clear();
-					appdriver.findElementByXPath(loc).sendKeys(entry);
+				}else {
+					if(migrCheckByXPath(test,migr,loc,def)) {
+						appdriver.findElementByXPath(loc).clear();
+						appdriver.findElementByXPath(loc).sendKeys(entry);
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				String err = "p";
 				if (neg_test) {
@@ -268,12 +307,24 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByIdDD(test,migr,title,def,a,b,c)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					appdriver.findElementById(loc).click();
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + def + "\")")).click();
+				}else {
+					if(migrCheckByIdDD(test,migr,title,def,a,b,c)) {
+						appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+						appdriver.findElementById(loc).click();
+						appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			}catch(Exception e) {
 				System.out.println(e.getMessage());
 				backButton.back();
@@ -320,10 +371,20 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByXPathDD(test,migr,title,def,a,b,c)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementByXPath(loc).click();
-					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + def + "\")")).click();
+				}else {
+					if(migrCheckByXPathDD(test,migr,title,def,a,b,c)) {
+						appdriver.findElementByXPath(loc).click();
+						appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + entry + "\")")).click();
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				backButton.back();
@@ -371,10 +432,20 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByIdDD(test, migr,title,def,a,b,c)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementById(loc).click();
-					appdriver.findElementByXPath(xpath).click();
+					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + def + "\")")).click();
+				}else {
+					if(migrCheckByIdDD(test, migr,title,def,a,b,c)) {
+						appdriver.findElementById(loc).click();
+						appdriver.findElementByXPath(xpath).click();
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				backButton.back();
@@ -422,10 +493,20 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByXPathDD(test,migr,title,def,a,b,c)) {
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
 					appdriver.findElementByXPath(loc).click();
-					appdriver.findElementByXPath(xpath).click();
+					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + def + "\")")).click();
+				}else {
+					if(migrCheckByXPathDD(test,migr,title,def,a,b,c)) {
+						appdriver.findElementByXPath(loc).click();
+						appdriver.findElementByXPath(xpath).click();
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 				backButton.back();
@@ -460,6 +541,7 @@ public class allFnxsP {
 			System.out.println("Processing Details: " + title + "(id)>>First Option");
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
+			
 		if(migrCheckByIdDD(test,migr,title,def,a,b,c)) {
 			appdriver.findElementById(loc).click();
 			Thread.sleep(2000);
@@ -805,11 +887,20 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,x,y);
 			try {
-				if(migrCheckByXPath(test,migr,loc,def)) {
-					entry=entry.replaceAll("_","-");
-					if(migrCheckById(test,migr,loc,def))
-						appdriver.findElementById(loc).sendKeys(entry);
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
+					
+				}else if(xc.getCellString(row, col).equals("Delete")) {
+					appdriver.findElementById(loc).clear();
+				}else {
+					if(migrCheckByXPath(test,migr,loc,def)) {
+						entry=entry.replaceAll("_","-");
+						if(migrCheckById(test,migr,loc,def))
+							appdriver.findElementById(loc).sendKeys(entry);
+					}
 				}
+				///////////////////////////////////////////////////////////////
+				
 			} catch (Exception e) {
 				String err = "p";
 				if (neg_test) {
@@ -1073,43 +1164,137 @@ public class allFnxsP {
 			if (!dir.equals(""))
 				mt.scrollToText(title, dir,0.40,0.65);
 			try {
-					if(true) {
-							java.util.List<AndroidElement> table = appdriver.findElementsByXPath(a);							
-							for (k = 1; k < table.size(); k++) {
-								try	{
-									if (!appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b).getText().equals(title)) {
-										throw new Exception("Next Title");
-									}
-									System.out.println(appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b).getText());
-									System.out.println(appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+def_btn_num+"]").getText());
-									System.out.println(appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+def_btn_num+"]").getAttribute("checked"));
-									System.out.println(appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+btn_num+"]").getText());
-								}catch(Exception ex){
-									ex.printStackTrace();
-									continue;
-								}
-								if (appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b).getText().equals(title)) {
-									 if(appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+def_btn_num+"]").getAttribute("checked").equalsIgnoreCase("true")) {
-										if(migr) {	
-										 System.out.println("|||||||||||||||>>Migrated Data is possible in radio button>> ");
-											test.log(Status.PASS, "||||||||||||||>>Migrated Data is possible in radio button>> ");
-											}
-										appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+btn_num+"]").click();
-										break;
-										} else {
-											System.out.println("No Migrated Data...field entry from excel");
-											appdriver.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k + c+"["+btn_num+"]").click();
-											break;	
-										}
-									 }	
-							}
-					}
-//					else {
-//						appdriver.findElementByXPath("//android.widget.LinearLayout[" + k + c+"["+btn_num+"]").click();
-//					}
+				////////////////////////////////////////////////////////////////
+				if(xc.getCellString(row, col).equals("DNE")) {
 					
-//				if(!migrCheckRdBtn(test,migr,title,def,a,b,c,def_btn_num)) {
-//					appdriver.findElementByXPath("//android.widget.LinearLayout[" + k + c+"["+btn_num+"]").getAttribute("checked");
+				}else if(xc.getCellString(row, col).equals("Delete")) {
+					btn_num=def_btn_num;
+					java.util.List<AndroidElement> table = appdriver.findElementsByXPath(a);
+					for (k = 1; k < table.size(); k++) {
+						try {
+							if (!appdriver
+									.findElementByXPath(
+											"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+									.getText().equals(title)) {
+								throw new Exception("Next Title");
+							}
+							System.out.println(appdriver
+									.findElementByXPath(
+											"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+									.getText());
+							System.out.println(appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + def_btn_num + "]")
+									.getText());
+							System.out
+									.println(
+											appdriver
+													.findElementByXPath(
+															"//android.widget.LinearLayout/android.widget.LinearLayout["
+																	+ k + c + "[" + def_btn_num + "]")
+													.getAttribute("checked"));
+							System.out.println(appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + btn_num + "]")
+									.getText());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							continue;
+						}
+						if (appdriver
+								.findElementByXPath(
+										"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+								.getText().equals(title)) {
+							if (appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + def_btn_num + "]")
+									.getAttribute("checked").equalsIgnoreCase("true")) {
+								if (migr) {
+									System.out.println("|||||||||||||||>>Migrated Data is possible in radio button>> ");
+									test.log(Status.PASS,
+											"||||||||||||||>>Migrated Data is possible in radio button>> ");
+								}
+								appdriver
+										.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout["
+												+ k + c + "[" + btn_num + "]")
+										.click();
+								break;
+							} else {
+								System.out.println("No Migrated Data...field entry from excel");
+								appdriver
+										.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout["
+												+ k + c + "[" + btn_num + "]")
+										.click();
+								break;
+							}
+						}
+					}
+
+				} else {
+					java.util.List<AndroidElement> table = appdriver.findElementsByXPath(a);
+					for (k = 1; k < table.size(); k++) {
+						try {
+							if (!appdriver
+									.findElementByXPath(
+											"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+									.getText().equals(title)) {
+								throw new Exception("Next Title");
+							}
+							System.out.println(appdriver
+									.findElementByXPath(
+											"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+									.getText());
+							System.out.println(appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + def_btn_num + "]")
+									.getText());
+							System.out
+									.println(
+											appdriver
+													.findElementByXPath(
+															"//android.widget.LinearLayout/android.widget.LinearLayout["
+																	+ k + c + "[" + def_btn_num + "]")
+													.getAttribute("checked"));
+							System.out.println(appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + btn_num + "]")
+									.getText());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							continue;
+						}
+						if (appdriver
+								.findElementByXPath(
+										"//android.widget.LinearLayout/android.widget.LinearLayout[" + k + b)
+								.getText().equals(title)) {
+							if (appdriver
+									.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout[" + k
+											+ c + "[" + def_btn_num + "]")
+									.getAttribute("checked").equalsIgnoreCase("true")) {
+								if (migr) {
+									System.out.println("|||||||||||||||>>Migrated Data is possible in radio button>> ");
+									test.log(Status.PASS,
+											"||||||||||||||>>Migrated Data is possible in radio button>> ");
+								}
+								appdriver
+										.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout["
+												+ k + c + "[" + btn_num + "]")
+										.click();
+								break;
+							} else {
+								System.out.println("No Migrated Data...field entry from excel");
+								appdriver
+										.findElementByXPath("//android.widget.LinearLayout/android.widget.LinearLayout["
+												+ k + c + "[" + btn_num + "]")
+										.click();
+								break;
+							}
+						}
+					}
+
+				}
+				///////////////////////////////////////////////////////////////
+					
 			}catch(Exception e) {
 				System.out.println(e.getMessage());
 				throw new Exception("Cannot detect option");
@@ -1149,6 +1334,7 @@ public class allFnxsP {
 				try {
 				appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 				appdriver.findElementByXPath(prefix+k+delete).click();
+				appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Yes\")")).click();
 				System.out.println("Previous Record Deleted");
 				return false;
 				}catch(Exception e) {
@@ -1158,6 +1344,7 @@ public class allFnxsP {
 				try {
 					appdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 					appdriver.findElementByXPath(prefix+k+delete).click();
+					appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"Yes\")")).click();
 					System.out.println("Previous Record Deleted");
 					}catch(Exception e) {
 						System.out.println("Previous Record Cannot Be Deleted");

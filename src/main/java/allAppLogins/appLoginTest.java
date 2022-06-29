@@ -20,7 +20,7 @@ public class appLoginTest extends accountsTest{
 	public static void login(int row,String role,ExtentTest test) throws InterruptedException {
 		
 		
-		MobileTouchAdv mt = new MobileTouchAdv(appdriver);
+		MobileTouchAdv mt = new MobileTouchAdv();
 		Thread.sleep(5000);
 		
 			
@@ -135,7 +135,7 @@ public class appLoginTest extends accountsTest{
 		endAction="Login Button";
 		
 
-		DeviceUtil du = new DeviceUtil(appdriver);
+		DeviceUtil du = new DeviceUtil();
 		// check for downloading master data
 		boolean message_flag = true;
 		Thread.sleep(5000);

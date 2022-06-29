@@ -68,4 +68,6 @@ public class profileCons {
 	public static final int president=64;
 	public static final int secretary=65;
 	public static final int treasurer=66;
+	public static final int checkupload=67;
+	public static final int description=68;
 }

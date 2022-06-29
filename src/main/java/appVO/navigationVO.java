@@ -42,7 +42,7 @@ public class navigationVO extends lokosTest {
 	public static void existingSHG(int row) throws Exception {
 		String shgName=xc.getCellString(row, profileCons.shgNameColNum).toUpperCase();
 		System.out.println("Navigating to "+shgName);
-		MobileTouchAdv mta=new MobileTouchAdv(appdriver);
+		MobileTouchAdv mta=new MobileTouchAdv();
 		mta.scrollToText(shgName, "top",0.60,0.80);
 	}
 	public static void existingSHG_Error(int row) throws Exception {
@@ -148,7 +148,7 @@ public class navigationVO extends lokosTest {
 
 	public static void existingMember(int row) {
 		xc.changeSheet("Members");
-		MobileTouch mt = new MobileTouch(appdriver);
+		MobileTouch mt = new MobileTouch();
 		mt.scrollToText(xc.getCellString(row, memCons.nameColNum), "top");
 		String name=xc.getCellString(row, memCons.nameColNum) ;
 		appdriver.findElement(MobileBy

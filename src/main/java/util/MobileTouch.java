@@ -7,12 +7,12 @@ import org.openqa.selenium.Dimension;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
+import lokos.lokosTest;
 
-public class MobileTouch {
+public class MobileTouch extends lokosTest{
 	// scroll from different coordinates
 	// scroll from different elements
 
@@ -27,22 +27,20 @@ public class MobileTouch {
 	public static final int SCROLL_DURATION = 1;
 	public static final int MAX_SCROLL_COUNTER = 25;
 
-	AndroidDriver<AndroidElement> driver;
 	Dimension dim;
 	DeviceUtil device;
 	@SuppressWarnings("rawtypes")
 	TouchAction act;
 
 	@SuppressWarnings("rawtypes")
-	public MobileTouch(AndroidDriver<AndroidElement> driver) {
-		this.driver = driver;
-		dim = driver.manage().window().getSize();
-		device = new DeviceUtil(driver);
-		act = new TouchAction(driver);
+	public MobileTouch() {		
+		dim = appdriver.manage().window().getSize();
+		device = new DeviceUtil();
+		act = new TouchAction(appdriver);
 	}
 
 	public void scrollToText(String text, String direction) {
-		// AndroidElement e = driver.findElement(MobileBy.AndroidUIAutomator("new
+		// AndroidElement e = appdriver.findElement(MobileBy.AndroidUIAutomator("new
 		// UiSelector().text(\""+text+"\")"));
 		// first find the presence
 		scrollToVisibleElementOnScreen("new UiSelector().text(\"" + text + "\")", "androidUIAutomatior", direction);
@@ -86,11 +84,11 @@ public class MobileTouch {
 			AndroidElement e = null;
 
 			if (locatorStrat.equals("id"))
-				e = driver.findElement(By.id(locator));
+				e = appdriver.findElement(By.id(locator));
 			else if (locatorStrat.equals("xpath"))
-				e = driver.findElement(By.xpath(locator));
+				e = appdriver.findElement(By.xpath(locator));
 			else if (locatorStrat.equals("androidUIAutomatior"))
-				e = driver.findElement(MobileBy.AndroidUIAutomator(locator));
+				e = appdriver.findElement(MobileBy.AndroidUIAutomator(locator));
 
 			verticalScroll(e.getLocation().y, topY);
 		} else if (direction.equals(DIRECTION_BOTTOM)) {
@@ -99,11 +97,11 @@ public class MobileTouch {
 			AndroidElement e = null;
 
 			if (locatorStrat.equals("id"))
-				e = driver.findElement(By.id(locator));
+				e = appdriver.findElement(By.id(locator));
 			else if (locatorStrat.equals("xpath"))
-				e = driver.findElement(By.xpath(locator));
+				e = appdriver.findElement(By.xpath(locator));
 			else if (locatorStrat.equals("androidUIAutomatior"))
-				e = driver.findElement(MobileBy.AndroidUIAutomator(locator));
+				e = appdriver.findElement(MobileBy.AndroidUIAutomator(locator));
 
 			verticalScroll(e.getLocation().y, bottomY - 20);
 		}

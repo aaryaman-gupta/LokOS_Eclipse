@@ -137,7 +137,6 @@ public class LoginTest extends lokosTest {
 					} catch (Exception e) {
 						// test.log(Status.FAIL, "Invalid User or Password:Login failed");
 						System.out.println("Invalid User or Password:Login failed");
-						web.LoginTest.startWeb();
 						throw new Exception("Invalid User or Password:Login failed");
 					}
 				} else if (text_name.equals("State")) {

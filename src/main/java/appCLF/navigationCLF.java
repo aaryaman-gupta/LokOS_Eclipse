@@ -38,7 +38,7 @@ public class navigationCLF extends lokosTest {
 	public static void existingSHG(int row) throws Exception {
 		String shgName=xc.getCellString(row, clfCons.CLF_Name_1).toUpperCase();
 		System.out.println("Navigating to "+shgName);
-		MobileTouchAdv mta=new MobileTouchAdv(appdriver);
+		MobileTouchAdv mta=new MobileTouchAdv();
 		mta.scrollToText(shgName, "top",0.60,0.80);
 	}
 	public static void existingSHG_Error(int row) throws Exception {

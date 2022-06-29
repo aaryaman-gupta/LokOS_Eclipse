@@ -21,7 +21,7 @@ public class appLogin extends accounts{
 		appdriver.findElementById(loginConstants.stateDDown).click();
 //		AndroidElement e= (AndroidElement) appdriver.findElement(MobileBy.AndroidUIAutomator());
 
-		MobileTouchAdv mt = new MobileTouchAdv(appdriver);
+		MobileTouchAdv mt = new MobileTouchAdv();
 		mt.scrollToVisibleElementOnScreen("new UiSelector().textContains(\""
 				+ xc.getCellString(row, loginConstants.stateColNum).toUpperCase() + "\")", "androidUIAutomatior", "top",0.40,0.60);
 		AndroidElement e = appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().textContains(\""
@@ -51,7 +51,7 @@ public class appLogin extends accounts{
 		appdriver.findElementById(loginConstants.password).sendKeys(xc.getCellString(row, loginConstants.passwordColNum));
 		appdriver.findElementById(loginConstants.loginButton).click();
 
-		DeviceUtil du = new DeviceUtil(appdriver);
+		DeviceUtil du = new DeviceUtil();
 		// check for downloading master data
 		boolean message_flag = true;
 		Thread.sleep(5000);

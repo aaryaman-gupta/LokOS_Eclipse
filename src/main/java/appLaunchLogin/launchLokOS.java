@@ -21,12 +21,12 @@ public class launchLokOS extends lokosTest {
 		cap.setCapability(MobileCapabilityType.UDID, launchAppConstants.UDID);
 		cap.setCapability(MobileCapabilityType.PLATFORM_NAME, launchAppConstants.platform_name);
 		cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, launchAppConstants.platform_version);
-
 		cap.setCapability(MobileCapabilityType.APP, new File(
 				System.getProperty("user.dir") + "\\apk\\" + apk)
 						.getAbsolutePath());
 		cap.setCapability(MobileCapabilityType.NO_RESET, "true");// clear the cache
 		cap.setCapability(MobileCapabilityType.FULL_RESET, "false");// dont uninstall
+		cap.setCapability (MobileCapabilityType.NEW_COMMAND_TIMEOUT, "50");
 //		
 //		cap.setCapability("autoGrantPermissions", "true");
 		try {

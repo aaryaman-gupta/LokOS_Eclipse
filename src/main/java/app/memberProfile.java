@@ -110,6 +110,13 @@ public class memberProfile extends lokosTest {
 					break;
 			case 003:
 				try {
+					if(xc.getCellString(row, memCons.genderColNum).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.genderColNum).equals("Delete")) {
+						
+					}else {
+						
+					}
 					selectById("Gender", "top", "com.microware.cdfi:id/spin_gender", row, memCons.genderColNum);
 					pseq(id, "003:Gender");
 				} catch (Exception e) {
@@ -121,26 +128,62 @@ public class memberProfile extends lokosTest {
 					break;
 			case 004:
 				try {
-					mt.scrollToText("Is Member Date of birth available?", "top");
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.memDOBAvlColNum) + "\")"))
-							.click();
+					////////////////////////////////////////////
+//					if(xc.getCellString(row,  ).equals("DNE")) {
+//						
+//					}else if(xc.getCellString(row, ).equals("Delete")) {
+//						
+//					}else {
+//						
+//					}
+					/////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.memDOBAvlColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.memDOBAvlColNum ).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Is Member Date of birth available?", "top");
+						appdriver.findElement(MobileBy.AndroidUIAutomator(
+								"new UiSelector().text(\"" + xc.getCellString(row, memCons.memDOBAvlColNum) + "\")"))
+								.click();
 
-					System.out.print("004:Member DOB Available and ");
+						System.out.print("004:Member DOB Available and ");
+						
+						if (xc.getCellString(row, memCons.memDOBAvlColNum).equals("Yes")) {
+							mt.scrollToText("Date of Birth", "top");
+//								appdriver.findElementById("com.microware.cdfi:id/et_dob").click();
+							///////////////////////////////////////////////////////////
+							if(xc.getCellString(row, memCons.DOBColNum ).equals("DNE")) {
+								
+							}else if(xc.getCellString(row, memCons.DOBColNum).equals("Delete")) {
+								
+							}else {
+								String date = xc.getCellString(row, memCons.DOBColNum);
+								dateLogic.datePicker(date, "com.microware.cdfi:id/et_dob");
+							}
+							//////////////////////////////////////////////////////////////
 
-					if (xc.getCellString(row, memCons.memDOBAvlColNum).equals("Yes")) {
-						mt.scrollToText("Date of Birth", "top");
-//							appdriver.findElementById("com.microware.cdfi:id/et_dob").click();
-						String date = xc.getCellString(row, memCons.DOBColNum);
-						dateLogic.datePicker(date, "com.microware.cdfi:id/et_dob");
-
-					} else {
-						enterValue_Id("Age", "top", "com.microware.cdfi:id/et_age", row, memCons.ageColNum,
-								"204:||Validation Error");
-						mt.scrollToText("As on Date", "top");
-//							appdriver.findElementById("com.microware.cdfi:id/et_ason").click();
-						String date = xc.getCellString(row, memCons.ageAODColNum);
-						dateLogic.datePicker(date, "com.microware.cdfi:id/et_ason");
+						} else {
+							////////////////////////////////////////////////////
+								enterValue_Id("Age", "top", "com.microware.cdfi:id/et_age", row, memCons.ageColNum,
+										"204:||Validation Error");
+							
+							/////////////////////////////////////////////////////
+							
+							////////////////////////////////////////////////////
+							if(xc.getCellString(row, memCons.ageAODColNum ).equals("DNE")) {
+								
+							}else if(xc.getCellString(row, memCons.ageAODColNum).equals("Delete")) {
+								
+							}else {
+								mt.scrollToText("As on Date", "top");
+//								appdriver.findElementById("com.microware.cdfi:id/et_ason").click();
+							String date = xc.getCellString(row, memCons.ageAODColNum);
+							dateLogic.datePicker(date, "com.microware.cdfi:id/et_ason");
+							}
+							/////////////////////////////////////////////////////
+							
+						}						
 					}
 					pseq(id, "004:Member DOB Available and Sub Parts Details filled");
 				} catch (Exception e) {
@@ -152,10 +195,19 @@ public class memberProfile extends lokosTest {
 					break;
 			case 005:
 				try {
-					mt.scrollToText("Member Joining Date", "top");
-					String date = xc.getCellString(row, memCons.dateColNum);
-					appdriver.findElementById("com.microware.cdfi:id/et_joiningDate").clear();
-					dateLogic.datePicker(date, "com.microware.cdfi:id/et_joiningDate");
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.dateColNum ).equals("DNE")) {
+	
+					}else if(xc.getCellString(row, memCons.dateColNum).equals("Delete")) {
+	
+					}else {
+						mt.scrollToText("Member Joining Date", "top");
+						String date = xc.getCellString(row, memCons.dateColNum);
+						appdriver.findElementById("com.microware.cdfi:id/et_joiningDate").clear();
+						dateLogic.datePicker(date, "com.microware.cdfi:id/et_joiningDate");
+						
+					}
+					/////////////////////////////////////////////
 					pseq(id, "005:Member Joining Date");
 				} catch (Exception e) {
 					fseq(id, "005:Member Joining Date", e);
@@ -166,9 +218,16 @@ public class memberProfile extends lokosTest {
 					break;
 			case 006:
 				try {
-					selectById("Marital Status", "top", "com.microware.cdfi:id/spin_martial", row,
-							memCons.maritalStatColNum);
+					////////////////////////////////////////////
+					if(xc.getCellString(row,  memCons.maritalStatColNum).equals("DNE")) {
+						
+					}else {
+						selectById("Marital Status", "top", "com.microware.cdfi:id/spin_martial", row,
+								memCons.maritalStatColNum);
+					}
+					/////////////////////////////////////////////
 					pseq(id, "006:Marital Status");
+					
 				} catch (Exception e) {
 					fseq(id, "006:Marital Status", e);
 				} finally {
@@ -178,8 +237,14 @@ public class memberProfile extends lokosTest {
 					break;
 			case 007:
 				try {
-					enterString_Id("Mother / Father / Spouse", "top", "com.microware.cdfi:id/et_mother_father", row,
-							memCons.M_F_SColNum, "007:||Validation Error");
+					////////////////////////////////////////////
+					if(xc.getCellString(row,memCons.M_F_SColNum  ).equals("DNE")) {
+						
+					}else {
+						enterString_Id("Mother / Father / Spouse", "top", "com.microware.cdfi:id/et_mother_father", row,
+								memCons.M_F_SColNum, "007:||Validation Error");						
+					}
+					/////////////////////////////////////////////
 					pseq(id, "007:Mother/Father/Spouse");
 				} catch (Exception e) {
 					fseq(id, "007:Mother/Father/Spouse", e);
@@ -190,13 +255,22 @@ public class memberProfile extends lokosTest {
 					break;
 			case 8:
 				try {
-					mt.scrollToText("Mother/Father/Spouse in local", "top");
-					appdriver.findElementById("com.microware.cdfi:id/et_mother_fatherlocal")
-							.sendKeys(xc.getCellString(row, memCons.M_F_SLocalColNum));
-					enterString_Id("Mother/Father/Spouse in local", "top",
-							"com.microware.cdfi:id/et_mother_fatherlocal", row, memCons.M_F_SLocalColNum,
-							"008:||Validation Error");
+					////////////////////////////////////////////
+					if(xc.getCellString(row,memCons.M_F_SLocalColNum  ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.M_F_SLocalColNum ).equals("Delete")) {
+						appdriver.findElementById("com.microware.cdfi:id/et_mother_fatherlocal").clear();
+					}else {
+						mt.scrollToText("Mother/Father/Spouse in local", "top");
+						appdriver.findElementById("com.microware.cdfi:id/et_mother_fatherlocal")
+								.sendKeys(xc.getCellString(row, memCons.M_F_SLocalColNum));
+						enterString_Id("Mother/Father/Spouse in local", "top",
+								"com.microware.cdfi:id/et_mother_fatherlocal", row, memCons.M_F_SLocalColNum,
+								"008:||Validation Error");
+					}
+					/////////////////////////////////////////////
 					pseq(id, "008:Mother/Father/Spouse in Local");
+					
 				} catch (Exception e) {
 					fseq(id, "008:Mother/Father/Spouse in Local", e);
 				} finally {
@@ -207,8 +281,15 @@ public class memberProfile extends lokosTest {
 
 			case 9:
 				try {
-					selectById("Relation", "top", "com.microware.cdfi:id/spin_relationmother", row,
-							memCons.relationColNum);
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.relationColNum ).equals("DNE")) {
+						
+					}else {
+						selectById("Relation", "top", "com.microware.cdfi:id/spin_relationmother", row,
+								memCons.relationColNum);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "009:Relation");
 				} catch (Exception e) {
 					fseq(id, "009:Relation", e);
@@ -219,10 +300,19 @@ public class memberProfile extends lokosTest {
 					break;
 			case 10:
 				try {
-					mt.scrollToText("Is Member Head of the family?", "top");
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.familyHeadColNum) + "\")"))
-							.click();
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.familyHeadColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.familyHeadColNum).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Is Member Head of the family?", "top");
+						appdriver.findElement(MobileBy.AndroidUIAutomator(
+								"new UiSelector().text(\"" + xc.getCellString(row, memCons.familyHeadColNum) + "\")"))
+								.click();
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "010:Is member head of the family?");
 				} catch (Exception e) {
 					fseq(id, "010:Is member head of the family?", e);
@@ -235,24 +325,67 @@ public class memberProfile extends lokosTest {
 				try {
 					mt.scrollToText("No disability", "top");
 
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.disabilityColNum) + "\")"))
-							.click();
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.disabilityColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.disabilityColNum ).equals("Delete")) {
+						
+					}else {
+						appdriver.findElement(MobileBy.AndroidUIAutomator(
+								"new UiSelector().text(\"" + xc.getCellString(row, memCons.disabilityColNum) + "\")"))
+								.click();
 
-					if (!xc.getCellString(row, memCons.disabilityColNum).equals("No disability")) {
-						selectById("Disability Type", "top", "com.microware.cdfi:id/spin_disabilityType", row,
-								memCons.disabilityTypeColNum);
-						if (du.isElementPresent("new UiSelector().text(\"Guardian Name/ Care Taker\")",
-								"androidUIAutomatior")) {
-							enterString_Id("Guardian Name/ Care Taker", "top", "com.microware.cdfi:id/et_guardianName",
-									row, memCons.guardianNameColNum, "211:||Validation Error||");
-							enterString_Id("Guardian Name/ Care Taker in local", "top",
-									"com.microware.cdfi:id/et_guardianNamelocal", row, memCons.guardianNameLocalColNum,
-									"311:||Validation Error||");
-							selectById("Relation with Guardian", "top", "com.microware.cdfi:id/spin_relationGuardian",
-									row, memCons.relationGuardianColNum);
+						if (!xc.getCellString(row, memCons.disabilityColNum).equals("No disability")) {
+
+							////////////////////////////////////////////
+							if(xc.getCellString(row, memCons.disabilityTypeColNum ).equals("DNE")) {
+								
+							}else if(xc.getCellString(row, memCons.disabilityTypeColNum).equals("Delete")) {
+								
+							}else {
+								selectById("Disability Type", "top", "com.microware.cdfi:id/spin_disabilityType", row,
+										memCons.disabilityTypeColNum);
+								
+								if (du.isElementPresent("new UiSelector().text(\"Guardian Name/ Care Taker\")",
+										"androidUIAutomatior")) {
+									////////////////////////////////////////////
+									if(xc.getCellString(row, memCons.guardianNameColNum ).equals("DNE")) {
+										
+									}else {
+										enterString_Id("Guardian Name/ Care Taker", "top", "com.microware.cdfi:id/et_guardianName",
+												row, memCons.guardianNameColNum, "211:||Validation Error||");
+									}
+									/////////////////////////////////////////////
+									////////////////////////////////////////////
+									if(xc.getCellString(row, memCons.guardianNameLocalColNum ).equals("DNE")) {
+									
+									}else {
+										enterString_Id("Guardian Name/ Care Taker in local", "top",
+												"com.microware.cdfi:id/et_guardianNamelocal", row, memCons.guardianNameLocalColNum,
+												"311:||Validation Error||");
+									}
+									/////////////////////////////////////////////
+									////////////////////////////////////////////
+									if(xc.getCellString(row, memCons.relationGuardianColNum ).equals("DNE")) {
+										
+									}else if(xc.getCellString(row, memCons.relationGuardianColNum).equals("Delete")) {
+										
+									}else {
+										selectById("Relation with Guardian", "top", "com.microware.cdfi:id/spin_relationGuardian",
+												row, memCons.relationGuardianColNum);
+									}
+									/////////////////////////////////////////////
+									
+									
+								}
+							}
+							/////////////////////////////////////////////
+							
+							
 						}
 					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "011:Disability and Sub Parts");
 				} catch (Exception e) {
 					fseq(id, "011:Disability and Sub Parts", e);
@@ -263,14 +396,24 @@ public class memberProfile extends lokosTest {
 					break;
 			case 12:
 				try {
-					mt.scrollToText("Post/Designation", "top");
-					if (!xc.getCellString(row, memCons.postColNum).equals("Null")) {
-						appdriver.findElementById("com.microware.cdfi:id/spin_Post").click();
-						appdriver
-								.findElement(MobileBy.AndroidUIAutomator(
-										"new UiSelector().text(\"" + xc.getCellString(row, memCons.postColNum) + "\")"))
-								.click();
+
+					////////////////////////////////////////////
+					if(xc.getCellString(row,  memCons.postColNum).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.postColNum ).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Post/Designation", "top");
+						if (!xc.getCellString(row, memCons.postColNum).equals("Null")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_Post").click();
+							appdriver
+									.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().text(\"" + xc.getCellString(row, memCons.postColNum) + "\")"))
+									.click();
+						}
 					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "012:Post/Designation");
 				} catch (Exception e) {
 					fseq(id, "012:Post/Designation", e);
@@ -281,8 +424,18 @@ public class memberProfile extends lokosTest {
 					break;
 			case 13:
 				try {
-					selectById("Social Category", "top", "com.microware.cdfi:id/spin_socialCategory", row,
-							memCons.socialCatColNum);
+
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.socialCatColNum  ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.socialCatColNum).equals("Delete")) {
+						
+					}else {
+						selectById("Social Category", "top", "com.microware.cdfi:id/spin_socialCategory", row,
+								memCons.socialCatColNum);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "013:Social Category");
 				} catch (Exception e) {
 					fseq(id, "013:Social Category", e);
@@ -293,7 +446,16 @@ public class memberProfile extends lokosTest {
 					break;
 			case 14:
 				try {
-					selectById("Religion", "top", "com.microware.cdfi:id/spin_religion", row, memCons.religionColNum);
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.religionColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.religionColNum).equals("Delete")) {
+						
+					}else {
+						selectById("Religion", "top", "com.microware.cdfi:id/spin_religion", row, memCons.religionColNum);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "014:Religion");
 				} catch (Exception e) {
 					fseq(id, "014:Religion", e);
@@ -304,8 +466,17 @@ public class memberProfile extends lokosTest {
 					break;
 			case 15:
 				try {
-					selectById("Highest Education Level", "top", "com.microware.cdfi:id/spin_education", row,
-							memCons.highEduLvlColNum);
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.highEduLvlColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.highEduLvlColNum).equals("Delete")) {
+						
+					}else {
+						selectById("Highest Education Level", "top", "com.microware.cdfi:id/spin_education", row,
+								memCons.highEduLvlColNum);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "015:Highest Education Level");
 					pass++;
 					System.out.println("015:Highest Education Level");
@@ -318,10 +489,19 @@ public class memberProfile extends lokosTest {
 					break;
 			case 51:
 				try {
-					mt.scrollToText("Insurance", "top");
-					appdriver.findElement(MobileBy.AndroidUIAutomator(
-							"new UiSelector().text(\"" + xc.getCellString(row, memCons.insuranceColNum) + "\")"))
-							.click();
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.insuranceColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.insuranceColNum).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Insurance", "top");
+						appdriver.findElement(MobileBy.AndroidUIAutomator(
+								"new UiSelector().text(\"" + xc.getCellString(row, memCons.insuranceColNum) + "\")"))
+								.click();
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "051:Insurance");
 				} catch (Exception e) {
 					fseq(id, "051:Insurance", e);
@@ -332,8 +512,17 @@ public class memberProfile extends lokosTest {
 					break;
 			case 16:
 				try {
-					selectById("Primary Livelihood", "top", "com.microware.cdfi:id/spin_occupation", row,
-							memCons.primaryla);
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.primaryla ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.primaryla ).equals("Delete")) {
+						
+					}else {
+						selectById("Primary Livelihood", "top", "com.microware.cdfi:id/spin_occupation", row,
+								memCons.primaryla);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "016:Primary Livelihood");
 				} catch (Exception e) {
 					fseq(id, "016:Primary Livelihood", e);
@@ -344,8 +533,17 @@ public class memberProfile extends lokosTest {
 					break;
 			case 17:
 				try {
-					selectById("Secondary Livelihood", "top", "com.microware.cdfi:id/spin_secondaryoccu", row,
-							memCons.secondaryla);
+					////////////////////////////////////////////
+					if(xc.getCellString(row,memCons.secondaryla  ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.secondaryla ).equals("Delete")) {
+						
+					}else {
+						selectById("Secondary Livelihood", "top", "com.microware.cdfi:id/spin_secondaryoccu", row,
+								memCons.secondaryla);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "017:Secondary Livelihood");
 				} catch (Exception e) {
 					fseq(id, "017:Secondary Livelihood", e);
@@ -356,8 +554,17 @@ public class memberProfile extends lokosTest {
 					break;
 			case 18:
 				try {
-					selectById("Tertiary Livelihood", "top", "com.microware.cdfi:id/spin_tertiaryoccu", row,
-							memCons.tertiaryla);
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.tertiaryla ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row,memCons.tertiaryla).equals("Delete")) {
+						
+					}else {
+						selectById("Tertiary Livelihood", "top", "com.microware.cdfi:id/spin_tertiaryoccu", row,
+								memCons.tertiaryla);
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "016:Tertiary Livelihood");
 				} catch (Exception e) {
 					fseq(id, "016:Tertiary Livelihood", e);
@@ -368,9 +575,18 @@ public class memberProfile extends lokosTest {
 					break;
 			case 19:
 				try {
-					mt.scrollToText("Member Image", "top");
-					appdriver.findElementById("com.microware.cdfi:id/Imgmember").click();
-					cameraLogic.click();
+					////////////////////////////////////////////
+					if(xc.getCellString(row,  memCons.memberImgColNum).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.memberImgColNum).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Member Image", "top");
+						appdriver.findElementById("com.microware.cdfi:id/Imgmember").click();
+						cameraLogic.click();
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "019:Image Upload");
 				} catch (Exception e) {
 					fseq(id, "019:Image Upload", e);
@@ -381,9 +597,18 @@ public class memberProfile extends lokosTest {
 					break;
 			case 050:
 				try {
-					mt.scrollToText("Consent Form Image", "top");
-					appdriver.findElementById("com.microware.cdfi:id/ImgmemberConsent").click();
-					cameraLogic.click();
+					////////////////////////////////////////////
+					if(xc.getCellString(row, memCons.consentFormImgColNum ).equals("DNE")) {
+						
+					}else if(xc.getCellString(row, memCons.consentFormImgColNum ).equals("Delete")) {
+						
+					}else {
+						mt.scrollToText("Consent Form Image", "top");
+						appdriver.findElementById("com.microware.cdfi:id/ImgmemberConsent").click();
+						cameraLogic.click();
+					}
+					/////////////////////////////////////////////
+					
 					pseq(id, "050:Consent Form Image Upload");
 					p = 1;
 					pass++;
@@ -1046,76 +1271,139 @@ public class memberProfile extends lokosTest {
 
 	public static void enterValue_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
-		int f = validCheckString(loc, "id", (int) xc.getCellDoubleValue(row, cons) + "", err);
-		if (f == 1)
-			invalid_flag = true;
+		if (((int) xc.getCellDoubleValue(row, cons) + "").equals("99999999")) {
+
+		} else if (((int) xc.getCellDoubleValue(row, cons) + "").equals("00000000")) {
+			appdriver.findElementById(loc).clear();
+		} else {
+			appdriver.findElementById(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
+			int f = validCheckString(loc, "id", (int) xc.getCellDoubleValue(row, cons) + "", err);
+			if (f == 1)
+				invalid_flag = true;
+		}
+		
 	}
 
 	public static void enterValue_Xpath(String title, String dir, String loc, int row, int cons, String err) {
-		mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
-		int f = validCheckString(loc, "xpath", (int) xc.getCellDoubleValue(row, cons) + "", err);
-		if (f == 1)
-			invalid_flag = true;
+		mt.scrollToText(title, dir);	
+		if (((int) xc.getCellDoubleValue(row, cons) + "").equals("99999999")) {
+
+		} else if (((int) xc.getCellDoubleValue(row, cons) + "").equals("00000000")) {
+			appdriver.findElementByXPath(loc).clear();
+		} else {
+			appdriver.findElementByXPath(loc).sendKeys((int) xc.getCellDoubleValue(row, cons) + "");
+			int f = validCheckString(loc, "xpath", (int) xc.getCellDoubleValue(row, cons) + "", err);
+			if (f == 1)
+				invalid_flag = true;
+		}
 	}
 
 	public static void enterDouble_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
-		int f = validCheckString(loc, "id", xc.getCellDoubleValue(row, cons) + "", err);
-		if (f == 1)
-			invalid_flag = true;
+		if ((xc.getCellDoubleValue(row, cons) + "").equals("99999999")) {
+
+		} else if ((xc.getCellDoubleValue(row, cons) + "").equals("00000000")) {
+			appdriver.findElementById(loc).clear();
+		} else {
+			appdriver.findElementById(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+			int f = validCheckString(loc, "id", xc.getCellDoubleValue(row, cons) + "", err);
+			if (f == 1)
+				invalid_flag = true;
+		}
 	}
 
 	public static void enterDouble_Xpath(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
-		int f = validCheckString(loc, "xpath", xc.getCellDoubleValue(row, cons) + "", err);
-		if (f == 1)
-			invalid_flag = true;
+		if ((xc.getCellDoubleValue(row, cons) + "").equals("99999999")) {
+
+		} else if ((xc.getCellDoubleValue(row, cons) + "").equals("00000000")) {
+			appdriver.findElementByXPath(loc).clear();
+		} else {
+			appdriver.findElementByXPath(loc).sendKeys(xc.getCellDoubleValue(row, cons) + "");
+			int f = validCheckString(loc, "xpath", xc.getCellDoubleValue(row, cons) + "", err);
+			if (f == 1)
+				invalid_flag = true;
+		}
 	}
 
 	public static void enterString_Id(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
-		int f = validCheckString(loc, "id", xc.getCellString(row, cons), err);
-		if (f == 1)
-			invalid_flag = true;
+		if (xc.getCellString(row, cons).equals("DNE")) {
+
+		} else if (xc.getCellString(row, cons).equals("Delete")) {
+			appdriver.findElementById(loc).clear();
+		} else {
+			appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons));
+			int f = validCheckString(loc, "id", xc.getCellString(row, cons), err);
+			if (f == 1)
+				invalid_flag = true;
+		}
+		
 	}
 
 	public static void enterString_Xpath(String title, String dir, String loc, int row, int cons, String err) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).sendKeys(xc.getCellString(row, cons));
-		int f = validCheckString(loc, "xpath", xc.getCellString(row, cons), err);
-		if (f == 1)
-			invalid_flag = true;
+		if (xc.getCellString(row, cons).equals("DNE")) {
+
+		} else if (xc.getCellString(row, cons).equals("Delete")) {
+			appdriver.findElementByXPath(loc).clear();
+		} else {
+			appdriver.findElementByXPath(loc).sendKeys(xc.getCellString(row, cons));
+			int f = validCheckString(loc, "xpath", xc.getCellString(row, cons), err);
+			if (f == 1)
+				invalid_flag = true;
+
+		}
+		
 	}
 
 	public static void selectById(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).click();
-		appdriver
-				.findElement(
-						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
-				.click();
+		if(xc.getCellString(row,cons).equals("DNE")) {
+			
+		}else if(xc.getCellString(row, cons).equals("Delete")) {
+			
+		}else {
+			appdriver.findElementById(loc).click();
+			appdriver
+					.findElement(
+							MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+					.click();
+		}
+		
 	}
 
 	public static void selectByXpath(String title, String dir, String loc, int row, int cons) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementByXPath(loc).click();
-		appdriver
-				.findElement(
-						MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
-				.click();
+		if(xc.getCellString(row,cons).equals("DNE")) {
+			
+		}else if(xc.getCellString(row, cons).equals("Delete")) {
+			
+		}else {
+			appdriver.findElementByXPath(loc).click();
+			appdriver
+					.findElement(
+							MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + xc.getCellString(row, cons) + "\")"))
+					.click();
+		}
+		
 	}
 
-	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err, String prefix) {
+	public static void enterLongNum_Id(String title, String dir, String loc, int row, int cons, String err,
+			String prefix) {
 		mt.scrollToText(title, dir);
-		appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons).substring(1));
-		int f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err,prefix);
-		if (f == 1)
-			invalid_flag = true;
+		int f = 0;
+		if (xc.getCellString(row, cons).equals("DNE")) {
+
+		} else if (xc.getCellString(row, cons).equals("Delete")) {
+			appdriver.findElementById(loc).clear();
+		} else {
+			appdriver.findElementById(loc).sendKeys(xc.getCellString(row, cons).substring(1));
+			f = validCheckLongNum(loc, "id", xc.getCellString(row, cons), err, prefix);
+			if (f == 1)
+				invalid_flag = true;
+
+		}
 	}
 
 	public static int validCheckLongNum(String loc, String locStrat, String field_txt, String text,String prefix) {

@@ -20,10 +20,37 @@ public class BPMSection extends LoginTest {
 		System.out.println("\n*************************");
 		System.out.println("We are in BPM user screen");
 
-		Thread.sleep(10000);
-		driver.findElement(By.linkText("Refresh Duplicate")).click();
 		Thread.sleep(6000);
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		int k = 0;
+		while (k == 4) {
+			try {
+				Thread.sleep(4000);
+				driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+				driver.findElement(By.linkText("Refresh Duplicate")).click();
+			} catch (Exception e) {
+				k++;
+			}
+		}
+		while (k == 4) {
+			try {
+				Thread.sleep(6000);
+				driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+				driver.findElement(By.linkText("Refresh Duplicate")).click();
+			} catch (Exception e) {
+				k++;
+			}
+		}
+		while (k == 4) {
+			try {
+				Thread.sleep(6000);
+				driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+				driver.findElement(By.linkText("Refresh Duplicate")).click();
+			} catch (Exception e) {
+				k++;
+			}
+		}
+		Thread.sleep(6000);
+		driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 		int shgCount = Integer.valueOf(driver.findElement(By.xpath(BPMConstants.shgCountPath)).getText());
 		System.out.println("No. of SHGs in queue:" + shgCount);
 
@@ -45,14 +72,20 @@ public class BPMSection extends LoginTest {
 			int shgListPageCount = (shgCount / 10) + 1;// default list length is 25
 			String shg = xc.getCellString(row, profileCons.shgNameColNum);
 			
+			
 			Actions a = new Actions(driver);
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			a.sendKeys(Keys.PAGE_DOWN).build().perform();
+			Thread.sleep(5000);
 			a.sendKeys(Keys.PAGE_DOWN).build().perform();
 			a.sendKeys(Keys.PAGE_DOWN).build().perform();
 			a.sendKeys(Keys.PAGE_DOWN).build().perform();
 			
 			Thread.sleep(3000);
 			
-			driver.findElement(By.xpath("//div[@class='mat-select-arrow-wrapper ng-tns-c65-1']")).click();
+//			driver.findElement(By.xpath("//div[@class='mat-select-arrow-wrapper ng-tns-c65-1']")).click();//TestServer microware
+			driver.findElement(By.xpath("//mat-select[@id='mat-select-0']/div[1]/div[2]/div[1]")).click();//CDFI Dev
 			driver.findElement(By.xpath("(//span[@class='mat-option-text'])[1]")).click();
 
 			//// Iteration done for each page until SHG linkText is found
@@ -162,10 +195,16 @@ public class BPMSection extends LoginTest {
 					///////////////////////////////
 					memRejection.rejectionRemarks();
 					///////////////////////////////
+					((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
+					driver.findElement(By.className("common-heading-new")).click();
+					Thread.sleep(1500);
 					driver.findElement(By.id(BPMConstants.rejectButtonID)).click();
+					Thread.sleep(1500);
 					driver.findElement(By.id(BPMConstants.rejectFormID)).sendKeys("Test run");
+					Thread.sleep(1500);
 					driver.findElement(By.xpath(BPMConstants.rejectFormOKButtonPath)).click();
-					driver.findElement(By.id("reject_btn")).click();
+					Thread.sleep(1500);
+					driver.findElement(By.xpath("//button[text()='Reject Profile']")).click();
 					Thread.sleep(3000);
 					flag = false;
 				}
@@ -218,6 +257,7 @@ public class BPMSection extends LoginTest {
 					driver.findElement(By.xpath("(//span[text()='Select List'])[1]")).click();
 					driver.findElement(By.xpath("//table[contains(@class,'table-new table-hover')]/tbody[1]/tr[" + i
 							+ "]/td[8]/ng-multiselect-dropdown[1]/div[1]/div[2]/ul[2]/li[1]/div[1]")).click();
+					Thread.sleep(3000);
 					// Select All:table[contains(@class,'table-new
 					// table-hover')]/tbody[1]/tr[1]/td[8]/ng-multiselect-dropdown[1]/div[1]/div[2]/ul[2]/li[1]
 					// Duplicate:table[contains(@class,'table-new
@@ -233,16 +273,23 @@ public class BPMSection extends LoginTest {
 
 		} else
 			System.out.println("Nothing to approve in SHG Profile");
-
+		
+		web.memRejection.rejectSHGProfile(row);
 		
 		((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
-		if (reject) {
+		Thread.sleep(1500);
+		driver.findElement(By.linkText("SHG Profile")).click();
+		if (rejectSHG) {
 			driver.findElement(By.id(BPMConstants.rejectButtonID)).click();
+			Thread.sleep(1500);
 			driver.findElement(By.id(BPMConstants.rejectFormID)).sendKeys("Test run");
+			Thread.sleep(1500);
 			driver.findElement(By.xpath(BPMConstants.rejectFormOKButtonPath)).click();
-			driver.findElement(By.id("reject_btn")).click();
+			Thread.sleep(1500);
+//			driver.findElement(By.id("reject_btn")).click();
+			driver.findElement(By.xpath("//button[text()='Reject Profile']")).click();
 			Thread.sleep(2000);
-		} else if (!reject) {
+		} else if (!rejectSHG) {
 			driver.findElement(By.xpath("//button[text()=' Approve Profile']")).click();
 			Thread.sleep(2000);
 		}

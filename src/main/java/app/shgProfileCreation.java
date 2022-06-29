@@ -83,7 +83,7 @@ public class shgProfileCreation extends lokosTest {
 		pass = 0;
 		fail = 0;
 
-		mt = new MobileTouchAdv(appdriver);
+		mt = new MobileTouchAdv();
 		allFnxsP af = new allFnxsP(xc, appdriver, testSHG, mt, du, shg_check);
 
 		if (xc.getCellString(row, profileCons.flowTypeColNum).contains("Migration"))
@@ -130,6 +130,7 @@ public class shgProfileCreation extends lokosTest {
 						break;
 
 				case 4:
+					////////////////////////////////////////////////////////////////
 					if(xc.getCellString(row, profileCons.dateColNum).equals("DNE")) {
 						
 					}else if(xc.getCellString(row, profileCons.dateColNum).equals("Delete")) {
@@ -145,105 +146,115 @@ public class shgProfileCreation extends lokosTest {
 							//No Action
 						}
 					}
-					
+					///////////////////////////////////////////////////////////////
 					if (id != 000)
 						break;
 				case 5:
 					try {
-						String promotedBy = xc.getCellString(row, profileCons.promotedByColNum);
-						af.pf(5, af.selectById(testSHG, "Promoted by", "top", "com.microware.cdfi:id/spin_promotedby",
-								row, profileCons.promotedByColNum, "005", false, migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						/////////////////////////////////////////////////////////////////
+						if (xc.getCellString(row, profileCons.promotedByColNum).equals("DNE")) {
 
-						if (promotedBy.equals("NRLM")) {
-							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
-									.click();
-							if (ncr.equals("Revived")) {
-								af.pf(305,
-										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
-												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
-												"dd-mm-yyyy", migr));
-							}
-
-						} else if (promotedBy.equals("State Project")) {
-							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
-									.click();
-							if (ncr.equals("Revived")) {
-								af.pf(305,
-										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
-												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
-												"dd-mm-yyyy", migr));
-							} else if (ncr.equals("Co-opted")) {
-								af.pf(405,
-										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
-												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
-												"dd-mm-yyyy", migr));
-							}
-
-						} else if (promotedBy.equals("NGO")) {
-							af.pf(205, af.selectById(testSHG, "Promoters name", "top",
-									"com.microware.cdfi:id/spin_FundingAgency", row, profileCons.promoterColNum, "205",
-									false, migr, "Select",
+						} else if (xc.getCellString(row, profileCons.dateColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_promotedby").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						} else {
+							String promotedBy = xc.getCellString(row, profileCons.promotedByColNum);
+							af.pf(5, af.selectById(testSHG, "Promoted by", "top", "com.microware.cdfi:id/spin_promotedby",
+									row, profileCons.promotedByColNum, "005", false, migr, "Select",
 									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
 									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
 									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
-									.click();
-							if (ncr.equals("Revived")) {
-								af.pf(305,
-										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
-												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
-												"dd-mm-yyyy", migr));
-							} else if (ncr.equals("Co-opted")) {
-								af.pf(405,
-										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
-												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
-												"dd-mm-yyyy", migr));
-							}
 
-						} else if (promotedBy.equals("SGSY")) {
-							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
-									.click();
-							if (ncr.equals("Revived")) {
-								af.pf(305,
-										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
-												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
-												"dd-mm-yyyy", migr));
-							} else if (ncr.equals("Co-opted")) {
-								af.pf(405,
-										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
-												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
-												"dd-mm-yyyy", migr));
-							}
+							if (promotedBy.equals("NRLM")) {
+								String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
+										.click();
+								if (ncr.equals("Revived")) {
+									af.pf(305,
+											af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+													"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+													"dd-mm-yyyy", migr));
+								}
 
-						} else if (promotedBy.equals("Other")) {
-							af.pf(205,
-									af.enterStringById(testSHG, "Promoters name", "top",
-											"com.microware.cdfi:id/et_promoter_name", row, profileCons.promoterColNum,
-											"205", "205", false, "Type here...", migr));
-							String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
-							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
-									.click();
-							if (ncr.equals("Revived")) {
-								af.pf(305,
-										af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
-												"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
-												"dd-mm-yyyy", migr));
-							} else if (ncr.equals("Co-opted")) {
-								af.pf(405,
-										af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
-												"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
-												"dd-mm-yyyy", migr));
+							} else if (promotedBy.equals("State Project")) {
+								String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
+										.click();
+								if (ncr.equals("Revived")) {
+									af.pf(305,
+											af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+													"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+													"dd-mm-yyyy", migr));
+								} else if (ncr.equals("Co-opted")) {
+									af.pf(405,
+											af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+													"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+													"dd-mm-yyyy", migr));
+								}
+
+							} else if (promotedBy.equals("NGO")) {
+								af.pf(205, af.selectById(testSHG, "Promoters name", "top",
+										"com.microware.cdfi:id/spin_FundingAgency", row, profileCons.promoterColNum, "205",
+										false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
+										.click();
+								if (ncr.equals("Revived")) {
+									af.pf(305,
+											af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+													"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+													"dd-mm-yyyy", migr));
+								} else if (ncr.equals("Co-opted")) {
+									af.pf(405,
+											af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+													"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+													"dd-mm-yyyy", migr));
+								}
+
+							} else if (promotedBy.equals("SGSY")) {
+								String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
+										.click();
+								if (ncr.equals("Revived")) {
+									af.pf(305,
+											af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+													"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+													"dd-mm-yyyy", migr));
+								} else if (ncr.equals("Co-opted")) {
+									af.pf(405,
+											af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+													"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+													"dd-mm-yyyy", migr));
+								}
+
+							} else if (promotedBy.equals("Other")) {
+								af.pf(205,
+										af.enterStringById(testSHG, "Promoters name", "top",
+												"com.microware.cdfi:id/et_promoter_name", row, profileCons.promoterColNum,
+												"205", "205", false, "Type here...", migr));
+								String ncr = xc.getCellString(row, profileCons.New_Coopt_RevColNum);
+								appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelector().text(\"" + ncr + "\")"))
+										.click();
+								if (ncr.equals("Revived")) {
+									af.pf(305,
+											af.dateLogic(testSHG, "Revival Date", "top", row, profileCons.revDateColNum,
+													"com.microware.cdfi:id/et_revivalDate", "305", "305", false,
+													"dd-mm-yyyy", migr));
+								} else if (ncr.equals("Co-opted")) {
+									af.pf(405,
+											af.dateLogic(testSHG, "Co-option Date", "top", row, profileCons.cooptDateColNum,
+													"com.microware.cdfi:id/et_coopt_Date", "405", "405", false,
+													"dd-mm-yyyy", migr));
+								}
 							}
+							af.errBool(af.invalidFlag());
+							af.pseq(id, "005:Promoted By and Sub Parts");
 						}
-						af.errBool(af.invalidFlag());
-						af.pseq(id, "005:Promoted By and Sub Parts");
+						/////////////////////////////////////////////////////////////////////
+						
 					} catch (Exception e) {
 						af.setInvalidFlag();
 						af.fseq(id, "005:Promoted By and Sub Parts", e);
@@ -254,31 +265,39 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 6:
 					try {
-						String s = xc.getCellString(row, profileCons.Women_Special);
-						if (s.equals("Women(Regular)"))
-							af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 1, row, profileCons.Women_Special, "006",
-									false, migr, 1,
-									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
-						else {
-							af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 2, row, profileCons.Women_Special, "006",
-									false, migr, 1,
-									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
-							af.pf(106, af.selectById(testSHG, "Tags", "top", "com.microware.cdfi:id/spin_tags", row,
-									profileCons.tagsColNum, "106", false, migr, "SELECT",
-									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							if (xc.getCellString(row, profileCons.tagsColNum).equals("OTHER")) {
-								af.pf(206,
-										af.enterStringById(testSHG, "Other(specify)", "top",
-												"com.microware.cdfi:id/et_OtherTags", row, profileCons.tagsOtherColNum,
-												"206", "206", false, "Type here...", migr));
+////////////////////////////////////////////////////////////////
+						if (xc.getCellString(row, profileCons.Women_Special).equals("DNE")) {
+
+						} else if (xc.getCellString(row, profileCons.Women_Special).equals("Delete")) {
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Women(Regular)\")"));
+						} else {
+							String s = xc.getCellString(row, profileCons.Women_Special);
+							if (s.equals("Women(Regular)"))
+								af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 1, row, profileCons.Women_Special, "006",
+										false, migr, 1,
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+							else {
+								af.pf(6, af.rdbtn(testSHG, "SHG Type", "top", 2, row, profileCons.Women_Special, "006",
+										false, migr, 1,
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+								af.pf(106, af.selectById(testSHG, "Tags", "top", "com.microware.cdfi:id/spin_tags", row,
+										profileCons.tagsColNum, "106", false, migr, "SELECT",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								if (xc.getCellString(row, profileCons.tagsColNum).equals("OTHER")) {
+									af.pf(206, af.enterStringById(testSHG, "Other(specify)", "top",
+											"com.microware.cdfi:id/et_OtherTags", row, profileCons.tagsOtherColNum,
+											"206", "206", false, "Type here...", migr));
+								}
 							}
 						}
+///////////////////////////////////////////////////////////////
+
 					} catch (Exception e) {
 						af.setInvalidFlag();
 						af.fseq(id, "006:SHG Type", e);
@@ -287,70 +306,81 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 7:
 					try {
-						String mtg = xc.getCellString(row, profileCons.meetingFreqColNum);
-						af.pf(7, af.selectById(testSHG, "Meeting Frequency", "top",
-								"com.microware.cdfi:id/spin_frequency", row, profileCons.meetingFreqColNum, "007",
-								false, migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+////////////////////////////////////////////////////////////////
+						if (xc.getCellString(row, profileCons.meetingFreqColNum).equals("DNE")) {
 
-						if (mtg.equals("Weekly")) {
-							af.pf(107, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday", row,
-									profileCons.dayWColNum, "107", false, migr, "Select",
-									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-
-						} else if (mtg.equals("Fortnightly")) {
-							af.pf(207, af.selectById(testSHG, "Fortnight Week", "top",
-									"com.microware.cdfi:id/spin_fortnight", row, profileCons.frtn8WeekFColNum, "207",
+						} else if (xc.getCellString(row, profileCons.meetingFreqColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_frequency").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						} else {
+							String mtg = xc.getCellString(row, profileCons.meetingFreqColNum);
+							af.pf(7, af.selectById(testSHG, "Meeting Frequency", "top",
+									"com.microware.cdfi:id/spin_frequency", row, profileCons.meetingFreqColNum, "007",
 									false, migr, "Select",
 									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
 									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
 									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							String s = xc.getCellString(row, profileCons.frtn8WeekFColNum);
-							if (s.equals("Date")) {
-								af.pf(407, af.selectById(testSHG, "Date", "top",
-										"com.microware.cdfi:id/spin_fortnightdate", row, profileCons.dateOtherFColNum,
-										"407", false, migr, "Select",
-										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							} else {
-								af.pf(307, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
-										row, profileCons.day1_2FColNum, "307", false, migr, "Select",
-										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							}
 
-						} else if (mtg.equals("Monthly")) {
-							String s = xc.getCellString(row, profileCons.monthlydayMColNum);
-							af.pf(507, af.selectById(testSHG, "Monthly Day", "top",
-									"com.microware.cdfi:id/spin_monthly", row, profileCons.monthlydayMColNum, "507",
-									false, migr, "Select",
-									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							if (s.equals("Date")) {
-								af.pf(707, af.selectById(testSHG, "Date", "top",
-										"com.microware.cdfi:id/spin_monthlydate", row, profileCons.dateMColNum, "707",
+							if (mtg.equals("Weekly")) {
+								af.pf(107, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday", row,
+										profileCons.dayWColNum, "107", false, migr, "Select",
+										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
+							} else if (mtg.equals("Fortnightly")) {
+								af.pf(207, af.selectById(testSHG, "Fortnight Week", "top",
+										"com.microware.cdfi:id/spin_fortnight", row, profileCons.frtn8WeekFColNum, "207",
 										false, migr, "Select",
 										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
 										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
 										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							} else {
-								af.pf(607, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
-										row, profileCons.dayMColNum, "607", false, migr, "Select",
+								String s = xc.getCellString(row, profileCons.frtn8WeekFColNum);
+								if (s.equals("Date")) {
+									af.pf(407, af.selectById(testSHG, "Date", "top",
+											"com.microware.cdfi:id/spin_fortnightdate", row, profileCons.dateOtherFColNum,
+											"407", false, migr, "Select",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								} else {
+									af.pf(307, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
+											row, profileCons.day1_2FColNum, "307", false, migr, "Select",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								}
+
+							} else if (mtg.equals("Monthly")) {
+								String s = xc.getCellString(row, profileCons.monthlydayMColNum);
+								af.pf(507, af.selectById(testSHG, "Monthly Day", "top",
+										"com.microware.cdfi:id/spin_monthly", row, profileCons.monthlydayMColNum, "507",
+										false, migr, "Select",
 										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
 										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
 										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							}
+								if (s.equals("Date")) {
+									af.pf(707, af.selectById(testSHG, "Date", "top",
+											"com.microware.cdfi:id/spin_monthlydate", row, profileCons.dateMColNum, "707",
+											false, migr, "Select",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								} else {
+									af.pf(607, af.selectById(testSHG, "Day", "top", "com.microware.cdfi:id/spin_weekday",
+											row, profileCons.dayMColNum, "607", false, migr, "Select",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								}
 
+							}
+							af.errBool(af.invalidFlag());
+							af.pseq(id, "007:Meeting Frequency and Sub Parts");
 						}
-						af.errBool(af.invalidFlag());
-						af.pseq(id, "007:Meeting Frequency and Sub Parts");
+///////////////////////////////////////////////////////////////
+
+						
 					} catch (Exception e) {
 						af.setInvalidFlag();
 						af.fseq(id, "007:Meeting Frequency and Sub Parts", e);
@@ -359,21 +389,41 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 8:
 					try {
-						af.pf(8, af.selectById(testSHG, "Compulsory Saving Frequency", "top",
-								"com.microware.cdfi:id/spin_savingfrequency", row, profileCons.compSavFreqColNum, "008",
-								false, migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.compSavFreqColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.compSavFreqColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_savingfrequency").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						}else {
+							af.pf(8, af.selectById(testSHG, "Compulsory Saving Frequency", "top",
+									"com.microware.cdfi:id/spin_savingfrequency", row, profileCons.compSavFreqColNum, "008",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						}
+						///////////////////////////////////////////////////////////////					
 
 					} catch (Exception e) {
 						af.fseq(8, "Error 008", e);
 					}
 				case 9:
 					try {
-						af.pf(9, af.enterNumById(testSHG, "Compulsory Saving Amount", "top",
-								"com.microware.cdfi:id/et_saving", row, profileCons.compSavAmtColNum, "009", "009",
-								false, "Type here...", migr));
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.compSavAmtColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.compSavAmtColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/et_saving").clear();
+						}else {
+							af.pf(9, af.enterNumById(testSHG, "Compulsory Saving Amount", "top",
+									"com.microware.cdfi:id/et_saving", row, profileCons.compSavAmtColNum, "009", "009",
+									false, "Type here...", migr));
+						}
+						///////////////////////////////////////////////////////////////		
+						
+						
 
 					} catch (Exception e) {
 						af.fseq(id, "009:Compulsory Saving Amount", e);
@@ -382,10 +432,19 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 10:
 					try {
-						af.pf(10,
-								af.enterNumById(testSHG, "Compulsory Saving Interest Rate (Annual) %", "top",
-										"com.microware.cdfi:id/et_ComsavingRoi", row, profileCons.compSavIRColNum,
-										"010", "010", false, "0", migr));
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.compSavIRColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.compSavIRColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/et_ComsavingRoi").clear();
+						}else {
+							af.pf(10,
+									af.enterNumById(testSHG, "Compulsory Saving Interest Rate (Annual) %", "top",
+											"com.microware.cdfi:id/et_ComsavingRoi", row, profileCons.compSavIRColNum,
+											"010", "010", false, "0", migr));
+						}
+						///////////////////////////////////////////////////////////////							
+						
 					} catch (Exception e) {
 						af.fseq(id, "010:Compulsory Saving Interest Rate", e);
 					} finally {
@@ -396,21 +455,36 @@ public class shgProfileCreation extends lokosTest {
 
 				case 11:
 					try {
-						int op = 0;
-						if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes"))
-							op = 1;
-						else if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("No"))
-							op = 2;
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.voluntarySavColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.voluntarySavColNum).equals("Delete")) {
+							af.pf(11, af.rdbtn(testSHG, "Voluntary Saving", "top", 2, row, profileCons.voluntarySavColNum,
+									"11", false, migr, 2,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+							
+						}else {
+							int op = 0;
+							if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes"))
+								op = 1;
+							else if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("No"))
+								op = 2;
 
-						af.pf(11, af.rdbtn(testSHG, "Voluntary Saving", "top", op, row, profileCons.voluntarySavColNum,
-								"11", false, migr, 2,
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
-						if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes")) {
-							af.pf(111, af.enterNumById(testSHG, "Voluntary Saving interest rate (Annual) %", "top",
-									"com.microware.cdfi:id/et_voluntarysavingROI", row,
-									profileCons.voluntarySavIRColNum, "111", "111", false, "Type here...", migr));
+							af.pf(11, af.rdbtn(testSHG, "Voluntary Saving", "top", op, row, profileCons.voluntarySavColNum,
+									"11", false, migr, 2,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.RadioGroup/android.widget.RadioButton"));
+							if (xc.getCellString(row, profileCons.voluntarySavColNum).equals("Yes")) {
+								af.pf(111, af.enterNumById(testSHG, "Voluntary Saving interest rate (Annual) %", "top",
+										"com.microware.cdfi:id/et_voluntarysavingROI", row,
+										profileCons.voluntarySavIRColNum, "111", "111", false, "Type here...", migr));
+						}
+						///////////////////////////////////////////////////////////////	
+						
+						
 						}
 					} catch (Exception e) {
 						af.setInvalidFlag();
@@ -422,51 +496,69 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 12:
 					try {
-						int op = 0;
-						if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-Internal"))
-							op = 1;
-						else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External"))
-							op = 2;
-						else if (xc.getCellString(row, profileCons.bkIdColNum).equals("No"))
-							op = 3;
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.bkIdColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.bkIdColNum).equals("Delete")) {
+							
+							af.pf(12, af.rdbtn(testSHG, "Bookkeeper Identified?", "top", 0, row, profileCons.bkIdColNum,
+									"012", false, migr, 1,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.RadioGroup/android.widget.RadioButton"));
+						}else {
+							int op = 0;
+							if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-Internal"))
+								op = 1;
+							else if (xc.getCellString(row, profileCons.bkIdColNum).equals("Yes-External"))
+								op = 2;
+							else if (xc.getCellString(row, profileCons.bkIdColNum).equals("No"))
+								op = 3;
 
-						af.pf(12, af.rdbtn(testSHG, "Bookkeeper Identified?", "top", op, row, profileCons.bkIdColNum,
-								"012", false, migr, 1,
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.RadioGroup/android.widget.RadioButton"));
+							if((id==0)&&(op==1))
+								op=3;
+							
+							af.pf(12, af.rdbtn(testSHG, "Bookkeeper Identified?", "top", op, row, profileCons.bkIdColNum,
+									"012", false, migr, 1,
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.RadioGroup/android.widget.RadioButton"));
 
-						if (op == 1) {
-							if ((xc.getCellString(row, profileCons.flowTypeColNum).equals("New")) && (!addMem)) {
-								appdriver.findElement(MobileBy.AndroidUIAutomator(
-										"new UiSelector().text(\"No Member available with the phone no in this SHG\")"))
-										.click();
-								appdriver.findElementByXPath(
-										"//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]")
-										.click();
-							} else
-								af.pf(112, af.selectById(testSHG, "Bookkeeper Name", "top",
-										"com.microware.cdfi:id/lay_spinmember", row, profileCons.bkNameColNum, "112",
-										false, migr, "No Member available with the phone no in this SHG",
-										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+							if (op == 1) {
+								if ((xc.getCellString(row, profileCons.flowTypeColNum).equals("New")) && (!addMem)) {
+									appdriver.findElement(MobileBy.AndroidUIAutomator(
+											"new UiSelector().text(\"No Member available with the phone no in this SHG\")"))
+											.click();
+									appdriver.findElementByXPath(
+											"//android.widget.LinearLayout/android.widget.ListView/android.widget.TextView[2]")
+											.click();
+								} else
+									af.pf(112, af.selectById(testSHG, "Bookkeeper Name", "top",
+											"com.microware.cdfi:id/lay_spinmember", row, profileCons.bkNameColNum, "112",
+											false, migr, "No Member available with the phone no in this SHG",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
 
-							af.pf(212,
-									af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
-											"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
-											profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
-						} else if (op == 2) {
-							af.pf(112,
-									af.enterStringById(testSHG, "Bookkeeper Name", "top",
-											"com.microware.cdfi:id/et_bookkeeper_name", row, profileCons.bkNameColNum,
-											"112", "112", false, "Type here...", migr));
-							af.pf(212,
-									af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
-											"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
-											profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
+								af.pf(212,
+										af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
+												"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
+												profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
+							} else if (op == 2) {
+								af.pf(112,
+										af.enterStringById(testSHG, "Bookkeeper Name", "top",
+												"com.microware.cdfi:id/et_bookkeeper_name", row, profileCons.bkNameColNum,
+												"112", "112", false, "Type here...", migr));
+								af.pf(212,
+										af.enterNumById(testSHG, "Bookkeeper's Mobile No.", "top",
+												"com.microware.cdfi:id/et_bookkeeper_s_mobile_no", row,
+												profileCons.bkMobColNum, "212", "212", false, "Type here...", migr));
+							}
+
+							
 						}
-
+						///////////////////////////////////////////////////////////////	
+						
 					} catch (Exception e) {
 						af.setInvalidFlag();
 						af.fseq(id, "012:Bookkeeper", e);
@@ -475,12 +567,23 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 13:
 					try {
-						af.pf(13, af.selectById(testSHG, "Primary Livelihood Activity", "top",
-								"com.microware.cdfi:id/spin_primaryActivity", row, profileCons.primaryla, "013", false,
-								migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.primaryla).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.primaryla).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_primaryActivity").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						}else {
+							af.pf(13, af.selectById(testSHG, "Primary Livelihood Activity", "top",
+									"com.microware.cdfi:id/spin_primaryActivity", row, profileCons.primaryla, "013", false,
+									migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						}
+						///////////////////////////////////////////////////////////////		
+						
 					} catch (Exception e) {
 						af.fseq(id, "013:Primary Livelihood", e);
 					}
@@ -488,12 +591,23 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 14:
 					try {
-						af.pf(14, af.selectById(testSHG, "Secondary Livelihood Activity", "top",
-								"com.microware.cdfi:id/spin_secondaryActivity", row, profileCons.secondaryla, "014",
-								false, migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.secondaryla).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.secondaryla).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_secondaryActivity").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						}else {
+							af.pf(14, af.selectById(testSHG, "Secondary Livelihood Activity", "top",
+									"com.microware.cdfi:id/spin_secondaryActivity", row, profileCons.secondaryla, "014",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						}
+						///////////////////////////////////////////////////////////////	
+						
 					} catch (Exception e) {
 						af.fseq(id, "014:Secondary Livelihood", e);
 					}
@@ -501,12 +615,22 @@ public class shgProfileCreation extends lokosTest {
 						break;
 				case 15:
 					try {
-						af.pf(15, af.selectById(testSHG, "Tertiary Livelihood Activity", "top",
-								"com.microware.cdfi:id/spin_tertiaryActivity", row, profileCons.tertiaryla, "015",
-								false, migr, "Select",
-								"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-								"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.tertiaryla).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.tertiaryla).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/spin_tertiaryActivity").click();
+							appdriver.findElement(MobileBy.AndroidUIAutomator("new UiSelect().text(\"Select\")")).click();
+						}else {
+							af.pf(15, af.selectById(testSHG, "Tertiary Livelihood Activity", "top",
+									"com.microware.cdfi:id/spin_tertiaryActivity", row, profileCons.tertiaryla, "015",
+									false, migr, "Select",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						}
+						///////////////////////////////////////////////////////////////	
+						
 					} catch (Exception e) {
 						af.fseq(id, "015:Tertiary Livelihood", e);
 					}
@@ -515,10 +639,19 @@ public class shgProfileCreation extends lokosTest {
 
 				case 16:
 					try {
-						af.pf(16,
-								af.enterNumById(testSHG, "Tenure of elected Office Bearers", "top",
-										"com.microware.cdfi:id/et_electiontenure", row, profileCons.tenureColNum, "016",
-										"016", false, "Type here...", migr));
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.tenureColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.tenureColNum).equals("Delete")) {
+							appdriver.findElementById("com.microware.cdfi:id/et_electiontenure").clear();
+						}else {
+							af.pf(16,
+									af.enterNumById(testSHG, "Tenure of elected Office Bearers", "top",
+											"com.microware.cdfi:id/et_electiontenure", row, profileCons.tenureColNum, "016",
+											"016", false, "Type here...", migr));
+						}
+						///////////////////////////////////////////////////////////////	
+						
 					} catch (Exception e) {
 						af.fseq(id, "016:Tenure of elected Office Bearers", e);
 					}
@@ -541,18 +674,32 @@ public class shgProfileCreation extends lokosTest {
 
 				case 18:
 					try {
-						if (!xc.getCellString(row, profileCons.typeColNum).equals("New SHG")) {
-							if (!xc.getCellString(row, memCons.typeColNum).equals("New")) {
-								af.pf(18, af.selectById(testSHG, "Status", "top", "com.microware.cdfi:id/spin_status",
-										row, profileCons.statusColNum, "018", false, migr, "Active",
-										"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[1]/android.widget.TextView[1]",
-										"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
-							}
-							af.pseq(id, "018:Status");
-						} else
-							--count;
+						////////////////////////////////////////////////////////////////
+						if(xc.getCellString(row, profileCons.statusColNum).equals("DNE")) {
+							
+						}else if(xc.getCellString(row, profileCons.statusColNum).equals("Delete")) {
+							af.pf(18, af.selectById(testSHG, "Status", "top", "com.microware.cdfi:id/spin_status",
+									row, profileCons.statusColNum, "018", false, migr, "Active",
+									"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+									"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+						}else {
+							if (!xc.getCellString(row, profileCons.typeColNum).equals("New SHG")) {
+								if (!xc.getCellString(row, memCons.typeColNum).equals("New")) {
+									af.pf(18, af.selectById(testSHG, "Status", "top", "com.microware.cdfi:id/spin_status",
+											row, profileCons.statusColNum, "018", false, migr, "Active",
+											"//android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[1]/android.widget.TextView[1]",
+											"]/android.widget.TableRow[2]/android.widget.Spinner/android.widget.TextView"));
+								}
+								af.pseq(id, "018:Status");
+							} else
+								--count;
 
+						}
+						///////////////////////////////////////////////////////////////	
+						
+					
 					} catch (Exception e) {
 						af.fseq(id, "018:Status", e);
 					} finally {
@@ -861,9 +1008,19 @@ public class shgProfileCreation extends lokosTest {
 								af.pf(21, af.enterStringById(testSHG,"IFSC Code", "top", "com.microware.cdfi:id/et_ifsc", row,
 										profileCons.IFSCColNum, "121","121",false,"Type here...",migr));
 								Thread.sleep(1000);
-								appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
+								
+								////////////////////////////////////////////////////////////////
+								if(xc.getCellString(row, profileCons.IFSCColNum).equals("DNE")) {
+									
+								}else if(xc.getCellString(row, profileCons.IFSCColNum).equals("Delete")) {
+								}else {
+									appdriver.findElementById("com.microware.cdfi:id/Imgsearch").click();
+								}
+								///////////////////////////////////////////////////////////////
+								
 								Thread.sleep(1000);
 								try {
+									af.checkTxtMsg("",row,profileCons.IFSCColNum+1,false);
 									Thread.sleep(2000);
 									appdriver.findElementById("com.microware.cdfi:id/btn_ok").click();
 									Thread.sleep(2000);
@@ -872,10 +1029,40 @@ public class shgProfileCreation extends lokosTest {
 
 								}
 								try {
-									appdriver.findElementById("com.microware.cdfi:id/lay_bankName").click();
-									appdriver.findElementById("android:id/search_src_text")
-											.sendKeys(xc.getCellString(row, profileCons.bankNameColNum));
-									appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+									////////////////////////////////////////////////////////////////
+									if(xc.getCellString(row, profileCons.bankNameColNum).equals("DNE")) {
+										
+									}else if(xc.getCellString(row, profileCons.bankNameColNum).equals("Delete")) {
+										appdriver.findElementById("com.microware.cdfi:id/lay_bankName").click();
+										appdriver.findElementById("android:id/search_src_text")
+												.sendKeys("select bank name");
+										appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+									}else {
+										appdriver.findElementById("com.microware.cdfi:id/lay_bankName").click();
+										appdriver.findElementById("android:id/search_src_text")
+												.sendKeys(xc.getCellString(row, profileCons.bankNameColNum));
+										appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+									}
+									///////////////////////////////////////////////////////////////
+
+									////////////////////////////////////////////////////////////////
+									if(xc.getCellString(row, profileCons.bankBranchColNum).equals("DNE")) {
+										
+									}else if(xc.getCellString(row, profileCons.bankBranchColNum).equals("Delete")) {
+										appdriver.findElementById("com.microware.cdfi:id/lay_branch").click();
+										appdriver.findElementById("android:id/search_src_text")
+											.sendKeys("Select Branch Name");
+										appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+									}else {
+										appdriver.findElementById("com.microware.cdfi:id/lay_branch").click();
+										appdriver.findElementById("android:id/search_src_text")
+											.sendKeys(xc.getCellString(row, profileCons.bankBranchColNum));
+										appdriver.findElementById("com.microware.cdfi:id/tvmyspinner").click();
+									}
+									///////////////////////////////////////////////////////////////
+								
+									
+									
 //								mt.scrollToText("Bank Branch", "top");
 //								appdriver.findElementById("com.microware.cdfi:id/lay_branch").click();
 //								appdriver.findElementById("android:id/search_src_text")
@@ -884,15 +1071,32 @@ public class shgProfileCreation extends lokosTest {
 								} catch (Exception e) {
 
 								}
+								
+
 								String acc="";
 								Random objGenerator = new Random();
 								acc=String.valueOf(objGenerator.nextInt(10000,99999))+String.valueOf(objGenerator.nextInt(100000,999999));
-								System.out.println("Account: "+acc);
-								try {								
-									appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(acc);									
-								}catch(Exception e) {
-									System.out.println("Unable to enter Account Data. Possible Migrated Data.");
+								
+								
+								////////////////////////////////////////////////////////////////
+								if(xc.getCellString(row, profileCons.accNoColNum).equals("DNE")) {
+									
+								}else if(xc.getCellString(row, profileCons.accNoColNum).equals("Delete")) {
+									try {								
+										appdriver.findElementById("com.microware.cdfi:id/et_Accountno").clear();									
+									}catch(Exception e) {
+										System.out.println("Unable to enter Account Data. Possible Migrated Data.");
+									}
+								}else {
+									System.out.println("Account: "+acc);
+									try {								
+										appdriver.findElementById("com.microware.cdfi:id/et_Accountno").sendKeys(acc);									
+									}catch(Exception e) {
+										System.out.println("Unable to enter Account Data. Possible Migrated Data.");
+									}
 								}
+								///////////////////////////////////////////////////////////////
+								
 								
 								try {
 									appdriver.findElementById("com.microware.cdfi:id/et_retype_Accountno").sendKeys(acc);									
@@ -915,8 +1119,19 @@ public class shgProfileCreation extends lokosTest {
 										"621", "621", false, "dd-mm-yyyy", migr));
 //								String date = xc.getCellString(row, profileCons.accOpDateColNum);
 //								dateLogic.datePicker(date, "com.microware.cdfi:id/et_opdate");
-								appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
-								cameraLogic.click();
+								
+
+								////////////////////////////////////////////////////////////////
+								if(xc.getCellString(row, profileCons.accNoColNum).equals("DNE")) {
+									
+								}else if(xc.getCellString(row, profileCons.accNoColNum).equals("Delete")) {
+								}else {
+
+									appdriver.findElementById("com.microware.cdfi:id/ImgFrntpage").click();
+									cameraLogic.click();
+								}
+								///////////////////////////////////////////////////////////////
+								
 								int op=0;
 								if(xc.getCellString(row, profileCons.isDefaultColNum).equals("Yes"))
 									op=1;
